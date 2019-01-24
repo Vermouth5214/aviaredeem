@@ -17,68 +17,69 @@ use Image;
 
 class CampaignController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
         //
 		return view ('backend.campaign.index');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
     {
         //
 		return view ('backend.campaign.update');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         //
-		$data = new CampaignH();
-        $data->kode_campaign = $request->kode_campaign;
-        $data->nama_campaign = $request->nama_campaign;
-        $data->jenis = $request->jenis;
-        if (isset($_POST['TTP'])){
-            $data->TPP = 1;
+        $cek = CampaignH::where('kode_campaign', trim($request->kode_campaign))->where('active','>',0)->count();
+        if ($cek == 0){
+            $data = new CampaignH();
+            $data->kode_campaign = $request->kode_campaign;
+            $data->nama_campaign = $request->nama_campaign;
+            $data->jenis = $request->jenis;
+            if (isset($_POST['TPP'])){
+                $data->TPP = 1;
+            } else {
+                $data->TPP = 0;
+            }
+            if ($request->hasFile('brosur')) {
+                $file = $request->file('brosur');
+                $ext = $file->getClientOriginalExtension();
+                $save_name = 'BROSUR-'.str_replace('/','',$request->kode_campaign)."-".time().".".$ext;
+                $image = Image::make($file)->resize(1000, null,function ($constraint) {$constraint->aspectRatio();});
+                $image->save('upload/Brosur/'.$save_name);
+                $data->brosur = $save_name;
+            }
+            $data->active = 2;
+            $data->user_modified = Session::get('userinfo')['uname'];
+            if($data->save()){
+                foreach ($_POST['kode_catalogue'] as $ctr=>$kode_catalogue):
+                    $insert = new CampaignDHadiah;
+                    $insert->id_campaign = $data->id;
+                    $insert->kode_catalogue = $_POST['kode_catalogue'][$ctr];
+                    $insert->kode_hadiah = $_POST['kode_hadiah'][$ctr];
+                    $insert->nama_hadiah = $_POST['nama_hadiah'][$ctr];
+                    $insert->jumlah = $_POST['jumlah'][$ctr];
+                    $insert->harga = $_POST['harga'][$ctr];
+                    $insert->pilihan = 0;
+                    if (isset($_POST['pilihan'][$ctr])){
+                        $insert->pilihan = 1;
+                    }
+                    $insert->emas = 0;
+                    if (isset($_POST['emas'][$ctr])){
+                        $insert->emas = 1;
+                    }
+                    $insert->save();
+                endforeach;
+                return Redirect::to('/backend/campaign/')->with('success', "Data saved successfully")->with('mode', 'success');
+            }
         } else {
-            $data->TPP = 0;
+            return Redirect::to('/backend/campaign/create')->with('success', "Kode Campaign sudah ada")->with('mode', 'danger');
         }
-        if ($request->hasFile('brosur')) {
-            $file = $request->file('brosur');
-            $ext = $file->getClientOriginalExtension();
-            $save_name = 'BROSUR-'.str_replace('/','',$request->kode_campaign)."-".time().".".$ext;
-            $image = Image::make($file)->resize(1000, null,function ($constraint) {$constraint->aspectRatio();});
-            $image->save('upload/Brosur/'.$save_name);
-            $data->brosur = $save_name;
-        }
-		$data->active = 2;
-		$data->user_modified = Session::get('userinfo')['uname'];
-		if($data->save()){
-			return Redirect::to('/backend/campaign/')->with('success', "Data saved successfully")->with('mode', 'success');
-		}
 
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\UserLevel  $userLevel
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
         //
@@ -92,54 +93,61 @@ class CampaignController extends Controller
 		}
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\UserLevel  $userLevel
-     * @return \Illuminate\Http\Response
-     */
     public function edit($id)
     {
         //
-		$data = UserLevel::where('id', $id)->where('active', '!=', 0)->get();
-		$userinfo = Session::get('userinfo');
+		$data = CampaignH::where('id', $id)->where('active', '!=', 0)->get();
 		if ($data->count() > 0){
-			if($userinfo['user_level_id'] > $data[0]->id){
-				return redirect('/backend');
-			}
-			return view ('backend.userlevel.update', ['data' => $data]);
+            $detail = CampaignDHadiah::where('id_campaign','=',$id)->orderBy('id','ASC')->get();
+            return view ('backend.campaign.update', ['data' => $data, 'detail' => $detail]);
 		}
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\UserLevel  $userLevel
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
         //
-		$data = UserLevel::find($id);
-		$userinfo = Session::get('userinfo');
-		if($userinfo['user_level_id'] > $data->id){
-			return redirect('/backend');
-		}
-		$data->name = $request->name;
-		$data->active = $request->active;
-		$data->user_modified = Session::get('userinfo')['user_id'];
-		if($data->save()){
-			return Redirect::to('/backend/users-level/')->with('success', "Data saved successfully")->with('mode', 'success');
-		}
+        $cek = CampaignH::where('kode_campaign', trim($request->kode_campaign))->where('id','<>',$id)->where('active','>',0)->count();
+        if ($cek == 0){
+            $data = CampaignH::find($id);
+            $data->kode_campaign = $request->kode_campaign;
+            $data->nama_campaign = $request->nama_campaign;
+            $data->jenis = $request->jenis;
+            if (isset($_POST['TPP'])){
+                $data->TPP = 1;
+            } else {
+                $data->TPP = 0;
+            }
+            if ($request->hasFile('brosur')) {
+                $file = $request->file('brosur');
+                $ext = $file->getClientOriginalExtension();
+                $save_name = 'BROSUR-'.str_replace('/','',$request->kode_campaign)."-".time().".".$ext;
+                $image = Image::make($file)->resize(1000, null,function ($constraint) {$constraint->aspectRatio();});
+                $image->save('upload/Brosur/'.$save_name);
+                $data->brosur = $save_name;
+            }
+            $data->user_modified = Session::get('userinfo')['uname'];
+            if($data->save()){
+                $deleteDetail = CampaignDHadiah::where('id_campaign',$id)->delete();
+                foreach ($_POST['kode_catalogue'] as $ctr=>$kode_catalogue):
+                    $data = new CampaignDHadiah;
+                    $data->id_campaign = $id;
+                    $data->kode_catalogue = $_POST['kode_catalogue'][$ctr];
+                    $data->kode_hadiah = $_POST['kode_hadiah'][$ctr];
+                    $data->nama_hadiah = $_POST['nama_hadiah'][$ctr];
+                    $data->jumlah = $_POST['jumlah'][$ctr];
+                    $data->harga = $_POST['harga'][$ctr];
+                    $data->pilihan = $_POST['pilihan'][$ctr];
+                    $data->emas = $_POST['emas'][$ctr];
+                    $data->save();
+                endforeach;
+                return Redirect::to('/backend/campaign/')->with('success', "Data saved successfully")->with('mode', 'success');
+            }
+        } else {
+            return Redirect::to('/backend/campaign/'.$id.'/edit')->with('success', "Kode Campaign sudah ada")->with('mode', 'danger');
+        }
+
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\UserLevel  $userLevel
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(Request $request, $id)
     {
         //
