@@ -49,14 +49,15 @@
                     <table class="table table-striped table-hover table-bordered dt-responsive nowrap dataTable" cellspacing="0" width="100%">
 						<thead>
 							<tr>
-								<th>ID</th>
+								<th>Actions</th>                                
                                 <th>Kode Campaign</th>
                                 <th>Kode Customer</th>
                                 <th>Periode Awal</th>
                                 <th>Periode Akhir</th>
-                                <th>Omzet</th>
+                                <th>Omzet Tepat Waktu</th>
+                                <th>Disc Pembelian</th>
+                                <th>Omzet Netto</th>
                                 <th>Poin</th>
-								<th>Actions</th>
 							</tr>
 						</thead>
 					</table>
@@ -79,17 +80,18 @@
 			serverSide: true,
 			ajax: "<?=url('backend/master-omzet/datatable');?>",
 			columns: [
-				{data: 'id', name: 'id'},
+				{data: 'action', name: 'action', orderable: false, searchable: false},
 				{data: 'kode_campaign', name: 'kode_campaign'},
                 {data: 'kode_customer', name: 'kode_customer'},
                 {data: 'periode_awal', name: 'periode_awal'},
                 {data: 'periode_akhir', name: 'periode_akhir'},
-                {data: 'omzet', name: 'omzet'},
-                {data: 'poin', name: 'poin'},
-				{data: 'action', name: 'action', orderable: false, searchable: false}
+                {data: 'omzet_tepat_waktu', name: 'omzet_tepat_waktu'},
+                {data: 'disc_pembelian', name: 'disc_pembelian'},
+                {data: 'omzet_netto', name: 'omzet_netto'},
+                {data: 'poin', name: 'poin'}
 			],
             order: [[ 0, "desc" ]],
-			responsive: true
+			responsive: false
 		});
 	</script>
 @endsection

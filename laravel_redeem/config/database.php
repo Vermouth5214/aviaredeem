@@ -54,6 +54,21 @@ return [
             'engine' => null,
         ],
 
+        'mysql_customer_care' => [
+            'driver' => 'mysql',
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'port' => env('DB_PORT', '3306'),
+            'database' => env('DB_DATABASE_2', 'forge'),
+            'username' => env('DB_USERNAME_2', 'forge'),
+            'password' => env('DB_PASSWORD_2', ''),
+            'unix_socket' => env('DB_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'strict' => false,
+            'engine' => null,
+        ],
+
         'pgsql' => [
             'driver' => 'pgsql',
             'host' => env('DB_HOST', '127.0.0.1'),
@@ -69,11 +84,11 @@ return [
 
         'sqlsrv' => [
             'driver' => 'sqlsrv',
-            'host' => env('DB_HOST', 'localhost'),
-            'port' => env('DB_PORT', '1433'),
-            'database' => env('DB_DATABASE', 'forge'),
-            'username' => env('DB_USERNAME', 'forge'),
-            'password' => env('DB_PASSWORD', ''),
+            'host' => env('DB_HOST_5', '117.102.78.227'),
+            'port' => env('DB_PORT_5', '1433'),
+            'database' => env('DB_DATABASE_5', 'SFA_AVIAN'),
+            'username' => env('DB_USERNAME_5', 'sa'),
+            'password' => env('DB_PASSWORD_5', 'password.1'),
             'charset' => 'utf8',
             'prefix' => '',
         ],

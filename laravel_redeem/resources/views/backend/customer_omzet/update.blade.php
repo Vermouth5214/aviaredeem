@@ -33,6 +33,8 @@
         $kode_customer = old('kode_customer');
         $periode_awal = date('d-m-Y');
         $periode_akhir = date('d-m-Y');
+        $omzet_tepat_waktu = 0;
+        $disc_pembelian = 0;
         $omzet = 0;
         $poin = 0;
 		$method = "POST";
@@ -43,7 +45,9 @@
             $kode_customer = $data[0]->kode_customer;
             $periode_awal = date('d-m-Y',strtotime($data[0]->periode_awal));
             $periode_akhir = date('d-m-Y',strtotime($data[0]->periode_akhir));
-            $omzet = $data[0]->omzet;
+            $omzet_tepat_waktu = $data[0]->omzet_tepat_waktu;
+            $disc_pembelian = $data[0]->disc_pembelian;
+            $omzet = $data[0]->omzet_netto;
             $poin = $data[0]->poin;
 			$method = "PUT";
 			$mode = "Edit";
@@ -71,6 +75,9 @@
 					{{ Form::open(['url' => $url, 'method' => $method,'class' => 'form-horizontal form-label-left']) }}
                         {!! csrf_field() !!}
                         @include('backend.elements.notification')
+                        <p class="small blue">
+                            - Untuk angka gunakan karakter titik sebagai tanda koma
+                        </p>
 						<div class="form-group">
 							<label class="control-label col-sm-3 col-xs-12">Kode Campaign <span class="required">*</span></label>
 							<div class="col-sm-5 col-xs-12">
@@ -104,24 +111,36 @@
                                     </span>
                                 </div>
 							</div>
-						</div>
+                        </div>
 						<div class="form-group">
-							<label class="control-label col-sm-3 col-xs-12">Omzet </label>
+							<label class="control-label col-sm-3 col-xs-12">Omzet Tepat Waktu</label>
+							<div class="col-sm-4 col-xs-12">
+								<input type="number" name="omzet_tepat_waktu" class="form-control" value="<?=$omzet_tepat_waktu;?>" min=0 required="required">
+							</div>
+                        </div>
+						<div class="form-group">
+							<label class="control-label col-sm-3 col-xs-12">Disc Pembelian</label>
+							<div class="col-sm-2 col-xs-12">
+								<input type="number" name="disc_pembelian" class="form-control" value="<?=$disc_pembelian;?>" min=0 required="required" step=0.00001>
+							</div>
+                        </div>
+						<div class="form-group">
+							<label class="control-label col-sm-3 col-xs-12">Omzet Netto dengan Disc</label>
 							<div class="col-sm-4 col-xs-12">
 								<input type="number" name="omzet" class="form-control" value="<?=$omzet;?>" min=0 required="required">
 							</div>
                         </div>
 						<div class="form-group">
 							<label class="control-label col-sm-3 col-xs-12">Poin </label>
-							<div class="col-sm-4 col-xs-12">
+							<div class="col-sm-3 col-xs-12">
 								<input type="number" name="poin" class="form-control" value="<?=$poin;?>" min=0 required="required">
 							</div>
                         </div>
 						<div class="ln_solid"></div>
 						<div class="form-group">
-							<div class="col-sm-6 col-xs-12 col-sm-offset-3">
-								<a href="<?=url('/backend/master-omzet')?>" class="btn btn-warning">Cancel</a>
-								<button type="submit" class="btn btn-primary">Submit </button>
+							<div class="col-sm-6 col-xs-12 col-sm-offset-6">
+								<a href="<?=url('/backend/master-omzet')?>" class="btn btn-warning">&nbsp;&nbsp;&nbsp;&nbsp;Cancel&nbsp;&nbsp;&nbsp;&nbsp;</a>
+								<button type="submit" class="btn btn-primary">&nbsp;&nbsp;&nbsp;&nbsp;Submit&nbsp;&nbsp;&nbsp;&nbsp;</button>
 							</div>
 						</div>
 					{{ Form::close() }}

@@ -54,7 +54,9 @@ class OmzetController extends Controller
                 $data->kode_customer = $request->kode_customer;
                 $data->periode_awal = date('Y-m-d',strtotime($request->periode_awal));
                 $data->periode_akhir = date('Y-m-d',strtotime($request->periode_akhir));
-                $data->omzet = $request->omzet;
+                $data->omzet_tepat_waktu = $request->omzet_tepat_waktu;
+                $data->disc_pembelian = $request->disc_pembelian;
+                $data->omzet_netto = $request->omzet;
                 $data->poin = $request->poin;
                 $data->active = 1;
                 $data->user_modified = Session::get('userinfo')['uname'];
@@ -112,7 +114,9 @@ class OmzetController extends Controller
                 $data->kode_customer = $request->kode_customer;
                 $data->periode_awal = date('Y-m-d', strtotime($request->periode_awal));
                 $data->periode_akhir = date('Y-m-d', strtotime($request->periode_akhir));
-                $data->omzet = $request->omzet;
+                $data->omzet_tepat_waktu = $request->omzet_tepat_waktu;
+                $data->disc_pembelian = $request->disc_pembelian;
+                $data->omzet_netto = $request->omzet;
                 $data->poin = $request->poin;
                 $data->user_modified = Session::get('userinfo')['uname'];
                 if($data->save()){
@@ -149,8 +153,14 @@ class OmzetController extends Controller
             ->editColumn('periode_akhir', function($data) {
                 return date('d M Y', strtotime($data->periode_akhir));
             })
-            ->editColumn('omzet', function($data) {
-                return number_format($data->omzet,0,',','.');
+            ->editColumn('omzet_tepat_waktu', function($data) {
+                return number_format($data->omzet_tepat_waktu,0,',','.');
+            })
+            ->editColumn('omzet_netto', function($data) {
+                return number_format($data->omzet_netto,0,',','.');
+            })
+            ->editColumn('disc_pembelian', function($data) {
+                return number_format($data->disc_pembelian,5,',','.');
             })
             ->editColumn('poin', function($data) {
                 return number_format($data->poin,0,',','.');
@@ -195,19 +205,19 @@ class OmzetController extends Controller
                     $text = "Baris ".$i." : Tanggal periode akhir lebih kecil dari periode awal";
                     array_push($error,$text);
                 } else 
-                if (($row[4] == 0) && ($row[5] == 0)){
+                if (($row[6] == 0) && ($row[7] == 0)){
                     //jika omzet 0 dan poin = 0
-                    $text = "Baris ".$i." : Omzet dan Poin 0";
+                    $text = "Baris ".$i." : Omzet Netto dan Poin 0";
                     array_push($error,$text);
                 } else 
-                if (($row[4] > 0) && ($row[5] > 0)){
+                if (($row[6] > 0) && ($row[7] > 0)){
                     //jika omzet dan poin diisi
-                    $text = "Baris ".$i." : Omzet dan Poin > 0";
+                    $text = "Baris ".$i." : Omzet Netto dan Poin > 0";
                     array_push($error,$text);
                 } else 
-                if (($row[4] < 0) || ($row[5] < 0)){
+                if (($row[6] < 0) || ($row[7] < 0)){
                     //jika omzet lebih kecil 0 atau poin lebih kecil 0
-                    $text = "Baris ".$i." : Omzet atau Poin < 0";
+                    $text = "Baris ".$i." : Omzet Netto atau Poin < 0";
                     array_push($error,$text);
                 } else {
                     $data = new CustomerOmzet;
@@ -215,8 +225,10 @@ class OmzetController extends Controller
                     $data->kode_customer = trim($row[1]);
                     $data->periode_awal = $row[2];
                     $data->periode_akhir = $row[3];
-                    $data->omzet = $row[4] / 1;
-                    $data->poin = $row[5] / 1;
+                    $data->omzet_tepat_waktu = $row[4] / 1;
+                    $data->disc_pembelian = $row[5] / 1;
+                    $data->omzet_netto = $row[6] / 1;
+                    $data->poin = $row[7] / 1;
                     $data->active = 1;
                     $data->user_modified = Session::get('userinfo')['uname'];
                     $data->save();

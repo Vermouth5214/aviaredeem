@@ -21,9 +21,8 @@ class TokenUserMiddleware
             return redirect('http://localhost/AVIAN/customercare/public/login');
         } else {
             $userinfo = Session::get('userinfo');
-
             //bukan user redeem
-            if ((($userinfo['priv'] == 'VSUPER') || ($userinfo['priv'] == 'VSUPERT') || ($userinfo['priv'] == 'VREDEEM')) || ($userinfo['priv'] == 'RECV' && $userinfo['posisi'] == 'AGEN' && $userinfo['utrace'] == 1)){
+            if (($userinfo['priv'] == 'VSUPER') || ($userinfo['priv'] == 'RECV' && $userinfo['posisi'] == 'AGEN' && $userinfo['utrace'] == 1)){
 
             } else {
                 return redirect('http://localhost/AVIAN/customercare/public/portal');

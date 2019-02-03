@@ -22,12 +22,18 @@ class ReadSetSession
     {
         $sessid=session_id();
         if (isset($_SESSION["uname"][$sessid])){
+            if ($request->session()->has('userinfo')){
+                if ($request->session()->get('userinfo')['uname'] != $_SESSION["uname"][$sessid]){
+                    $request->session()->flush();
+                }
+            }
             $userinfo['uname'] = $_SESSION["uname"][$sessid];
             $userinfo['priv'] = $_SESSION["priv"][$sessid];
             $userinfo['sub_priv'] = $_SESSION["sub_priv"][$sessid];
             $userinfo['posisi'] = $_SESSION["posisi"][$sessid];
             $userinfo['cabang'] = $_SESSION["cabang"][$sessid];
             $userinfo['reldag'] = $_SESSION["reldag"][$sessid];
+            $userinfo['utrace'] = $_SESSION["utrace"][$sessid];
             Session::put ('userinfo', $userinfo);
         } else {
             return redirect('http://localhost/AVIAN/customercare/public/login');

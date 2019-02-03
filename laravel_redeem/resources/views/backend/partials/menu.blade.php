@@ -1,18 +1,23 @@
 <!-- sidebar menu -->
 <?php
 	$segment =  Request::segment(2);
-	$sub_segment =  Request::segment(3);
+    $sub_segment =  Request::segment(3);
 ?>
 <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+    <?php 
+        if (($userinfo['priv'] == "VSUPER") || ($userinfo['priv'] == "VSUPERT")):
+    ?>
     <div class="menu_section">
-        <h3>REDEEM</h3>
+        <h3>GENERAL</h3>
 		<ul class="nav side-menu">
 			<li class="{{ ($segment == 'dashboard' ? 'active' : '') }}">
 				<a href="<?=url('backend/dashboard');?>"><i class="fa fa-dashboard"></i> Dashboard</a>
 			</li>
         </ul>
     </div>
-
+    <?php
+        endif;
+    ?>
     <?php
         // ADMIN //
         if (($userinfo['priv'] == "VSUPER") || ($userinfo['priv'] == "VSUPERT") || ($userinfo['priv'] == "VREDEEM")):
@@ -38,8 +43,35 @@
     <?php
         endif;
     ?>
-
-
+    <?php
+        // AGEN //
+        if (($userinfo['priv'] == "VSUPER") || ($userinfo['priv'] == "RECV")):
+    ?>
+    <div class="menu_section">
+        <h3>REDEEM</h3>
+		<ul class="nav side-menu">
+            <li class="{{ ($segment == 'redeem-hadiah' ? 'active' : '') }}">
+                <a href="<?=url('backend/redeem-hadiah');?>"><i class="fa fa-gift"></i> Redeem Hadiah</a>
+            </li>
+        </ul>
+    </div>
+    <?php
+        endif;
+    ?>
+    <?php
+        if (($userinfo['priv'] == "VSUPER") || ($userinfo['priv'] == "VSUPERT")):
+    ?>
+    <div class="menu_section">
+        <h3>REPORT</h3>
+		<ul class="nav side-menu">
+            <li class="{{ ($segment == 'general-report' ? 'active' : '') }}">
+                <a href="<?=url('backend/general-report');?>"><i class="fa fa-file-text-o"></i> General Report</a>
+            </li>
+        </ul>
+    </div>
+    <?php
+        endif;
+    ?>
     <?php
         // SUPER ADMIN //
         if ($userinfo['priv'] == "VSUPER"):

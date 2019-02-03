@@ -20,7 +20,6 @@ class Kernel extends HttpKernel
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
         \App\Http\Middleware\TrustProxies::class,
         \App\Http\Middleware\PreferredDomain::class,
-        \App\Http\Middleware\ReadSetSession::class,
     ];
 
     /**
@@ -37,6 +36,7 @@ class Kernel extends HttpKernel
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \App\Http\Middleware\ReadSetSession::class,
         ],
 
         'api' => [
@@ -59,6 +59,7 @@ class Kernel extends HttpKernel
         'can' => \Illuminate\Auth\Middleware\Authorize::class,
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        'token_all' => \App\Http\Middleware\TokenAllMiddleware::class,
         'token_user' => \App\Http\Middleware\TokenUserMiddleware::class,
         'token_admin' => \App\Http\Middleware\TokenAdminMiddleware::class,
         'token_super' => \App\Http\Middleware\TokenSuperMiddleware::class,

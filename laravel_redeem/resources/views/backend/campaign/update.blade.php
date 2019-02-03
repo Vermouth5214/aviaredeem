@@ -45,7 +45,10 @@
             $brosur = $data[0]->brosur;
 			$method = "PUT";
 			$mode = "Edit";
-			$url = "backend/campaign/".$data[0]->id;
+            $url = "backend/campaign/".$data[0]->id;
+            if ($mode_c == "edit_list_hadiah"){
+                $url = "backend/campaign/".$data[0]->id."/edit-list-hadiah";
+            }
         }
 	?>
 	<div class="page-title">
@@ -66,13 +69,29 @@
 		<div class="col-xs-12">
 			<div class="x_panel">
                 <div class="x_title">
-                    <h2>Form Campaign - Header</h2>
+                    <h2>Form Campaign</h2>
                     <div class="clearfix"></div>
                 </div>
 				<div class="x_content">
-                    @include('backend.elements.notification');
+                    @include('backend.elements.notification')
+                    <?php
+                        if ($mode_c == "edit_list_hadiah"):
+                    ?>
+                    <div class="x_title">
+                        <h2>Kode Campaign : <b><i><?=$data[0]->kode_campaign;?></i></b></h2>
+                        <div class="clearfix"></div>
+                        <h2>Nama Campaign : <b><i><?=$data[0]->nama_campaign;?></i></b></h2>
+                        <div class="clearfix"></div>
+                        <br/>
+                    </div>
+                    <?php
+                        endif;
+                    ?>
 					{{ Form::open(['url' => $url, 'method' => $method,'class' => 'form-horizontal form-label-left', 'files' => true]) }}
-						{!! csrf_field() !!}
+                        {!! csrf_field() !!}
+                        <?php
+                            if (($mode_c == "insert") || ($mode_c == "edit_header")):
+                        ?>
 						<div class="form-group">
 							<label class="control-label col-sm-3 col-xs-12"> <span class="required">Kode Campaign * :</span></label>
 							<div class="col-sm-3 col-xs-12">
@@ -131,6 +150,12 @@
                                 ?>
 							</div>
                         </div>
+                        <?php
+                            endif;
+                        ?>
+                        <?php
+                            if (($mode_c == "insert") || ($mode_c == "edit_list_hadiah")):
+                        ?>
                         <br/><br/>
                         <div class="x_title">
                             <h2>List Hadiah</h2>
@@ -140,7 +165,8 @@
                                 - Kolom jumlah diisi sesuai dengan jumlah hadiah : Misal : Nama Hadiah = 2 Gram Emas , Jumlah = 2<br/>
                                 - Hadiah emas harap memberi centang pada kolom emas<br/>
                                 - Kolom pilihan harap dicentang untuk hadiah-hadiah yang berbeda di tiap agennya (misal : voucher / minyak) <br/>
-                                - Jika hadiah sama untuk semua agen kolom pilihan tidak perlu dicentang
+                                - Jika hadiah sama untuk semua agen kolom pilihan tidak perlu dicentang<br/>
+                                - Saat melakukan submit edit list hadiah, data pembagian hadiah dan master emas akan dihapus. Harap memasukkan ulang data pembagian hadiah dan master emas
                             </p>
                         </div>
                         <div class="row">
@@ -157,7 +183,7 @@
                                 <b>Jumlah</b>
                             </div>
                             <div class="col-xs-12 col-sm-2 text-center">
-                                <b>Harga</b>
+                                <b>Harga / Poin</b>
                             </div>
                             <div class="col-xs-12 col-sm-1 text-center">
                                 <b>Pilihan</b>
@@ -260,6 +286,9 @@
                                 }
                             ?>
                         </div>
+                        <?php
+                            endif;
+                        ?>
                         <br/>
 						<div class="form-group">
 							<div class="col-sm-6 col-xs-12 col-sm-offset-6">

@@ -90,6 +90,11 @@
                                         <li><a href="<?=url('http://localhost/AVIAN/customercare/public/logout');?>"><i class="fa fa-sign-out pull-right"></i> Log Out</a></li>
                                     </ul>
                                 </li>
+                                <li>
+                                    <a href="<?=url('http://localhost/AVIAN/customercare/public/portal');?>">
+                                        <i class="fa fa-home"> Menu Utama </i>
+                                    </a>
+                                </li>
                             </ul>
                         </nav>
                     </div>

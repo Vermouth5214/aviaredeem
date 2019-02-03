@@ -25,9 +25,17 @@
 				<span class="form-control"><?=date('d M Y', strtotime($data->periode_akhir));?></span>
 			</div>
 			<div class="form-group col-xs-12">
-				<label class="control-label">Omzet :</label>
-				<span class="form-control"><?=number_format($data->omzet,0,',','.');?></span>
+				<label class="control-label">Omzet Tepat Waktu:</label>
+				<span class="form-control"><?=number_format($data->omzet_tepat_waktu,0,',','.');?></span>
+            </div>
+			<div class="form-group col-xs-12">
+				<label class="control-label">Disc Pembelian:</label>
+				<span class="form-control"><?=number_format($data->disc_pembelian,5,',','.');?></span>
 			</div>
+			<div class="form-group col-xs-12">
+				<label class="control-label">Omzet Netto dgn Disc:</label>
+				<span class="form-control"><?=number_format($data->omzet_netto,0,',','.');?></span>
+            </div>
 			<div class="form-group col-xs-12">
 				<label class="control-label">Poin :</label>
 				<span class="form-control"><?=number_format($data->poin,0,',','.');?></span>
