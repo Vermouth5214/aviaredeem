@@ -2,21 +2,21 @@
 	$breadcrumb = [];
 	$breadcrumb[0]['title'] = 'Dashboard';
 	$breadcrumb[0]['url'] = url('backend/dashboard');
-	$breadcrumb[1]['title'] = 'Klaim Hadiah';
-	$breadcrumb[1]['url'] = url('backend/klaim-hadiah');
+	$breadcrumb[1]['title'] = 'Konversi Emas';
+	$breadcrumb[1]['url'] = url('backend/konversi-emas');
 ?>
 
 <!-- LAYOUT -->
 @extends('backend.layouts.main')
 
 <!-- TITLE -->
-@section('title', 'Klaim Hadiah')
+@section('title', 'Konversi Emas')
 
 <!-- CONTENT -->
 @section('content')
 	<div class="page-title">
 		<div class="title_left">
-			<h3>Klaim Hadiah</h3>
+			<h3>Konversi Emas</h3>
 		</div>
 		<div class="title_right">
 			<div class="col-md-4 col-sm-4 col-xs-8 form-group pull-right top_search">
@@ -81,44 +81,21 @@
                     <div class="row">
                         <div class="col-xs-12">
                             <?php
-                                $url = "backend/redeem-hadiah/".$data_omzet[0]->id."/klaim-hadiah";
+                                $url = "backend/redeem-hadiah/".$data_omzet[0]->id."/konversi-emas";
                                 $total = 0;
                             ?>
                             {{ Form::open(['url' => $url, 'method' => 'POST','class' => 'form-horizontal form-label-left', 'id' => 'form-submit']) }}
-                            <?php
-                                if ($data_header[0]->jenis == "omzet"):
-                                    $total = $data_omzet[0]->omzet_netto;
-                            ?>
-                            <h3>Sisa Omzet : <span id="omzet_poin"><?=number_format($data_omzet[0]->omzet_netto,0,',','.');?></span></h3>
-                            <?php
-                                endif;
-                            ?>
-                            <?php
-                                if ($data_header[0]->jenis == "poin"):
-                                    $total = $data_omzet[0]->poin;
-                            ?>
-                            <h3>Sisa Poin : <span id="omzet_poin"><?=number_format($data_omzet[0]->poin,0,',','.');?></span></h3>
-                            <?php
-                                endif;
-                            ?>
-                            <?php
-                                if ($data_header[0]->TPP == 1):
-                            ?>
-                            <i><p class="small blue">Sisa Omzet / Poin akan dikonversikan ke dalam hadiah Tambahan Potongan Penjualan</p></i>
-                            <?php
-                                endif;
-                            ?>
+                            <h3>Total Emas (gr) : <span id="total_emas"><?=number_format($total_gram,0,',','.');?></span></h3>
                             <br/>
                             <h2>List Hadiah</h2>
                                 <table class="table table-striped table-hover table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
                                 <thead>
                                     <th class="text-center">Hadiah</th>
                                     <th class="text-center">Jumlah</th>
-                                    <th class="text-center">Harga / Poin</th>
                                 </thead>
                                 <tbody>
                             <?php
-                                foreach ($data_list_hadiah as $hadiah):
+                                foreach ($data_konversi as $hadiah):
                             ?>      
                                     <tr>
                                         <td width = "60%" class="text-right">
@@ -127,10 +104,7 @@
                                         </td>
                                         <td>
                                             <input type="number" class="form-control jumlah" name="jumlah[]" min=0 value=0 required="required">
-                                        </td>
-                                        <td class="text-right">
-                                            <input type="hidden" value="<?=$hadiah->harga;?>" class="harga" name="harga[]">
-                                            <?=number_format($hadiah->harga,0,',','.');?>
+                                            <input type="hidden" value="<?=$hadiah->jumlah;?>" class="jumlah_emas" name="jumlah_emas[]">
                                         </td>
                                     </tr>
                             <?php
@@ -172,36 +146,35 @@
             subtotal = 0;
             $('.jumlah').each(function () {
                 val = parseFloat($(this).val()) | 0;
-                harga = $(this).parent().next().find('.harga').val();
-                subtotal = subtotal + (val * harga);
+                jumlah = $(this).next().val();
+                subtotal = subtotal + (val * jumlah);
             });
             return subtotal;
         }
 
         $('.jumlah').on('change',function(e){
-            var total = <?=$total;?>;
+            var total = <?=$total_gram;?>;
             var subtotal = hitung_sub_total();
             var sisa = total - subtotal;
             if (sisa < 0){
-                $('#omzet_poin').html("<span class='red'>" + numberWithCommas(sisa) + "</span>");
+                $('#total_emas').html("<span class='red'>" + numberWithCommas(sisa) + "</span>");
             } else {
-                $('#omzet_poin').html(numberWithCommas(sisa));
+                $('#total_emas').html(numberWithCommas(sisa));
             }
             
         })
 
         $('#form-submit').on('submit',function(){
             if (confirm("Apakah anda yakin mau mensubmit data ini?")) {            
-                var total = <?=$total;?>;
-                var harga_terendah = <?=$harga_terendah;?>;
+                var total = <?=$total_gram;?>;
                 var subtotal = hitung_sub_total();
                 var sisa = total - subtotal;
                 if (sisa < 0){
-                    alert('Penukaran hadiah melebihi omzet / poin')
+                    alert('Penukaran emas melebihi omzet')
                     return false;
                 }
-                if (sisa > harga_terendah ){
-                    alert('Sisa omzet / poin masih bisa ditukarkan dengan hadiah lain')
+                if (sisa > 0 ){
+                    alert('Sisa omzet masih bisa dikonversikan')
                     return false;
                 }
                 return true;

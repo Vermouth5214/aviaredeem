@@ -56,6 +56,7 @@ class OmzetController extends Controller
                 $data->periode_akhir = date('Y-m-d',strtotime($request->periode_akhir));
                 $data->omzet_tepat_waktu = $request->omzet_tepat_waktu;
                 $data->disc_pembelian = $request->disc_pembelian;
+                $data->disc_penjualan = $request->disc_penjualan;
                 $data->omzet_netto = $request->omzet;
                 $data->poin = $request->poin;
                 $data->active = 1;
@@ -116,6 +117,7 @@ class OmzetController extends Controller
                 $data->periode_akhir = date('Y-m-d', strtotime($request->periode_akhir));
                 $data->omzet_tepat_waktu = $request->omzet_tepat_waktu;
                 $data->disc_pembelian = $request->disc_pembelian;
+                $data->disc_penjualan = $request->disc_penjualan;
                 $data->omzet_netto = $request->omzet;
                 $data->poin = $request->poin;
                 $data->user_modified = Session::get('userinfo')['uname'];
@@ -205,17 +207,17 @@ class OmzetController extends Controller
                     $text = "Baris ".$i." : Tanggal periode akhir lebih kecil dari periode awal";
                     array_push($error,$text);
                 } else 
-                if (($row[6] == 0) && ($row[7] == 0)){
+                if (($row[7] == 0) && ($row[8] == 0)){
                     //jika omzet 0 dan poin = 0
                     $text = "Baris ".$i." : Omzet Netto dan Poin 0";
                     array_push($error,$text);
                 } else 
-                if (($row[6] > 0) && ($row[7] > 0)){
+                if (($row[7] > 0) && ($row[8] > 0)){
                     //jika omzet dan poin diisi
                     $text = "Baris ".$i." : Omzet Netto dan Poin > 0";
                     array_push($error,$text);
                 } else 
-                if (($row[6] < 0) || ($row[7] < 0)){
+                if (($row[7] < 0) || ($row[8] < 0)){
                     //jika omzet lebih kecil 0 atau poin lebih kecil 0
                     $text = "Baris ".$i." : Omzet Netto atau Poin < 0";
                     array_push($error,$text);
@@ -227,8 +229,9 @@ class OmzetController extends Controller
                     $data->periode_akhir = $row[3];
                     $data->omzet_tepat_waktu = $row[4] / 1;
                     $data->disc_pembelian = $row[5] / 1;
-                    $data->omzet_netto = $row[6] / 1;
-                    $data->poin = $row[7] / 1;
+                    $data->disc_penjualan = $row[6] / 1;
+                    $data->omzet_netto = $row[7] / 1;
+                    $data->poin = $row[8] / 1;
                     $data->active = 1;
                     $data->user_modified = Session::get('userinfo')['uname'];
                     $data->save();

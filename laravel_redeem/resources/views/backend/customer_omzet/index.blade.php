@@ -56,6 +56,7 @@
                                 <th>Periode Akhir</th>
                                 <th>Omzet Tepat Waktu</th>
                                 <th>Disc Pembelian</th>
+                                <th>Disc Penjualan</th>
                                 <th>Omzet Netto</th>
                                 <th>Poin</th>
 							</tr>
@@ -87,6 +88,7 @@
                 {data: 'periode_akhir', name: 'periode_akhir'},
                 {data: 'omzet_tepat_waktu', name: 'omzet_tepat_waktu'},
                 {data: 'disc_pembelian', name: 'disc_pembelian'},
+                {data: 'disc_penjualan', name: 'disc_penjualan'},
                 {data: 'omzet_netto', name: 'omzet_netto'},
                 {data: 'poin', name: 'poin'}
 			],

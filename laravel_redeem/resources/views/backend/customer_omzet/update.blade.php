@@ -35,6 +35,7 @@
         $periode_akhir = date('d-m-Y');
         $omzet_tepat_waktu = 0;
         $disc_pembelian = 0;
+        $disc_penjualan = 0;
         $omzet = 0;
         $poin = 0;
 		$method = "POST";
@@ -47,6 +48,7 @@
             $periode_akhir = date('d-m-Y',strtotime($data[0]->periode_akhir));
             $omzet_tepat_waktu = $data[0]->omzet_tepat_waktu;
             $disc_pembelian = $data[0]->disc_pembelian;
+            $disc_penjualan = $data[0]->disc_penjualan;
             $omzet = $data[0]->omzet_netto;
             $poin = $data[0]->poin;
 			$method = "PUT";
@@ -122,6 +124,12 @@
 							<label class="control-label col-sm-3 col-xs-12">Disc Pembelian</label>
 							<div class="col-sm-2 col-xs-12">
 								<input type="number" name="disc_pembelian" class="form-control" value="<?=$disc_pembelian;?>" min=0 required="required" step=0.00001>
+							</div>
+                        </div>
+						<div class="form-group">
+							<label class="control-label col-sm-3 col-xs-12">Disc Penjualan</label>
+							<div class="col-sm-2 col-xs-12">
+								<input type="number" name="disc_penjualan" class="form-control" value="<?=$disc_penjualan;?>" min=0 required="required" step=0.00001>
 							</div>
                         </div>
 						<div class="form-group">

@@ -24,7 +24,9 @@ class ReadSetSession
         if (isset($_SESSION["uname"][$sessid])){
             if ($request->session()->has('userinfo')){
                 if ($request->session()->get('userinfo')['uname'] != $_SESSION["uname"][$sessid]){
-                    $request->session()->flush();
+                    foreach (Session::all() as $key=>$item){
+                        if ($key!='_token') Session::forget($key);
+                    }
                 }
             }
             $userinfo['uname'] = $_SESSION["uname"][$sessid];

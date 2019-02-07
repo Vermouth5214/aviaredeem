@@ -5,7 +5,7 @@ namespace App\Model;
 use Illuminate\Database\Eloquent\Model;
 
 class RedeemEmas extends Model {
-	protected $table = 'redeem_detail';
+	protected $table = 'redeem_emas';
     protected $hidden = ['created_at', 'updated_at'];
     
 	public function campaign()
@@ -15,7 +15,7 @@ class RedeemEmas extends Model {
 
 	public function campaign_hadiah()
 	{
-		return $this->belongsTo('App\Model\CampaignDHadiah', 'id_campaign_d_hadiah');
+		return $this->belongsTo('App\Model\CampaignDEmas', 'id_campaign_emas');
 	}
 
 	public function agen()

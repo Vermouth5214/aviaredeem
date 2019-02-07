@@ -31,6 +31,10 @@
 			<div class="form-group col-xs-12">
 				<label class="control-label">Disc Pembelian:</label>
 				<span class="form-control"><?=number_format($data->disc_pembelian,5,',','.');?></span>
+            </div>
+			<div class="form-group col-xs-12">
+				<label class="control-label">Disc Penjualan:</label>
+				<span class="form-control"><?=number_format($data->disc_penjualan,5,',','.');?></span>
 			</div>
 			<div class="form-group col-xs-12">
 				<label class="control-label">Omzet Netto dgn Disc:</label>

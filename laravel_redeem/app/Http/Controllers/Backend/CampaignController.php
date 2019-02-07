@@ -11,6 +11,7 @@ use App\Model\CampaignH;
 use App\Model\CampaignDHadiah;
 use App\Model\CampaignDBagi;
 use App\Model\CampaignDEmas;
+use App\Model\RedeemDetail;
 use App\Model\UserAvex;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
@@ -214,7 +215,17 @@ class CampaignController extends Controller
                 if (($count == 0) || ($data->active == 3) || ($data->active == 1)){
                     $edit_master_emas = "<a class='btn-action btn btn-info btn-edit' href='".$url_edit_master_emas."' title='Edit Master Emas'><i class='fa fa-edit'></i> Edit Master Emas</a>";
                 }
-				$delete = "<button data-url='".$url."' onclick='deleteData(this)' class='btn-action btn btn-danger btn-delete' title='Delete'><i class='fa fa-trash-o'></i> Delete</button>";
+                $delete = "<button data-url='".$url."' onclick='deleteData(this)' class='btn-action btn btn-danger btn-delete' title='Delete'><i class='fa fa-trash-o'></i> Delete</button>";
+                
+                $jum_redeem = RedeemDetail::where('id_campaign', $data->id)->count();
+                if ($jum_redeem > 0){
+                    $edit_header = "";
+                    $edit_list_hadiah = "";
+                    $edit_pembagian_hadiah = "";
+                    $edit_master_emas = "";
+                    $delete = "";
+                }
+
 				return $view." ".$edit_header." ".$edit_list_hadiah." ".$edit_pembagian_hadiah." ".$edit_master_emas." ".$delete;
             })			
             ->rawColumns(['action','brosur'])

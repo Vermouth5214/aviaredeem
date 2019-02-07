@@ -15,7 +15,7 @@ class RedeemDetail extends Model {
 
 	public function campaign_hadiah()
 	{
-		return $this->belongsTo('App\Model\CampaignDHadiah', 'id_campaign_d_hadiah');
+		return $this->belongsTo('App\Model\CampaignDHadiah', 'id_campaign_hadiah');
 	}
 
 	public function agen()

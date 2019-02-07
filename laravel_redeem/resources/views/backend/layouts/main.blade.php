@@ -1,5 +1,5 @@
 <?php
-	$userinfo = Session::get('userinfo');
+    $userinfo = Session::get('userinfo');
 	$avatar = url('img/noprofileimage.png');
 	if (isset($userinfo['avatar'])){
 		$avatar = url($userinfo['avatar']);
