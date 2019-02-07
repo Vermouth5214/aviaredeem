@@ -83,16 +83,28 @@
                             <?php
                                 if ($data_header[0]->jenis == "omzet"):
                                     $total = $data_omzet[0]->omzet_netto;
+                                    $sisa = 0;
+                                    $subtotal = 0;
+                                    foreach ($data_redeem as $detail):
+                                        $subtotal = $subtotal + ($detail->jumlah * $detail->campaign_hadiah->harga);
+                                    endforeach;
+                                    $sisa = $total - $subtotal;
                             ?>
-                            <h3>Sisa Omzet : <span id="omzet_poin"><?=number_format($data_omzet[0]->omzet_netto,0,',','.');?></span></h3>
+                            <h3>Sisa Omzet : <span id="omzet_poin"><?=number_format($sisa,0,',','.');?></span></h3>
                             <?php
                                 endif;
                             ?>
                             <?php
                                 if ($data_header[0]->jenis == "poin"):
                                     $total = $data_omzet[0]->poin;
+                                    $sisa = 0;
+                                    $subtotal = 0;
+                                    foreach ($data_redeem as $detail):
+                                        $subtotal = $subtotal + ($detail->jumlah * $detail->campaign_hadiah->harga);
+                                    endforeach;
+                                    $sisa = $total - $subtotal;
                             ?>
-                            <h3>Sisa Poin : <span id="omzet_poin"><?=number_format($data_omzet[0]->poin,0,',','.');?></span></h3>
+                            <h3>Sisa Poin : <span id="omzet_poin"><?=number_format($sisa,0,',','.');?></span></h3>
                             <?php
                                 endif;
                             ?>
@@ -104,8 +116,63 @@
                                 endif;
                             ?>
                             <br/>
-                            <h2>List Hadiah</h2>
-                            
+                            <h2>Daftar Redeem</h2>
+                            <table class="table table-striped table-hover table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                                <thead>
+                                    <th class="text-center">Hadiah</th>
+                                    <th class="text-center">Jumlah</th>
+                                    <th class="text-center">Harga / Poin</th>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                        $total = 0;
+                                        foreach ($data_redeem as $hadiah):
+                                    ?>      
+                                            <tr>
+                                                <td width = "60%" class="text-right">
+                                                    <?=$hadiah->campaign_hadiah->nama_hadiah;?>
+                                                </td>
+                                                <td class="text-right">
+                                                    <?=number_format($hadiah->jumlah,0,',','.');?>
+                                                </td>
+                                                <td class="text-right">
+                                                    <?=number_format($hadiah->campaign_hadiah->harga,0,',','.');?>
+                                                </td>
+                                            </tr>
+                                    <?php
+                                        $total = $total + ($hadiah->jumlah * $hadiah->campaign_hadiah->harga);
+                                        endforeach;
+                                    ?>
+                                </tbody>
+                                <thead>
+                                    <th class="text-right" colspan=2>Grand Total</th>
+                                    <th class="text-right">  <?=number_format($total,0,',','.');?></th>
+                                </thead>
+                            </table>
+                            <br/>
+                            <h2>Daftar Konversi Emas</h2>
+                            <table class="table table-striped table-hover table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                                <thead>
+                                    <th class="text-center">Hadiah</th>
+                                    <th class="text-center">Jumlah</th>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                        foreach ($data_konversi as $hadiah):
+                                    ?>      
+                                            <tr>
+                                                <td width = "60%" class="text-right">
+                                                    <?=$hadiah->campaign_hadiah->nama_hadiah;?>
+                                                </td>
+                                                <td class="text-right">
+                                                    <?=$hadiah->jumlah;?>
+                                                </td>
+                                            </tr>
+                                    <?php
+                                        endforeach;
+                                    ?>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
 				</div>
