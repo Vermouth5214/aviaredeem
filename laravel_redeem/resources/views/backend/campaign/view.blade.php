@@ -38,7 +38,7 @@
                         <div class="clearfix"></div>
                     </div>
                     <div class="row">
-                        <div class="col-xs-12">
+                        <div class="col-xs-12 col-sm-6">
                             <h5>Kode Campaign : <b><?=$data_header[0]->kode_campaign;?></b></h5>
                             <h5>Nama Campaign : <b><?=$data_header[0]->nama_campaign;?></b></h5>
                             <h5>Jenis : <b><?=strtoupper($data_header[0]->jenis);?></b></h5>
@@ -56,10 +56,19 @@
                             <?php
                                 if ($data_header[0]->active == 1){
                                     echo "<span class='badge badge-success'>Active</span>";
+                                } else if ($data_header[0]->active == 5){
+                                    echo "<span class='badge badge-error'>Need Approval</span>";
                                 } else {
+
                                     echo "<span class='badge badge-warning'>Not Complete</span>";
                                 }
                             ?></h5>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 text-right">
+                            {{ Form::open(['url' => url('backend/campaign/view/approval/'.$data_header[0]->id), 'method' => 'POST','class' => 'form-horizontal form-label-left', 'files' => true, 'id' => 'form-submit']) }}
+                            {!! csrf_field() !!}
+                                <button type="submit" class="btn btn-primary btn-danger">&nbsp;&nbsp;&nbsp;Approve Campaign&nbsp;&nbsp;&nbsp;</button>
+                            {{ Form::close() }}                            
                         </div>
                     </div>
                     <br/>
@@ -78,6 +87,7 @@
                                         <th>Nama Hadiah</th>
                                         <th>Jumlah</th>
                                         <th>Harga</th>
+                                        <th>Satuan</th>
                                         <th>Pilihan</th>
                                         <th>Emas</th>
                                     </tr>
@@ -93,6 +103,7 @@
                                             <td><?=$hadiah->nama_hadiah;?></td>
                                             <td class="text-right"><?=$hadiah->jumlah;?></td>
                                             <td class="text-right"><?=number_format($hadiah->harga,0,',','.');?></td>
+                                            <td><?=$hadiah->satuan;?></td>
                                             <td class="text-center">
                                                 <?php
                                                     $pilihan = "";
@@ -189,6 +200,7 @@
                                         <th>Nama Hadiah</th>
                                         <th>Jumlah</th>
                                         <th>Harga</th>
+                                        <th>Satuan</th>
                                     </tr>
                                 </thead>
                                 <?php
@@ -202,6 +214,7 @@
                                             <td><?=$hadiah->nama_hadiah;?></td>
                                             <td class="text-right"><?=$hadiah->jumlah;?></td>
                                             <td class="text-right"><?=number_format($hadiah->harga,0,',','.');?></td>
+                                            <td><?=$hadiah->satuan;?></td>
                                         </tr>
                                 <?php
                                         $i++;
@@ -223,4 +236,12 @@
 
 <!-- JAVASCRIPT -->
 @section('script')
+    <script>
+        $('#form-submit').on('submit',function(){
+            if (confirm("Apakah anda yakin melakukan approve campaign ini?")) {
+                return true;
+            }
+            return false;
+        })
+    </script>
 @endsection

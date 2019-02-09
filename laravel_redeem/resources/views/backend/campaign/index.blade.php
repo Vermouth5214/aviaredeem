@@ -74,10 +74,14 @@
 					if (data == 1){
 						text = "Active";
 						label = "success";
-					} else {    
+					} else 
+                    if (data == 5){    
+						text = "Need Approval";
+						label = "error";
+					} else {
 						text = "Not Complete";
 						label = "warning";
-					}
+                    }
 					return "<span class='badge badge-" + label + "'>"+ text + "</span>";
                 }},				
 				{data: 'action', name: 'action', orderable: false, searchable: false}

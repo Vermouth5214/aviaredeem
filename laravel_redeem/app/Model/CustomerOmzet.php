@@ -17,7 +17,7 @@ class CustomerOmzet extends Model {
 
 	public function agen()
 	{
-		return $this->belongsTo('App\Model\UserAvex', 'kode_agen', 'reldag');
+		return $this->belongsTo('App\Model\UserAvex', 'kode_customer', 'reldag');
 	}
     
 }

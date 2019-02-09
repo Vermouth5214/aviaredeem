@@ -20,7 +20,7 @@
     ?>
     <?php
         // ADMIN //
-        if (($userinfo['priv'] == "VSUPER") || ($userinfo['priv'] == "VSUPERT") || ($userinfo['priv'] == "VREDEEM")):
+        if ((($userinfo['priv'] == "VSUPER") || ($userinfo['priv'] == "VSUPERT") || ($userinfo['priv'] == "VREDEEM")) && ($userinfo['uname'] != "mkt01")):
     ?>
     <div class="menu_section">
         <h3>MASTER</h3>

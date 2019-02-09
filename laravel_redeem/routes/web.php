@@ -46,6 +46,10 @@ Route::group(array('prefix' => 'backend','middleware'=> ['token_admin']), functi
     Route::get('/dashboard','Backend\DashboardController@dashboard');
 
     /* MASTER CAMPAIGN */
+
+    /* APPROVAL */
+    Route::post('/campaign/view/approval/{id}','Backend\CampaignController@view_approval');
+
     Route::get('/campaign/datatable','Backend\CampaignController@datatable');	
     Route::get('/campaign/{id}/edit-list-hadiah','Backend\CampaignController@edit_list_hadiah');
     Route::match(array('PUT','PATCH'),'/campaign/{id}/edit-list-hadiah','Backend\CampaignController@update_list_hadiah');
@@ -55,6 +59,10 @@ Route::group(array('prefix' => 'backend','middleware'=> ['token_admin']), functi
     Route::post('/campaign/{id}/edit-master-emas','Backend\CampaignController@update_master_emas');
     Route::resource('campaign', 'Backend\CampaignController');
     
+    /* GENERAL REPORT */
+    Route::get('/general-report','Backend\ReportController@general_report');
+    Route::get('/general-report/datatable','Backend\ReportController@datatable');
+    Route::get('/general-report/view/{id}','Backend\ReportController@view');
 });
 
 

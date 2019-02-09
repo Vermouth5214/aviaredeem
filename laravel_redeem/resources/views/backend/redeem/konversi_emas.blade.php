@@ -92,6 +92,7 @@
                                 <thead>
                                     <th class="text-center">Hadiah</th>
                                     <th class="text-center">Jumlah</th>
+                                    <th class="text-center">Satuan</th>
                                 </thead>
                                 <tbody>
                             <?php
@@ -105,6 +106,9 @@
                                         <td>
                                             <input type="number" class="form-control jumlah" name="jumlah[]" min=0 value=0 required="required">
                                             <input type="hidden" value="<?=$hadiah->jumlah;?>" class="jumlah_emas" name="jumlah_emas[]">
+                                        </td>
+                                        <td>
+                                            <?=$hadiah->satuan;?>
                                         </td>
                                     </tr>
                             <?php

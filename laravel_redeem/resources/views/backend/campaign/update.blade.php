@@ -185,11 +185,8 @@
                             <div class="col-xs-12 col-sm-2 text-center">
                                 <b>Harga / Poin</b>
                             </div>
-                            <div class="col-xs-12 col-sm-1 text-center">
-                                <b>Pilihan</b>
-                            </div>
-                            <div class="col-xs-12 col-sm-1 text-center">
-                                <b>Emas</b>
+                            <div class="col-xs-12 col-sm-2 text-center">
+                                <b>Satuan | Pilihan | Emas</b>
                             </div>
                             <div class="col-xs-12 col-sm-1 text-center">
                                 <b>Action</b>
@@ -203,37 +200,38 @@
                                     foreach ($detail as $key => $value):
                             ?>
                             <div class="row" style="margin-bottom:10px;">
-                                <div class="col-xs-12 col-sm-2">
+                                <div class="col-xs-12 col-sm-2 baris">
                                     <input type="text" class="form-control" name="kode_catalogue[]" placeholder="Kode Catalogue" required="required" value="<?=$value->kode_catalogue;?>">
                                 </div>
-                                <div class="col-xs-12 col-sm-2">
+                                <div class="col-xs-12 col-sm-2 baris">
                                     <input type="text" class="form-control" name="kode_hadiah[]" placeholder="Kode Barang" required="required" value="<?=$value->kode_hadiah;?>">
                                 </div>
-                                <div class="col-xs-12 col-sm-2">
+                                <div class="col-xs-12 col-sm-2 baris">
                                     <input type="text" class="form-control" name="nama_hadiah[]" placeholder="Nama Hadiah" required="required" value="<?=$value->nama_hadiah;?>">
                                 </div>
-                                <div class="col-xs-12 col-sm-1">
+                                <div class="col-xs-12 col-sm-1 baris">
                                     <input type="number" class="form-control" name="jumlah[]" placeholder=1 min=1 required="required" value="<?=$value->jumlah;?>">
                                 </div>
-                                <div class="col-xs-12 col-sm-2">
+                                <div class="col-xs-12 col-sm-2 baris">
                                     <input type="number" class="form-control" name="harga[]" placeholder=1 min=1 required="required" value="<?=$value->harga;?>">
                                 </div>
-                                <div class="col-xs-12 col-sm-1 text-center">
+                                <div class="col-xs-12 col-sm-2 baris">
+                                    <input type="text" class="form-control" name="satuan[]" placeholder="Satuan" required="required" value="<?=$value->satuan;?>">
                                     <?php
                                         $checked = "";
                                         if ($value->pilihan == 1){
                                             $checked = "checked";
                                         }
                                     ?>
+                                    &nbsp;
                                     <input type="checkbox" name="pilihan[]" <?=$checked;?>>
-                                </div>
-                                <div class="col-xs-12 col-sm-1 text-center">
                                     <?php
                                         $checked = "";
                                         if ($value->emas == 1){
                                             $checked = "checked";
                                         }
                                     ?>
+                                    &nbsp;
                                     <input type="checkbox" name="emas[]" <?=$checked;?>>
                                 </div>
                                 <div class="col-xs-12 col-sm-1">
@@ -248,7 +246,6 @@
                                     <?php
                                         }
                                     ?>
-
                                 </div>
                             </div>
                             <?php
@@ -257,28 +254,29 @@
                                 } else {
                             ?>
                             <div class="row" style="margin-bottom:10px;">
-                                <div class="col-xs-12 col-sm-2">
+                                <div class="col-xs-12 col-sm-2 baris">
                                     <input type="text" class="form-control" name="kode_catalogue[]" placeholder="Kode Catalogue" required="required">
                                 </div>
-                                <div class="col-xs-12 col-sm-2">
+                                <div class="col-xs-12 col-sm-2 baris">
                                     <input type="text" class="form-control" name="kode_hadiah[]" placeholder="Kode Barang" required="required">
                                 </div>
-                                <div class="col-xs-12 col-sm-2">
+                                <div class="col-xs-12 col-sm-2 baris">
                                     <input type="text" class="form-control" name="nama_hadiah[]" placeholder="Nama Hadiah" required="required">
                                 </div>
-                                <div class="col-xs-12 col-sm-1">
+                                <div class="col-xs-12 col-sm-1 baris">
                                     <input type="number" class="form-control" name="jumlah[]" placeholder=1 min=1 required="required">
                                 </div>
-                                <div class="col-xs-12 col-sm-2">
+                                <div class="col-xs-12 col-sm-2 baris">
                                     <input type="number" class="form-control" name="harga[]" placeholder=1 min=1 required="required">
                                 </div>
-                                <div class="col-xs-12 col-sm-1 text-center">
+                                <div class="col-xs-12 col-sm-2 baris">
+                                    <input type="text" class="form-control" name="satuan[]" placeholder="Satuan" required="required" style="width : 60%; display : inline">
+                                    &nbsp;
                                     <input type="checkbox" name="pilihan[]">
-                                </div>
-                                <div class="col-xs-12 col-sm-1 text-center">
+                                    &nbsp;
                                     <input type="checkbox" name="emas[]">
                                 </div>
-                                <div class="col-xs-12 col-sm-1">
+                                <div class="col-xs-12 col-sm-1 baris">
                                     <a href="javascript:void(0);" class="add_button btn btn-primary btn-block" title="Tambah Baris">+</a>
                                 </div>
                             </div>
@@ -305,7 +303,18 @@
 
 <!-- CSS -->
 @section('css')
+    <style>
+        .baris {
+            padding-right : 3px !important;
+            padding-left : 3px !important;
+        }
 
+        .baris .form-control{
+            padding : 6px 6px !important;
+            font-size : 12px;
+            
+        }
+    </style>
 @endsection
 
 <!-- JAVASCRIPT -->
@@ -315,7 +324,7 @@
             var addButton = $('.add_button');
             var wrapper = $('.field_wrapper');
             $(addButton).click(function(){ //Once add button is clicked
-                $(wrapper).append('<div class="row" style="margin-bottom:10px;"><div class="col-xs-12 col-sm-2"><input type="text" class="form-control" name="kode_catalogue[]" placeholder="Kode Catalogue" required="required"></div><div class="col-xs-12 col-sm-2"><input type="text" class="form-control" name="kode_hadiah[]" placeholder="Kode Barang" required="required"></div><div class="col-xs-12 col-sm-2"><input type="text" class="form-control" name="nama_hadiah[]" placeholder="Nama Hadiah" required="required"></div><div class="col-xs-12 col-sm-1"><input type="number" class="form-control" name="jumlah[]" placeholder=1 min=1 required="required"></div><div class="col-xs-12 col-sm-2"><input type="number" class="form-control" name="harga[]" placeholder=1 min=1 required="required"></div><div class="col-xs-12 col-sm-1 text-center"><input type="checkbox" name="pilihan[]"></div><div class="col-xs-12 col-sm-1 text-center"><input type="checkbox" name="emas[]"></div><div class="col-xs-12 col-sm-1"><a href="javascript:void(0);" class="remove_button btn btn-danger btn-block" title="Hapus Baris">-</a></div>'); 
+                $(wrapper).append('<div class="row" style="margin-bottom:10px;"><div class="col-xs-12 col-sm-2 baris"><input type="text" class="form-control" name="kode_catalogue[]" placeholder="Kode Catalogue" required="required"></div><div class="col-xs-12 col-sm-2 baris"><input type="text" class="form-control" name="kode_hadiah[]" placeholder="Kode Barang" required="required"></div><div class="col-xs-12 col-sm-2 baris"><input type="text" class="form-control" name="nama_hadiah[]" placeholder="Nama Hadiah" required="required"></div><div class="col-xs-12 col-sm-1 baris"><input type="number" class="form-control" name="jumlah[]" placeholder=1 min=1 required="required"></div><div class="col-xs-12 col-sm-2 baris"><input type="number" class="form-control" name="harga[]" placeholder=1 min=1 required="required"></div><div class="col-xs-12 col-sm-2 baris"><input type="text" class="form-control" name="satuan[]" placeholder="Satuan" required="required" style="width : 60%; display : inline">&nbsp;&nbsp;&nbsp;<input type="checkbox" name="pilihan[]">&nbsp;&nbsp;&nbsp;<input type="checkbox" name="emas[]"></div><div class="col-xs-12 col-sm-1 baris"><a href="javascript:void(0);" class="remove_button btn btn-danger btn-block" title="Hapus Baris">-</a></div>'); 
             });
             $(wrapper).on('click', '.remove_button', function(e){ 
                 if (confirm("Apakah anda yakin mau menghapus baris ini?")) {

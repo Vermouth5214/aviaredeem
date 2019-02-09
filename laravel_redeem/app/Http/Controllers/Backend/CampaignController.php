@@ -64,6 +64,7 @@ class CampaignController extends Controller
                     $insert->nama_hadiah = $_POST['nama_hadiah'][$ctr];
                     $insert->jumlah = $_POST['jumlah'][$ctr];
                     $insert->harga = $_POST['harga'][$ctr];
+                    $insert->satuan = $_POST['satuan'][$ctr];
                     $insert->pilihan = $_POST['pilihan'][$ctr];
                     $insert->emas = $_POST['emas'][$ctr];
                     $insert->user_modified = Session::get('userinfo')['uname'];
@@ -157,6 +158,7 @@ class CampaignController extends Controller
                 $data->nama_hadiah = $_POST['nama_hadiah'][$ctr];
                 $data->jumlah = $_POST['jumlah'][$ctr];
                 $data->harga = $_POST['harga'][$ctr];
+                $data->satuan = $_POST['satuan'][$ctr];
                 $data->pilihan = $_POST['pilihan'][$ctr];
                 $data->emas = $_POST['emas'][$ctr];
                 $data->user_modified = Session::get('userinfo')['uname'];
@@ -294,7 +296,7 @@ class CampaignController extends Controller
 
             //update status campaign header jadi 2 = non active mode awal
             $dataH = CampaignH::find($id);
-            $dataH->active = 1;
+            $dataH->active = 5;
             $dataH->user_modified = Session::get('userinfo')['uname'];
             $dataH->save();
 
@@ -306,6 +308,7 @@ class CampaignController extends Controller
                 $data->nama_hadiah = $_POST['nama_hadiah'][$ctr];
                 $data->jumlah = $_POST['jumlah'][$ctr];
                 $data->harga = $_POST['harga'][$ctr];
+                $data->satuan = $_POST['satuan'][$ctr];
                 $data->user_modified = Session::get('userinfo')['uname'];
                 $data->save();
             endforeach;
@@ -335,6 +338,15 @@ class CampaignController extends Controller
         view()->share('list_hadiah_pilihan', $list_hadiah_pilihan);
 
     	return view ('backend.campaign.view');
-	}
+    }
+    
+    public function view_approval($id){
+        //ubah status campaign jadi active
+        $data = CampaignH::find($id);
+        $data->active = 1;
+        if ($data->save()){
+            return Redirect::to('/backend/campaign/')->with('success', "Data saved successfully")->with('mode', 'success');            
+        }
+    }
 
 }
