@@ -38,7 +38,7 @@ class RedeemController extends Controller
 	
 	public function datatable() {
         $userinfo = Session::get('userinfo');
-        $data = CustomerOmzet::select('customer_omzet.id', 'campaign_h.kode_campaign', 'campaign_h.nama_campaign','campaign_h.jenis','customer_omzet.periode_awal','customer_omzet.periode_akhir','campaign_h.brosur','customer_omzet.omzet_netto','customer_omzet.poin', DB::raw('count(campaign_d_hadiah.id) as jum_emas'),DB::raw('count(redeem_detail.id) as jum_redeem_detail'),DB::raw('count(redeem_emas.id) as jum_redeem_emas'))
+        $data = CustomerOmzet::select('customer_omzet.id', 'campaign_h.kode_campaign', 'campaign_h.nama_campaign','campaign_h.jenis','customer_omzet.periode_awal','customer_omzet.periode_akhir','campaign_h.brosur','customer_omzet.omzet_netto','customer_omzet.poin', DB::raw('count(distinct campaign_d_hadiah.id) as jum_emas'),DB::raw('count(distinct redeem_detail.id) as jum_redeem_detail'),DB::raw('count(distinct redeem_emas.id) as jum_redeem_emas'))
                 ->leftJoin('campaign_h','customer_omzet.kode_campaign','=','campaign_h.kode_campaign')
                 ->leftJoin('campaign_d_hadiah', function($join){
                     $join->on('campaign_d_hadiah.id_campaign', '=', 'campaign_h.id');
