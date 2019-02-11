@@ -65,10 +65,17 @@
                             ?></h5>
                         </div>
                         <div class="col-xs-12 col-sm-6 text-right">
+                            <?php
+                                $userinfo = Session::get('userinfo');
+                                if (($data_header[0]->active == 5) && (($userinfo['priv'] == "VSUPERT") || ($userinfo['priv'] == "VSUPER"))):
+                            ?>
                             {{ Form::open(['url' => url('backend/campaign/view/approval/'.$data_header[0]->id), 'method' => 'POST','class' => 'form-horizontal form-label-left', 'files' => true, 'id' => 'form-submit']) }}
                             {!! csrf_field() !!}
                                 <button type="submit" class="btn btn-primary btn-danger">&nbsp;&nbsp;&nbsp;Approve Campaign&nbsp;&nbsp;&nbsp;</button>
-                            {{ Form::close() }}                            
+                            {{ Form::close() }}
+                            <?php
+                                endif;
+                            ?>
                         </div>
                     </div>
                     <br/>
