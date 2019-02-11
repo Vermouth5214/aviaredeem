@@ -142,7 +142,7 @@
                     </form>
                     <br/>
                     <p class="small blue"> - Proses Generate TTO hanya menggunakan parameter <b><i><u>Kode Campaign</u></i></b> dan <b><i><u>Periode</u></i></b><br/>
-                        - TTO yang digerenate hanya untuk campaign dengan statys <b>SUDAH KLAIM</b>
+                        - TTO yang digerenate hanya untuk campaign dengan status <b>SUDAH KLAIM</b>
                     </p>
                     <br/>
                     <table class="table table-striped table-hover table-bordered dt-responsive nowrap dataTable" cellspacing="0" width="100%">
@@ -151,6 +151,7 @@
                                 <th>Status</th>
                                 <th>Action</th>
                                 <th>Kode Customer</th>
+                                <th>Cabang</th>
                                 <th>Kode Campaign</th>
                                 <th>Nama</th>
                                 <th>Jenis</th>
@@ -210,12 +211,13 @@
                 }},
 				{data: 'action', name: 'action', orderable: false, searchable: false},                
                 {data: 'kode_customer', name: 'kode_customer'},
+                {data: 'cabang', name: 'tbuser.cabang'},
 				{data: 'kode_campaign', name: 'kode_campaign'},
-                {data: 'nama_campaign', name: 'nama_campaign'},
-                {data: 'jenis', name: 'jenis'},
+                {data: 'nama_campaign', name: 'campaign_h.nama_campaign'},
+                {data: 'jenis', name: 'campaign_h.jenis'},
                 {data: 'periode_awal', name: 'periode_awal'},
                 {data: 'periode_akhir', name: 'periode_akhir'},
-                {data: 'brosur', name: 'brosur'},
+                {data: 'brosur', name: 'campaign_h.brosur'},
                 {data: 'omzet_netto', name: 'omzet_netto'},
                 {data: 'poin', name: 'poin'}
 			],

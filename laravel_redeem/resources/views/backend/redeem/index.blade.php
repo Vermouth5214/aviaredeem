@@ -142,12 +142,12 @@
 					return "<span class='badge badge-" + label + "'>"+ text + "</span>";
                 }},
 				{data: 'action', name: 'action', orderable: false, searchable: false},                
-				{data: 'kode_campaign', name: 'kode_campaign'},
-                {data: 'nama_campaign', name: 'nama_campaign'},
-                {data: 'jenis', name: 'jenis'},
+				{data: 'kode_campaign', name: 'campaign_h.kode_campaign'},
+                {data: 'nama_campaign', name: 'campaign_h.nama_campaign'},
+                {data: 'jenis', name: 'campaign_h.jenis'},
                 {data: 'periode_awal', name: 'periode_awal'},
                 {data: 'periode_akhir', name: 'periode_akhir'},
-                {data: 'brosur', name: 'brosur'},
+                {data: 'brosur', name: 'campaign_h.brosur'},
                 {data: 'omzet_netto', name: 'omzet_netto'},
                 {data: 'poin', name: 'poin'}
 			],

@@ -152,14 +152,14 @@ class ReportController extends Controller
     
                 $excel->sheet('Header Emas', function($sheet) use($data_emas_header) {
                     $sheet->row(1, array(
-                        'Document No.', 'Customer No.', 'Campaign Code', 'Posting Date', 'Total QQ', 'Status', 'Discount %', 'Type', 'No. Series', 'Journal Template Name', 'Journal Batch Name', 'Location Code', 'Branch Code', 'Salesperson Code'
+                        'Document No.', 'Customer No.', 'Campaign Code', 'Posting Date', 'Total OQ', 'Status', 'Discount %', 'Type', 'No. Series', 'Journal Template Name', 'Journal Batch Name', 'Location Code', 'Branch Code', 'Salesperson Code'
                     ));                    
                     $sheet->fromArray($data_emas_header, null, 'A2', false, false);
                 });
 
                 $excel->sheet('Detail Emas', function($sheet) use($data_emas_detail) {
                     $sheet->row(1, array(
-                        'Document No.', 'Line No.', 'Catalog Code', 'Item No.', 'Qty. Catalog', 'Quantity', 'QQ Needed', 'Type', 'Unit of Measure', 'Quantity Per.', 'QQ Needed After Disc.', 'Paket', 'Bin Code'
+                        'Document No.', 'Line No.', 'Catalog Code', 'Item No.', 'Qty. Catalog', 'Quantity', 'OQ Needed', 'Type', 'Unit of Measure', 'Quantity Per.', 'OQ Needed After Disc.', 'Paket', 'Bin Code'
                     ));                    
                     $sheet->fromArray($data_emas_detail, null, 'A2', false, false);
                 });
@@ -211,14 +211,14 @@ class ReportController extends Controller
 
                 $excel->sheet('Header Non Emas', function($sheet) use($data_non_emas_header) {
                     $sheet->row(1, array(
-                        'Document No.', 'Customer No.', 'Campaign Code', 'Posting Date', 'Total QQ', 'Status', 'Discount %', 'Type', 'No. Series', 'Journal Template Name', 'Journal Batch Name', 'Location Code', 'Branch Code', 'Salesperson Code'
+                        'Document No.', 'Customer No.', 'Campaign Code', 'Posting Date', 'Total OQ', 'Status', 'Discount %', 'Type', 'No. Series', 'Journal Template Name', 'Journal Batch Name', 'Location Code', 'Branch Code', 'Salesperson Code'
                     ));                    
                     $sheet->fromArray($data_non_emas_header, null, 'A2', false, false);
                 });
 
                 $excel->sheet('Detail Non Emas', function($sheet) use($data_non_emas_detail) {
                     $sheet->row(1, array(
-                        'Document No.', 'Line No.', 'Catalog Code', 'Item No.', 'Qty. Catalog', 'Quantity', 'QQ Needed', 'Type', 'Unit of Measure', 'Quantity Per.', 'QQ Needed After Disc.', 'Paket', 'Bin Code'
+                        'Document No.', 'Line No.', 'Catalog Code', 'Item No.', 'Qty. Catalog', 'Quantity', 'OQ Needed', 'Type', 'Unit of Measure', 'Quantity Per.', 'OQ Needed After Disc.', 'Paket', 'Bin Code'
                     ));                    
                     $sheet->fromArray($data_non_emas_detail, null, 'A2', false, false);
                 });
@@ -246,7 +246,8 @@ class ReportController extends Controller
     }
 
 	public function datatable() {
-        $data = CustomerOmzet::select('customer_omzet.id', 'campaign_h.kode_campaign', 'campaign_h.nama_campaign','campaign_h.jenis','customer_omzet.periode_awal','customer_omzet.periode_akhir','campaign_h.brosur','customer_omzet.omzet_netto','customer_omzet.poin', DB::raw('count(distinct campaign_d_hadiah.id) as jum_emas'),DB::raw('count(distinct redeem_detail.id) as jum_redeem_detail'),DB::raw('count(distinct redeem_emas.id) as jum_redeem_emas'),'customer_omzet.kode_customer')
+        $db2 = env('DB_DATABASE_2');
+        $data = CustomerOmzet::select('tbuser.cabang', 'customer_omzet.id', 'campaign_h.kode_campaign', 'campaign_h.nama_campaign','campaign_h.jenis','customer_omzet.periode_awal','customer_omzet.periode_akhir','campaign_h.brosur','customer_omzet.omzet_netto','customer_omzet.poin', DB::raw('count(distinct campaign_d_hadiah.id) as jum_emas'),DB::raw('count(distinct redeem_detail.id) as jum_redeem_detail'),DB::raw('count(distinct redeem_emas.id) as jum_redeem_emas'),'customer_omzet.kode_customer')
                 ->leftJoin('campaign_h','customer_omzet.kode_campaign','=','campaign_h.kode_campaign')
                 ->leftJoin('campaign_d_hadiah', function($join){
                     $join->on('campaign_d_hadiah.id_campaign', '=', 'campaign_h.id');
@@ -260,6 +261,7 @@ class ReportController extends Controller
                     $join->on('redeem_emas.kode_customer', '=', 'customer_omzet.kode_customer');
                     $join->on('redeem_emas.id_campaign','=','campaign_h.id');
                 })
+                ->leftJoin($db2.'.tbuser','customer_omzet.kode_customer','tbuser.reldag')
                 ->where('campaign_h.active','=',1)
                 ->groupBy('customer_omzet.kode_customer')
                 ->groupBy('customer_omzet.kode_campaign');
