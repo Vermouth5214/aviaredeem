@@ -84,11 +84,11 @@ return [
 
         'sqlsrv' => [
             'driver' => 'sqlsrv',
-            'host' => env('DB_HOST_5', '117.102.78.227'),
+            'host' => env('DB_HOST_5', '117.102.78.229'),
             'port' => env('DB_PORT_5', '1433'),
             'database' => env('DB_DATABASE_5', 'SFA_AVIAN'),
             'username' => env('DB_USERNAME_5', 'sa'),
-            'password' => env('DB_PASSWORD_5', 'password.1'),
+            'password' => env('DB_PASSWORD_5', 'kitakeren*g7'),
             'charset' => 'utf8',
             'prefix' => '',
         ],
