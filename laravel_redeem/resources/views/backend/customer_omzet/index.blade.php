@@ -79,6 +79,8 @@
 		$('.dataTable').dataTable({
 			processing: true,
 			serverSide: true,
+            "lengthMenu": [[35, 75, 100], [35, 75, 100]],
+            "pageLength": 35,
 			ajax: "<?=url('backend/master-omzet/datatable');?>",
 			columns: [
 				{data: 'action', name: 'action', orderable: false, searchable: false},

@@ -186,6 +186,8 @@
 		$('.dataTable').dataTable({
 			processing: true,
             serverSide: true,
+            "lengthMenu": [[35, 75, 100], [35, 75, 100]],
+            "pageLength": 35,
             ajax: "<?=url('backend/general-report/datatable?startDate='.$startDate.'&endDate='.$endDate.'&status='.$status.'&mode='.$mode.'&kode_campaign='.$kode_campaign);?>",
 			columns: [
 				{data:  'status', render: function ( data, type, row ) {

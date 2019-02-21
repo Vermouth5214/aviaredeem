@@ -61,6 +61,8 @@
 		$('.dataTable').dataTable({
 			processing: true,
 			serverSide: true,
+            "lengthMenu": [[35, 75, 100], [35, 75, 100]],
+            "pageLength": 35,
 			ajax: "<?=url('backend/campaign/datatable');?>",
 			columns: [
 				{data: 'id', name: 'id'},

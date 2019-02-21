@@ -118,6 +118,8 @@
 		$('.dataTable').dataTable({
 			processing: true,
             serverSide: true,
+            "lengthMenu": [[35, 75, 100], [35, 75, 100]],
+            "pageLength": 35,
             ajax: "<?=url('backend/redeem-hadiah/datatable?status='.$status);?>",
 			columns: [
 				{data:  'status', render: function ( data, type, row ) {
