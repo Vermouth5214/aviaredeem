@@ -18,7 +18,12 @@ class TokenAdminMiddleware
     public function handle($request, Closure $next)
     {
         if(!Session::get('userinfo')) {
-            return redirect('http://localhost/AVIAN/customercare/public/login');
+            if (env('APP_STATUS') == "local"):
+                return redirect('http://localhost/AVIAN/customercare/public/login');
+            endif;
+            if (env('APP_STATUS') == "prod"):
+                return redirect('https://www.avianbrands.com/customercare/login');
+            endif;
         } else{
             $userinfo = Session::get('userinfo');
 			//Jika bukan admin

@@ -38,7 +38,12 @@ class ReadSetSession
             $userinfo['utrace'] = $_SESSION["utrace"][$sessid];
             Session::put ('userinfo', $userinfo);
         } else {
-            return redirect('http://localhost/AVIAN/customercare/public/login');
+            if (env('APP_STATUS') == "local"):
+                return redirect('http://localhost/AVIAN/customercare/public/login');
+            endif;
+            if (env('APP_STATUS') == "prod"):
+                return redirect('https://www.avianbrands.com/customercare/login');
+            endif;
         }
 
         return $next($request);

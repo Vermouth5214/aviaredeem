@@ -18,14 +18,24 @@ class TokenUserMiddleware
     public function handle($request, Closure $next)
     {
         if(!Session::get('userinfo')) {
-            return redirect('http://localhost/AVIAN/customercare/public/login');
+            if (env('APP_STATUS') == "local"):
+                return redirect('http://localhost/AVIAN/customercare/public/login');
+            endif;
+            if (env('APP_STATUS') == "prod"):
+                return redirect('https://www.avianbrands.com/customercare/login');
+            endif;
         } else {
             $userinfo = Session::get('userinfo');
             //bukan user redeem
             if (($userinfo['priv'] == 'VSUPER') || ($userinfo['priv'] == 'RECV' && $userinfo['posisi'] == 'AGEN' && $userinfo['utrace'] == 1)){
 
             } else {
-                return redirect('http://localhost/AVIAN/customercare/public/portal');
+                if (env('APP_STATUS') == "local"):
+                    return redirect('http://localhost/AVIAN/customercare/public/portal');
+                endif;
+                if (env('APP_STATUS') == "prod"):
+                    return redirect('https://www.avianbrands.com/customercare/portal');
+                endif;
             }
         }
         return $next($request);

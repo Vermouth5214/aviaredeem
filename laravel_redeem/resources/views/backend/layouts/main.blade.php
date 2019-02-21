@@ -87,13 +87,37 @@
                                         <span class=" fa fa-angle-down"></span>
                                     </a>
                                     <ul class="dropdown-menu dropdown-usermenu pull-right">
+                                        <?php
+                                            if (env('APP_STATUS') == "local"):
+                                        ?>  
                                         <li><a href="<?=url('http://localhost/AVIAN/customercare/public/logout');?>"><i class="fa fa-sign-out pull-right"></i> Log Out</a></li>
+                                        <?php
+                                            endif;
+                                            if (env('APP_STATUS') == "prod"):
+                                        ?>
+                                        <li><a href="<?=url('https://www.avianbrands.com/customercare/logout');?>"><i class="fa fa-sign-out pull-right"></i> Log Out</a></li>
+                                        <?php
+                                            endif;
+                                        ?>
                                     </ul>
                                 </li>
                                 <li>
+                                    <?php
+                                        if (env('APP_STATUS') == "local"):
+                                    ?>  
                                     <a href="<?=url('http://localhost/AVIAN/customercare/public/portal');?>">
                                         <i class="fa fa-home"> Menu Utama </i>
                                     </a>
+                                    <?php
+                                        endif;
+                                        if (env('APP_STATUS') == "prod"):
+                                    ?>
+                                    <a href="<?=url('https://www.avianbrands.com/customercare/portal');?>">
+                                        <i class="fa fa-home"> Menu Utama </i>
+                                    </a>
+                                    <?php
+                                        endif;
+                                    ?>
                                 </li>
                             </ul>
                         </nav>
