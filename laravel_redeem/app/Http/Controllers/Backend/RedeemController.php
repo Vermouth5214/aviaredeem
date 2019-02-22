@@ -139,8 +139,8 @@ class RedeemController extends Controller
                 $url_konvert = url('backend/redeem-hadiah/'.$data->id.'/konversi-emas');
 
                 $view = "<a class='btn-action btn btn-primary' href='".$url_view."' title='View'><i class='fa fa-eye'></i> View</a>";  
-                $klaim = "<a class='btn-action btn btn-success' href='".$url_klaim."' title='Klaim Hadiah'><i class='fa fa-gift'></i> Klaim Hadiah</a>";  
-                $konvert = "<a class='btn-action btn btn-success' href='".$url_konvert."' title='Konversi Emas'><i class='fa fa-exchange'></i> Konversi Emas</a>";  
+                $klaim = "<a class='btn-action btn btn-warning' href='".$url_klaim."' title='Klaim Hadiah'><i class='fa fa-gift'></i> Klaim Hadiah</a>";  
+                $konvert = "<a class='btn-action btn btn-danger' href='".$url_konvert."' title='Konversi Emas'><i class='fa fa-exchange'></i> Konversi Emas</a>";  
 
                 if ($status == 1){
                     $klaim = "";

@@ -59,7 +59,7 @@
                                 <b>Jumlah</b>
                             </div>
                             <div class="col-xs-12 col-sm-2 text-center">
-                                <b>Harga</b>
+                                <b>Harga / Poin</b>
                             </div>
                             <div class="col-xs-12 col-sm-1 text-center">
                                 <b>Satuan</b>
