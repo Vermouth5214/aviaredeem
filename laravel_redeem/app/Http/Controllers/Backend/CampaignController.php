@@ -325,7 +325,7 @@ class CampaignController extends Controller
         //ambil data list hadiah
         $data_list_hadiah = CampaignDHadiah::where('id_campaign',$id)->orderBy('id','ASC')->get();
         //ambil data pembagian hadiah
-        $data_pembagian_hadiah = CampaignDBagi::where('id_campaign', $id)->orderBy('id','ASC')->get();
+        $data_pembagian_hadiah = CampaignDBagi::with('agen')->where('id_campaign', $id)->orderBy('id','ASC')->get();
         //ambil data master emas
         $data_master_emas = CampaignDEmas::where('id_campaign', $id)->orderBy('id','ASC')->get();
         //data hadiah pilihan

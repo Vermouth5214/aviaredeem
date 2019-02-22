@@ -216,7 +216,7 @@
                                     <input type="number" class="form-control" name="harga[]" placeholder=1 min=1 required="required" value="<?=$value->harga;?>">
                                 </div>
                                 <div class="col-xs-12 col-sm-2 baris">
-                                    <input type="text" class="form-control" name="satuan[]" placeholder="Satuan" required="required" value="<?=$value->satuan;?>">
+                                    <input type="text" class="form-control" name="satuan[]" placeholder="Satuan" required="required" value="<?=$value->satuan;?>" style="width : 60%; display : inline">
                                     <?php
                                         $checked = "";
                                         if ($value->pilihan == 1){
@@ -234,7 +234,7 @@
                                     &nbsp;
                                     <input type="checkbox" name="emas[]" <?=$checked;?>>
                                 </div>
-                                <div class="col-xs-12 col-sm-1">
+                                <div class="col-xs-12 col-sm-1 baris">
                                     <?php
                                         if ($i == 1){
                                     ?>
