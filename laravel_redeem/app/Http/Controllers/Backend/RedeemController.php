@@ -275,7 +275,7 @@ class RedeemController extends Controller
             if ($sisa < 0){
                 return Redirect::to('/backend/redeem-hadiah/'.$id.'/klaim-hadiah')->with('success', "Penukaran hadiah melebihi omzet / poin")->with('mode', 'danger');
             }
-            if ($sisa > $harga_terendah){
+            if ($sisa >= $harga_terendah){
                 return Redirect::to('/backend/redeem-hadiah/'.$id.'/klaim-hadiah')->with('success', "Sisa omzet / poin masih bisa ditukarkan dengan hadiah lain")->with('mode', 'danger');
             }
 
@@ -406,10 +406,10 @@ class RedeemController extends Controller
             $data_header = CampaignH::where('kode_campaign', '=', $data_omzet[0]->kode_campaign)->get();
 
             //data redeem hadiah
-            $data_redeem = RedeemDetail::with('campaign_hadiah')->where('id_campaign', $data_header[0]->id)->where('kode_customer', $userinfo['reldag'])->get();
+            $data_redeem = RedeemDetail::with('campaign_hadiah')->where('id_campaign', $data_header[0]->id)->where('kode_customer', $userinfo['reldag'])->orderBy('id','ASC')->get();
 
             //data konversi emas
-            $data_konversi = RedeemEmas::with('campaign_hadiah')->where('id_campaign', $data_header[0]->id)->where('kode_customer', $userinfo['reldag'])->get();
+            $data_konversi = RedeemEmas::with('campaign_hadiah')->where('id_campaign', $data_header[0]->id)->where('kode_customer', $userinfo['reldag'])->orderBy('id','ASC')->get();
 
             view()->share('data_omzet', $data_omzet);
             view()->share('data_header', $data_header);

@@ -42,6 +42,7 @@
                             <h5>Kode Campaign : <b><?=$data_header[0]->kode_campaign;?></b></h5>
                             <h5>Nama Campaign : <b><?=$data_header[0]->nama_campaign;?></b></h5>
                             <h5>Jenis : <b><?=strtoupper($data_header[0]->jenis);?></b></h5>
+                            <h5>Kategori : <b><?=strtoupper($data_header[0]->category);?></b></h5>
                             <h5>TPP : 
                             <?php
                                 if ($data_header[0]->TPP == 0){

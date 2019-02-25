@@ -29,6 +29,7 @@ class ReportController extends Controller
         //
         $kode_campaign = "";
         $status = 999;
+        $category = "CAT";
     	$startDate = "01"."-".date('m-Y');
         $endDate = date('d-m-Y');
         $mode = "limited";
@@ -51,234 +52,460 @@ class ReportController extends Controller
 			if (isset($_GET['kode_campaign'])){
 				$kode_campaign = $_GET['kode_campaign'];
             }
+			if (isset($_GET['category'])){
+				$category = $_GET['category'];
+            }
         }
 
         //generate TTO
         if (isset($_GET['export'])){
-            Excel::create('TTO Campaign', function($excel) {
-                $kode_campaign = "";
-                $status = 999;
-                $startDate = "01"."-".date('m-Y');
-                $endDate = date('d-m-Y');
-                $mode = "limited";
-        
-                if (isset($_GET["startDate"]) || isset($_GET["endDate"]) || isset($_GET["status"]) || isset($_GET["mode"])){
-                    if ((isset($_GET['startDate'])) && ($_GET['startDate'] != "")){
-                        $startDate = $_GET["startDate"];
-                    }
-                    if ((isset($_GET['endDate'])) && ($_GET['endDate'] != "")){
-                        $endDate = $_GET["endDate"];
-                    }
-                    if ((isset($_GET['status'])) && ($_GET['status'] != "")){
-                        $status = $_GET["status"];
-                    }
-                    if (isset($_GET["mode"])){
-                        $mode = $_GET['mode'];
-                    }
-                    if (isset($_GET['kode_campaign'])){
-                        $kode_campaign = $_GET['kode_campaign'];
-                    }
-                }
-                
-                //ambil data list campaign dulu
-                $data_list_campaign = CustomerOmzet::select('customer_omzet.kode_campaign','customer_omzet.kode_customer','campaign_h.jenis')->with('agen')
-                                        ->leftJoin('campaign_h','customer_omzet.kode_campaign','campaign_h.kode_campaign')
-                                        ->where('campaign_h.active', 1);
-                if ($mode != "all"){
-                    $data_list_campaign = $data_list_campaign->where('customer_omzet.periode_awal','>=', date('Y-m-d 00:00:00',strtotime($startDate)));
-                    $data_list_campaign = $data_list_campaign->where('customer_omzet.periode_akhir','<=',date('Y-m-d 23:59:59',strtotime($endDate)));
-                }
-
-                if ($kode_campaign != ""){
-                    $data_list_campaign = $data_list_campaign->where('customer_omzet.kode_campaign','=',$kode_campaign);
-                }
-        
-                $data_list_campaign = $data_list_campaign->get();
-
-                //generate no TTO Emas
-                $no_tto_emas = "TTO-AAP-".date('ym')."-2";
-                $last_tto_emas = TTOLast::whereRaw("no_tto like'".$no_tto_emas."%'")->latest()->first();
-                if ($last_tto_emas){
-                    $no_tto_emas = "TTO-AAP-".date('ym')."-".strval((int)(substr($last_tto_emas->no_tto, -5)) + 1);
-                } else {
-                    $no_tto_emas = $no_tto_emas."0000";
-                }
-
-                //generate no TTO Non Emas
-                $no_tto_non_emas = "TTO-AAP-".date('ym')."-5";
-                $last_tto_non_emas = TTOLast::whereRaw("no_tto like'".$no_tto_non_emas."%'")->latest()->first();
-                if ($last_tto_non_emas){
-                    $no_tto_non_emas = "TTO-AAP-".date('ym')."-".strval((int)(substr($last_tto_non_emas->no_tto, -5)) + 1);
-                } else {
-                    $no_tto_non_emas = $no_tto_non_emas."0000";
-                }
-
-                //generate Header Detail Emas
-                $document_no = "";
-                $data_emas_header = [];
-                $data_emas_detail = [];
-                $data_emas_header_item = [];
-                $data_emas_detail_item = [];
-                $digit = (int)substr($no_tto_emas, -5);
-                foreach ($data_list_campaign as $campaign):
-                    $data_konversi_emas = RedeemEmas::select('campaign_d_emas.kode_catalogue','campaign_d_emas.kode_hadiah','redeem_emas.jumlah','campaign_h.jenis','campaign_d_emas.harga','campaign_d_emas.satuan',DB::raw('campaign_d_emas.jumlah as jumlah_gram'))
-                                            ->leftJoin('campaign_h', 'campaign_h.id','=','redeem_emas.id_campaign')
-                                            ->leftJoin('campaign_d_emas','redeem_emas.id_campaign_emas','=','campaign_d_emas.id')
-                                            ->where('campaign_h.kode_campaign','=', $campaign->kode_campaign)
-                                            ->where('redeem_emas.kode_customer','=', $campaign->kode_customer)
-                                            ->where('redeem_emas.jumlah','>',0)
-                                            ->orderBy('campaign_d_emas.jumlah','DESC')
-                                            ->get();
-                    $document_no = "TTO-AAP-".date('ym')."-".strval($digit);
-                    $line_no = 10000;
-                    $ctr = 1;
-                    $total = 0;
-                    $tipe = "Omzet dan Qty Reward";
-                    if ($campaign->jenis == "poin"){
-                        $tipe = "Point Reward";
-                    }
-                    $total_gram = 0;
-                    $jumlah_emas = 1;
-                    foreach ($data_konversi_emas as $detail_emas):
-                        $jumlah_emas = 1;
-                        for ($i=1;$i<=$detail_emas->jumlah;$i++){
-                            if ($total_gram + $detail_emas->jumlah_gram >= 300){
-                                //generate detail emas
-                                $document_no = "TTO-AAP-".date('ym')."-".strval($digit);
-                                $data_emas_detail_item = [$document_no, $line_no * $ctr, $detail_emas->kode_catalogue, $detail_emas->kode_hadiah, $jumlah_emas, $jumlah_emas, $detail_emas->harga * $jumlah_emas, $tipe, $detail_emas->satuan, 1, $detail_emas->harga * $jumlah_emas, "0", "H"];
-                                array_push($data_emas_detail, $data_emas_detail_item);
-
-                                $total = $total + ($jumlah_emas * $detail_emas->harga);
-                                //generate header emas
-                                $data_emas_header_item = [$document_no, $campaign->kode_customer, $campaign->kode_campaign, date('Y-m-d'), $total, "New", "0", $tipe, "AAP-TTO", "MBTRHSL", "DEFAULT", "AAP-FGBAIK", "AAP", $campaign->agen->salesperson];
-                                array_push($data_emas_header, $data_emas_header_item);
-
-                                $jumlah_emas = 0;
-                                $total_gram = 0;
-                                $total = 0;
-                                $ctr = 0;
-                                $ctr = $ctr + 1;
-                                $digit = $digit + 1;
-                            } else {
-                                $total_gram = $total_gram + $detail_emas->jumlah_gram;
-                            }
-                            $jumlah_emas = $jumlah_emas + 1;
-                            
+            if ($category == "CAT"):
+                Excel::create('TTO Campaign CAT', function($excel) {
+                    $kode_campaign = "";
+                    $status = 999;
+                    $startDate = "01"."-".date('m-Y');
+                    $endDate = date('d-m-Y');
+                    $mode = "limited";
+            
+                    if (isset($_GET["startDate"]) || isset($_GET["endDate"]) || isset($_GET["status"]) || isset($_GET["mode"])){
+                        if ((isset($_GET['startDate'])) && ($_GET['startDate'] != "")){
+                            $startDate = $_GET["startDate"];
                         }
-                        //generate detail emas
+                        if ((isset($_GET['endDate'])) && ($_GET['endDate'] != "")){
+                            $endDate = $_GET["endDate"];
+                        }
+                        if ((isset($_GET['status'])) && ($_GET['status'] != "")){
+                            $status = $_GET["status"];
+                        }
+                        if (isset($_GET["mode"])){
+                            $mode = $_GET['mode'];
+                        }
+                        if (isset($_GET['kode_campaign'])){
+                            $kode_campaign = $_GET['kode_campaign'];
+                        }
+                    }
+                    
+                    //ambil data list campaign CAT dulu
+                    $data_list_campaign = CustomerOmzet::select('customer_omzet.kode_campaign','customer_omzet.kode_customer','campaign_h.jenis')->with('agen')
+                                            ->leftJoin('campaign_h','customer_omzet.kode_campaign','campaign_h.kode_campaign')
+                                            ->where('campaign_h.active', 1)
+                                            ->where('campaign_h.category', "CAT");
+                    if ($mode != "all"){
+                        $data_list_campaign = $data_list_campaign->where('customer_omzet.periode_awal','>=', date('Y-m-d 00:00:00',strtotime($startDate)));
+                        $data_list_campaign = $data_list_campaign->where('customer_omzet.periode_akhir','<=',date('Y-m-d 23:59:59',strtotime($endDate)));
+                    }
+
+                    if ($kode_campaign != ""){
+                        $data_list_campaign = $data_list_campaign->where('customer_omzet.kode_campaign','=',$kode_campaign);
+                    }
+            
+                    $data_list_campaign = $data_list_campaign->get();
+
+                    //generate no TTO Emas
+                    $no_tto_emas = "TTO-AAP-".date('ym')."-2";
+                    $last_tto_emas = TTOLast::whereRaw("no_tto like'".$no_tto_emas."%'")->latest()->first();
+                    if ($last_tto_emas){
+                        $no_tto_emas = "TTO-AAP-".date('ym')."-".strval((int)(substr($last_tto_emas->no_tto, -5)) + 1);
+                    } else {
+                        $no_tto_emas = $no_tto_emas."0000";
+                    }
+
+                    //generate no TTO Non Emas
+                    $no_tto_non_emas = "TTO-AAP-".date('ym')."-5";
+                    $last_tto_non_emas = TTOLast::whereRaw("no_tto like'".$no_tto_non_emas."%'")->latest()->first();
+                    if ($last_tto_non_emas){
+                        $no_tto_non_emas = "TTO-AAP-".date('ym')."-".strval((int)(substr($last_tto_non_emas->no_tto, -5)) + 1);
+                    } else {
+                        $no_tto_non_emas = $no_tto_non_emas."0000";
+                    }
+
+                    //generate Header Detail Emas
+                    $document_no = "";
+                    $data_emas_header = [];
+                    $data_emas_detail = [];
+                    $data_emas_header_item = [];
+                    $data_emas_detail_item = [];
+                    $digit = (int)substr($no_tto_emas, -5);
+                    foreach ($data_list_campaign as $campaign):
+                        $data_konversi_emas = RedeemEmas::select('campaign_d_emas.kode_catalogue','campaign_d_emas.kode_hadiah','redeem_emas.jumlah','campaign_h.jenis','campaign_d_emas.harga','campaign_d_emas.satuan',DB::raw('campaign_d_emas.jumlah as jumlah_gram'))
+                                                ->leftJoin('campaign_h', 'campaign_h.id','=','redeem_emas.id_campaign')
+                                                ->leftJoin('campaign_d_emas','redeem_emas.id_campaign_emas','=','campaign_d_emas.id')
+                                                ->where('campaign_h.kode_campaign','=', $campaign->kode_campaign)
+                                                ->where('redeem_emas.kode_customer','=', $campaign->kode_customer)
+                                                ->where('redeem_emas.jumlah','>',0)
+                                                ->orderBy('campaign_d_emas.jumlah','DESC')
+                                                ->get();
                         $document_no = "TTO-AAP-".date('ym')."-".strval($digit);
-                        $data_emas_detail_item = [$document_no, $line_no * $ctr, $detail_emas->kode_catalogue, $detail_emas->kode_hadiah, ($jumlah_emas - 1), ($jumlah_emas - 1), $detail_emas->harga * ($jumlah_emas - 1), $tipe, $detail_emas->satuan, 1, $detail_emas->harga * ($jumlah_emas - 1), "0", "H"];
-                        array_push($data_emas_detail, $data_emas_detail_item);
-                        $total = $total + (($jumlah_emas - 1) * $detail_emas->harga);
-                        $ctr = $ctr + 1;
-                    endforeach;
-                    $document_no = "TTO-AAP-".date('ym')."-".strval($digit);
-                    //generate header emas
-                    $data_emas_header_item = [$document_no, $campaign->kode_customer, $campaign->kode_campaign, date('Y-m-d'), $total, "New", "0", $tipe, "AAP-TTO", "MBTRHSL", "DEFAULT", "AAP-FGBAIK", "AAP", $campaign->agen->salesperson];
-                    array_push($data_emas_header, $data_emas_header_item);
+                        $line_no = 10000;
+                        $ctr = 1;
+                        $total = 0;
+                        $tipe = "Omzet dan Qty Reward";
+                        if ($campaign->jenis == "poin"){
+                            $tipe = "Point Reward";
+                        }
+                        $total_gram = 0;
+                        $jumlah_emas = 1;
+                        foreach ($data_konversi_emas as $detail_emas):
+                            $jumlah_emas = 1;
+                            for ($i=1;$i<=$detail_emas->jumlah;$i++){
+                                if ($total_gram + $detail_emas->jumlah_gram >= 300){
+                                    //generate detail emas
+                                    $document_no = "TTO-AAP-".date('ym')."-".strval($digit);
+                                    $data_emas_detail_item = [$document_no, $line_no * $ctr, $detail_emas->kode_catalogue, $detail_emas->kode_hadiah, $jumlah_emas, $jumlah_emas, $detail_emas->harga * $jumlah_emas, $tipe, $detail_emas->satuan, 1, $detail_emas->harga * $jumlah_emas, "0", "H"];
+                                    array_push($data_emas_detail, $data_emas_detail_item);
 
-                    $digit = $digit + 1;
-                endforeach;
-                
-    
-                $excel->sheet('Header Emas', function($sheet) use($data_emas_header) {
-                    $sheet->row(1, array(
-                        'Document No.', 'Customer No.', 'Campaign Code', 'Posting Date', 'Total OQ', 'Status', 'Discount %', 'Type', 'No. Series', 'Journal Template Name', 'Journal Batch Name', 'Location Code', 'Branch Code', 'Salesperson Code'
-                    ));                    
-                    $sheet->fromArray($data_emas_header, null, 'A2', false, false);
-                });
+                                    $total = $total + ($jumlah_emas * $detail_emas->harga);
+                                    //generate header emas
+                                    $data_emas_header_item = [$document_no, $campaign->kode_customer, $campaign->kode_campaign, date('Y-m-d'), $total, "New", "0", $tipe, "AAP-TTO", "MBTRHSL", "DEFAULT", "AAP-FGBAIK", "AAP", $campaign->agen->salesperson];
+                                    array_push($data_emas_header, $data_emas_header_item);
 
-                $excel->sheet('Detail Emas', function($sheet) use($data_emas_detail) {
-                    $sheet->row(1, array(
-                        'Document No.', 'Line No.', 'Catalog Code', 'Item No.', 'Qty. Catalog', 'Quantity', 'OQ Needed', 'Type', 'Unit of Measure', 'Quantity Per.', 'OQ Needed After Disc.', 'Paket', 'Bin Code'
-                    ));                    
-                    $sheet->fromArray($data_emas_detail, null, 'A2', false, false);
-                });
-                $last_no_tto_emas = $document_no;
-                //save last no tto emas
-                if ($last_no_tto_emas != ""){
-                    $insert = new TTOLast;
-                    $insert->no_tto = $last_no_tto_emas;
-                    $insert->save();
-                }
+                                    $jumlah_emas = 0;
+                                    $total_gram = 0;
+                                    $total = 0;
+                                    $ctr = 0;
+                                    $ctr = $ctr + 1;
+                                    $digit = $digit + 1;
+                                } else {
+                                    $total_gram = $total_gram + $detail_emas->jumlah_gram;
+                                }
+                                $jumlah_emas = $jumlah_emas + 1;
+                                
+                            }
+                            //generate detail emas
+                            if (($jumlah_emas - 1) > 0):
+                                $document_no = "TTO-AAP-".date('ym')."-".strval($digit);
+                                $data_emas_detail_item = [$document_no, $line_no * $ctr, $detail_emas->kode_catalogue, $detail_emas->kode_hadiah, ($jumlah_emas - 1), ($jumlah_emas - 1), $detail_emas->harga * ($jumlah_emas - 1), $tipe, $detail_emas->satuan, 1, $detail_emas->harga * ($jumlah_emas - 1), "0", "H"];
+                                array_push($data_emas_detail, $data_emas_detail_item);
+                                $total = $total + (($jumlah_emas - 1) * $detail_emas->harga);
+                                $ctr = $ctr + 1;
+                            endif;
+                        endforeach;
+                        $document_no = "TTO-AAP-".date('ym')."-".strval($digit);
+                        //generate header emas
+                        $data_emas_header_item = [$document_no, $campaign->kode_customer, $campaign->kode_campaign, date('Y-m-d'), $total, "New", "0", $tipe, "AAP-TTO", "MBTRHSL", "DEFAULT", "AAP-FGBAIK", "AAP", $campaign->agen->salesperson];
+                        array_push($data_emas_header, $data_emas_header_item);
 
-                //generate Header Detail Non Emas
-                $document_no = "";
-                $data_non_emas_header = [];
-                $data_non_emas_detail = [];
-                $data_non_emas_header_item = [];
-                $data_non_emas_detail_item = [];
-                $digit = (int)substr($no_tto_non_emas, -5);
-                foreach ($data_list_campaign as $campaign):
-                    $data_redeem_non_emas = RedeemDetail::select('campaign_d_hadiah.kode_catalogue','campaign_d_hadiah.kode_hadiah','redeem_detail.jumlah','campaign_h.jenis','campaign_d_hadiah.harga','campaign_d_hadiah.satuan', DB::raw('campaign_d_hadiah.jumlah as jum_paket'))
-                                            ->leftJoin('campaign_h', 'campaign_h.id','=','redeem_detail.id_campaign')
-                                            ->leftJoin('campaign_d_hadiah','redeem_detail.id_campaign_hadiah','=','campaign_d_hadiah.id')
-                                            ->where('campaign_h.kode_campaign','=', $campaign->kode_campaign)
-                                            ->where('redeem_detail.kode_customer','=', $campaign->kode_customer)
-                                            ->where('redeem_detail.jumlah','>',0)
-                                            ->where('campaign_d_hadiah.emas','=',0)
-                                            ->orderBy('redeem_detail.id','ASC')
-                                            ->get();
-                    $document_no = "TTO-AAP-".date('ym')."-".strval($digit);
-                    $line_no = 10000;
-                    $ctr = 1;
-                    $total = 0;
-                    $tipe = "Omzet dan Qty Reward";
-                    if ($campaign->jenis == "poin"){
-                        $tipe = "Point Reward";
-                    }
-                    foreach ($data_redeem_non_emas as $detail_non_emas):
-                        $data_non_emas_detail_item = [$document_no, $line_no * $ctr, $detail_non_emas->kode_catalogue, $detail_non_emas->kode_hadiah, $detail_non_emas->jumlah, $detail_non_emas->jumlah * $detail_non_emas->jum_paket, $detail_non_emas->harga * $detail_non_emas->jumlah, $tipe, $detail_non_emas->satuan, $detail_non_emas->jum_paket, $detail_non_emas->harga * $detail_non_emas->jumlah, "0", "H"];
-                        array_push($data_non_emas_detail, $data_non_emas_detail_item);
-                        $ctr = $ctr + 1;
-                        $total = $total + ($detail_non_emas->jumlah * $detail_non_emas->harga);
-                    endforeach;
-                    if ($total > 0){
                         $digit = $digit + 1;
-                        $data_non_emas_header_item = [$document_no, $campaign->kode_customer, $campaign->kode_campaign, date('Y-m-d'), $total, "New", "0", $tipe, "AAP-TTO", "MBTRHSL", "DEFAULT", "AAP-FGBAIK", "AAP", $campaign->agen->salesperson];
-                        array_push($data_non_emas_header, $data_non_emas_header_item);
+                    endforeach;
+                    
+        
+                    $excel->sheet('Header Emas', function($sheet) use($data_emas_header) {
+                        $sheet->row(1, array(
+                            'Document No.', 'Customer No.', 'Campaign Code', 'Posting Date', 'Total OQ', 'Status', 'Discount %', 'Type', 'No. Series', 'Journal Template Name', 'Journal Batch Name', 'Location Code', 'Branch Code', 'Salesperson Code'
+                        ));                    
+                        $sheet->fromArray($data_emas_header, null, 'A2', false, false);
+                    });
+
+                    $excel->sheet('Detail Emas', function($sheet) use($data_emas_detail) {
+                        $sheet->row(1, array(
+                            'Document No.', 'Line No.', 'Catalog Code', 'Item No.', 'Qty. Catalog', 'Quantity', 'OQ Needed', 'Type', 'Unit of Measure', 'Quantity Per.', 'OQ Needed After Disc.', 'Paket', 'Bin Code'
+                        ));                    
+                        $sheet->fromArray($data_emas_detail, null, 'A2', false, false);
+                    });
+                    $last_no_tto_emas = $document_no;
+                    //save last no tto emas
+                    if ($last_no_tto_emas != ""){
+                        $insert = new TTOLast;
+                        $insert->no_tto = $last_no_tto_emas;
+                        $insert->save();
                     }
-                endforeach;
 
-                $excel->sheet('Header Non Emas', function($sheet) use($data_non_emas_header) {
-                    $sheet->row(1, array(
-                        'Document No.', 'Customer No.', 'Campaign Code', 'Posting Date', 'Total OQ', 'Status', 'Discount %', 'Type', 'No. Series', 'Journal Template Name', 'Journal Batch Name', 'Location Code', 'Branch Code', 'Salesperson Code'
-                    ));                    
-                    $sheet->fromArray($data_non_emas_header, null, 'A2', false, false);
-                });
+                    //generate Header Detail Non Emas
+                    $document_no = "";
+                    $data_non_emas_header = [];
+                    $data_non_emas_detail = [];
+                    $data_non_emas_header_item = [];
+                    $data_non_emas_detail_item = [];
+                    $digit = (int)substr($no_tto_non_emas, -5);
+                    foreach ($data_list_campaign as $campaign):
+                        $data_redeem_non_emas = RedeemDetail::select('campaign_d_hadiah.kode_catalogue','campaign_d_hadiah.kode_hadiah','redeem_detail.jumlah','campaign_h.jenis','campaign_d_hadiah.harga','campaign_d_hadiah.satuan', DB::raw('campaign_d_hadiah.jumlah as jum_paket'))
+                                                ->leftJoin('campaign_h', 'campaign_h.id','=','redeem_detail.id_campaign')
+                                                ->leftJoin('campaign_d_hadiah','redeem_detail.id_campaign_hadiah','=','campaign_d_hadiah.id')
+                                                ->where('campaign_h.kode_campaign','=', $campaign->kode_campaign)
+                                                ->where('redeem_detail.kode_customer','=', $campaign->kode_customer)
+                                                ->where('redeem_detail.jumlah','>',0)
+                                                ->where('campaign_d_hadiah.emas','=',0)
+                                                ->orderBy('redeem_detail.id','ASC')
+                                                ->get();
+                        $document_no = "TTO-AAP-".date('ym')."-".strval($digit);
+                        $line_no = 10000;
+                        $ctr = 1;
+                        $total = 0;
+                        $tipe = "Omzet dan Qty Reward";
+                        if ($campaign->jenis == "poin"){
+                            $tipe = "Point Reward";
+                        }
+                        foreach ($data_redeem_non_emas as $detail_non_emas):
+                            $data_non_emas_detail_item = [$document_no, $line_no * $ctr, $detail_non_emas->kode_catalogue, $detail_non_emas->kode_hadiah, $detail_non_emas->jumlah, $detail_non_emas->jumlah * $detail_non_emas->jum_paket, $detail_non_emas->harga * $detail_non_emas->jumlah, $tipe, $detail_non_emas->satuan, $detail_non_emas->jum_paket, $detail_non_emas->harga * $detail_non_emas->jumlah, "0", "H"];
+                            array_push($data_non_emas_detail, $data_non_emas_detail_item);
+                            $ctr = $ctr + 1;
+                            $total = $total + ($detail_non_emas->jumlah * $detail_non_emas->harga);
+                        endforeach;
+                        if ($total > 0){
+                            $digit = $digit + 1;
+                            $data_non_emas_header_item = [$document_no, $campaign->kode_customer, $campaign->kode_campaign, date('Y-m-d'), $total, "New", "0", $tipe, "AAP-TTO", "MBTRHSL", "DEFAULT", "AAP-FGBAIK", "AAP", $campaign->agen->salesperson];
+                            array_push($data_non_emas_header, $data_non_emas_header_item);
+                        }
+                    endforeach;
 
-                $excel->sheet('Detail Non Emas', function($sheet) use($data_non_emas_detail) {
-                    $sheet->row(1, array(
-                        'Document No.', 'Line No.', 'Catalog Code', 'Item No.', 'Qty. Catalog', 'Quantity', 'OQ Needed', 'Type', 'Unit of Measure', 'Quantity Per.', 'OQ Needed After Disc.', 'Paket', 'Bin Code'
-                    ));                    
-                    $sheet->fromArray($data_non_emas_detail, null, 'A2', false, false);
-                });
-                $last_no_tto_non_emas = $document_no;
-                //save last no tto non emas
-                if ($last_no_tto_non_emas != ""){
-                    $insert = new TTOLast;
-                    $insert->no_tto = $last_no_tto_non_emas;
-                    $insert->save();
-                }
+                    $excel->sheet('Header Non Emas', function($sheet) use($data_non_emas_header) {
+                        $sheet->row(1, array(
+                            'Document No.', 'Customer No.', 'Campaign Code', 'Posting Date', 'Total OQ', 'Status', 'Discount %', 'Type', 'No. Series', 'Journal Template Name', 'Journal Batch Name', 'Location Code', 'Branch Code', 'Salesperson Code'
+                        ));                    
+                        $sheet->fromArray($data_non_emas_header, null, 'A2', false, false);
+                    });
 
-                
-            })->export('xls');            
+                    $excel->sheet('Detail Non Emas', function($sheet) use($data_non_emas_detail) {
+                        $sheet->row(1, array(
+                            'Document No.', 'Line No.', 'Catalog Code', 'Item No.', 'Qty. Catalog', 'Quantity', 'OQ Needed', 'Type', 'Unit of Measure', 'Quantity Per.', 'OQ Needed After Disc.', 'Paket', 'Bin Code'
+                        ));                    
+                        $sheet->fromArray($data_non_emas_detail, null, 'A2', false, false);
+                    });
+                    $last_no_tto_non_emas = $document_no;
+                    //save last no tto non emas
+                    if ($last_no_tto_non_emas != ""){
+                        $insert = new TTOLast;
+                        $insert->no_tto = $last_no_tto_non_emas;
+                        $insert->save();
+                    }
 
+                    
+                })->export('xls');
+            endif;
+
+            if ($category == "PIPA"):
+                /*========================================================*/
+                /*                      PIPA                              */
+                /*========================================================*/
+
+                Excel::create('TTO Campaign PIPA', function($excel) {
+                    $kode_campaign = "";
+                    $status = 999;
+                    $startDate = "01"."-".date('m-Y');
+                    $endDate = date('d-m-Y');
+                    $mode = "limited";
+            
+                    if (isset($_GET["startDate"]) || isset($_GET["endDate"]) || isset($_GET["status"]) || isset($_GET["mode"])){
+                        if ((isset($_GET['startDate'])) && ($_GET['startDate'] != "")){
+                            $startDate = $_GET["startDate"];
+                        }
+                        if ((isset($_GET['endDate'])) && ($_GET['endDate'] != "")){
+                            $endDate = $_GET["endDate"];
+                        }
+                        if ((isset($_GET['status'])) && ($_GET['status'] != "")){
+                            $status = $_GET["status"];
+                        }
+                        if (isset($_GET["mode"])){
+                            $mode = $_GET['mode'];
+                        }
+                        if (isset($_GET['kode_campaign'])){
+                            $kode_campaign = $_GET['kode_campaign'];
+                        }
+                    }
+                    
+                    //ambil data list campaign CAT dulu
+                    $data_list_campaign = CustomerOmzet::select('customer_omzet.kode_campaign','customer_omzet.kode_customer','campaign_h.jenis')->with('agen')
+                                            ->leftJoin('campaign_h','customer_omzet.kode_campaign','campaign_h.kode_campaign')
+                                            ->where('campaign_h.active', 1)
+                                            ->where('campaign_h.category', "PIPA");
+                    if ($mode != "all"){
+                        $data_list_campaign = $data_list_campaign->where('customer_omzet.periode_awal','>=', date('Y-m-d 00:00:00',strtotime($startDate)));
+                        $data_list_campaign = $data_list_campaign->where('customer_omzet.periode_akhir','<=',date('Y-m-d 23:59:59',strtotime($endDate)));
+                    }
+
+                    if ($kode_campaign != ""){
+                        $data_list_campaign = $data_list_campaign->where('customer_omzet.kode_campaign','=',$kode_campaign);
+                    }
+            
+                    $data_list_campaign = $data_list_campaign->get();
+
+                    //generate no TTO Emas
+                    $no_tto_emas = "TTO-IPP-".date('ym')."-2";
+                    $last_tto_emas = TTOLast::whereRaw("no_tto like'".$no_tto_emas."%'")->latest()->first();
+                    if ($last_tto_emas){
+                        $no_tto_emas = "TTO-IPP-".date('ym')."-".strval((int)(substr($last_tto_emas->no_tto, -5)) + 1);
+                    } else {
+                        $no_tto_emas = $no_tto_emas."0000";
+                    }
+
+                    //generate no TTO Non Emas
+                    $no_tto_non_emas = "TTO-IPP-".date('ym')."-5";
+                    $last_tto_non_emas = TTOLast::whereRaw("no_tto like'".$no_tto_non_emas."%'")->latest()->first();
+                    if ($last_tto_non_emas){
+                        $no_tto_non_emas = "TTO-IPP-".date('ym')."-".strval((int)(substr($last_tto_non_emas->no_tto, -5)) + 1);
+                    } else {
+                        $no_tto_non_emas = $no_tto_non_emas."0000";
+                    }
+
+                    //generate Header Detail Emas
+                    $document_no = "";
+                    $data_emas_header = [];
+                    $data_emas_detail = [];
+                    $data_emas_header_item = [];
+                    $data_emas_detail_item = [];
+                    $digit = (int)substr($no_tto_emas, -5);
+                    foreach ($data_list_campaign as $campaign):
+                        $data_konversi_emas = RedeemEmas::select('campaign_d_emas.kode_catalogue','campaign_d_emas.kode_hadiah','redeem_emas.jumlah','campaign_h.jenis','campaign_d_emas.harga','campaign_d_emas.satuan',DB::raw('campaign_d_emas.jumlah as jumlah_gram'))
+                                                ->leftJoin('campaign_h', 'campaign_h.id','=','redeem_emas.id_campaign')
+                                                ->leftJoin('campaign_d_emas','redeem_emas.id_campaign_emas','=','campaign_d_emas.id')
+                                                ->where('campaign_h.kode_campaign','=', $campaign->kode_campaign)
+                                                ->where('redeem_emas.kode_customer','=', $campaign->kode_customer)
+                                                ->where('redeem_emas.jumlah','>',0)
+                                                ->orderBy('campaign_d_emas.jumlah','DESC')
+                                                ->get();
+                        $document_no = "TTO-AAP-".date('ym')."-".strval($digit);
+                        $line_no = 10000;
+                        $ctr = 1;
+                        $total = 0;
+                        $tipe = "Omzet dan Qty Reward";
+                        if ($campaign->jenis == "poin"){
+                            $tipe = "Point Reward";
+                        }
+                        $total_gram = 0;
+                        $jumlah_emas = 1;
+                        foreach ($data_konversi_emas as $detail_emas):
+                            $jumlah_emas = 1;
+                            for ($i=1;$i<=$detail_emas->jumlah;$i++){
+                                if ($total_gram + $detail_emas->jumlah_gram >= 300){
+                                    //generate detail emas
+                                    $document_no = "TTO-IPP-".date('ym')."-".strval($digit);
+                                    $data_emas_detail_item = [$document_no, $line_no * $ctr, $detail_emas->kode_catalogue, $detail_emas->kode_hadiah, $jumlah_emas, $jumlah_emas, $detail_emas->harga * $jumlah_emas, $tipe, $detail_emas->satuan, 1, $detail_emas->harga * $jumlah_emas, "0", "H"];
+                                    array_push($data_emas_detail, $data_emas_detail_item);
+
+                                    $total = $total + ($jumlah_emas * $detail_emas->harga);
+                                    //generate header emas
+                                    $data_emas_header_item = [$document_no, $campaign->kode_customer, $campaign->kode_campaign, date('Y-m-d'), $total, "New", "0", $tipe, "IPP-TTO", "MBTRHSL", "DEFAULT", "IPP-FG", "IPP", $campaign->agen->salesperson];
+                                    array_push($data_emas_header, $data_emas_header_item);
+
+                                    $jumlah_emas = 0;
+                                    $total_gram = 0;
+                                    $total = 0;
+                                    $ctr = 0;
+                                    $ctr = $ctr + 1;
+                                    $digit = $digit + 1;
+                                } else {
+                                    $total_gram = $total_gram + $detail_emas->jumlah_gram;
+                                }
+                                $jumlah_emas = $jumlah_emas + 1;
+                                
+                            }
+                            //generate detail emas
+                            if (($jumlah_emas - 1) > 0):
+                                $document_no = "TTO-IPP-".date('ym')."-".strval($digit);
+                                $data_emas_detail_item = [$document_no, $line_no * $ctr, $detail_emas->kode_catalogue, $detail_emas->kode_hadiah, ($jumlah_emas - 1), ($jumlah_emas - 1), $detail_emas->harga * ($jumlah_emas - 1), $tipe, $detail_emas->satuan, 1, $detail_emas->harga * ($jumlah_emas - 1), "0", "H"];
+                                array_push($data_emas_detail, $data_emas_detail_item);
+                                $total = $total + (($jumlah_emas - 1) * $detail_emas->harga);
+                                $ctr = $ctr + 1;
+                            endif;
+                        endforeach;
+                        $document_no = "TTO-IPP-".date('ym')."-".strval($digit);
+                        //generate header emas
+                        $data_emas_header_item = [$document_no, $campaign->kode_customer, $campaign->kode_campaign, date('Y-m-d'), $total, "New", "0", $tipe, "IPP-TTO", "MBTRHSL", "DEFAULT", "IPP-FG", "IPP", $campaign->agen->salesperson];
+                        array_push($data_emas_header, $data_emas_header_item);
+
+                        $digit = $digit + 1;
+                    endforeach;
+                    
+        
+                    $excel->sheet('Header Emas', function($sheet) use($data_emas_header) {
+                        $sheet->row(1, array(
+                            'Document No.', 'Customer No.', 'Campaign Code', 'Posting Date', 'Total OQ', 'Status', 'Discount %', 'Type', 'No. Series', 'Journal Template Name', 'Journal Batch Name', 'Location Code', 'Branch Code', 'Salesperson Code'
+                        ));                    
+                        $sheet->fromArray($data_emas_header, null, 'A2', false, false);
+                    });
+
+                    $excel->sheet('Detail Emas', function($sheet) use($data_emas_detail) {
+                        $sheet->row(1, array(
+                            'Document No.', 'Line No.', 'Catalog Code', 'Item No.', 'Qty. Catalog', 'Quantity', 'OQ Needed', 'Type', 'Unit of Measure', 'Quantity Per.', 'OQ Needed After Disc.', 'Paket', 'Bin Code'
+                        ));                    
+                        $sheet->fromArray($data_emas_detail, null, 'A2', false, false);
+                    });
+                    $last_no_tto_emas = $document_no;
+                    //save last no tto emas
+                    if ($last_no_tto_emas != ""){
+                        $insert = new TTOLast;
+                        $insert->no_tto = $last_no_tto_emas;
+                        $insert->save();
+                    }
+
+                    //generate Header Detail Non Emas
+                    $document_no = "";
+                    $data_non_emas_header = [];
+                    $data_non_emas_detail = [];
+                    $data_non_emas_header_item = [];
+                    $data_non_emas_detail_item = [];
+                    $digit = (int)substr($no_tto_non_emas, -5);
+                    foreach ($data_list_campaign as $campaign):
+                        $data_redeem_non_emas = RedeemDetail::select('campaign_d_hadiah.kode_catalogue','campaign_d_hadiah.kode_hadiah','redeem_detail.jumlah','campaign_h.jenis','campaign_d_hadiah.harga','campaign_d_hadiah.satuan', DB::raw('campaign_d_hadiah.jumlah as jum_paket'))
+                                                ->leftJoin('campaign_h', 'campaign_h.id','=','redeem_detail.id_campaign')
+                                                ->leftJoin('campaign_d_hadiah','redeem_detail.id_campaign_hadiah','=','campaign_d_hadiah.id')
+                                                ->where('campaign_h.kode_campaign','=', $campaign->kode_campaign)
+                                                ->where('redeem_detail.kode_customer','=', $campaign->kode_customer)
+                                                ->where('redeem_detail.jumlah','>',0)
+                                                ->where('campaign_d_hadiah.emas','=',0)
+                                                ->orderBy('redeem_detail.id','ASC')
+                                                ->get();
+                        $document_no = "TTO-IPP-".date('ym')."-".strval($digit);
+                        $line_no = 10000;
+                        $ctr = 1;
+                        $total = 0;
+                        $tipe = "Omzet dan Qty Reward";
+                        if ($campaign->jenis == "poin"){
+                            $tipe = "Point Reward";
+                        }
+                        foreach ($data_redeem_non_emas as $detail_non_emas):
+                            $data_non_emas_detail_item = [$document_no, $line_no * $ctr, $detail_non_emas->kode_catalogue, $detail_non_emas->kode_hadiah, $detail_non_emas->jumlah, $detail_non_emas->jumlah * $detail_non_emas->jum_paket, $detail_non_emas->harga * $detail_non_emas->jumlah, $tipe, $detail_non_emas->satuan, $detail_non_emas->jum_paket, $detail_non_emas->harga * $detail_non_emas->jumlah, "0", "H"];
+                            array_push($data_non_emas_detail, $data_non_emas_detail_item);
+                            $ctr = $ctr + 1;
+                            $total = $total + ($detail_non_emas->jumlah * $detail_non_emas->harga);
+                        endforeach;
+                        if ($total > 0){
+                            $digit = $digit + 1;
+                            $data_non_emas_header_item = [$document_no, $campaign->kode_customer, $campaign->kode_campaign, date('Y-m-d'), $total, "New", "0", $tipe, "IPP-TTO", "MBTRHSL", "DEFAULT", "IPP-FG", "IPP", $campaign->agen->salesperson];
+                            array_push($data_non_emas_header, $data_non_emas_header_item);
+                        }
+                    endforeach;
+
+                    $excel->sheet('Header Non Emas', function($sheet) use($data_non_emas_header) {
+                        $sheet->row(1, array(
+                            'Document No.', 'Customer No.', 'Campaign Code', 'Posting Date', 'Total OQ', 'Status', 'Discount %', 'Type', 'No. Series', 'Journal Template Name', 'Journal Batch Name', 'Location Code', 'Branch Code', 'Salesperson Code'
+                        ));                    
+                        $sheet->fromArray($data_non_emas_header, null, 'A2', false, false);
+                    });
+
+                    $excel->sheet('Detail Non Emas', function($sheet) use($data_non_emas_detail) {
+                        $sheet->row(1, array(
+                            'Document No.', 'Line No.', 'Catalog Code', 'Item No.', 'Qty. Catalog', 'Quantity', 'OQ Needed', 'Type', 'Unit of Measure', 'Quantity Per.', 'OQ Needed After Disc.', 'Paket', 'Bin Code'
+                        ));                    
+                        $sheet->fromArray($data_non_emas_detail, null, 'A2', false, false);
+                    });
+                    $last_no_tto_non_emas = $document_no;
+                    //save last no tto non emas
+                    if ($last_no_tto_non_emas != ""){
+                        $insert = new TTOLast;
+                        $insert->no_tto = $last_no_tto_non_emas;
+                        $insert->save();
+                    }
+
+                    
+                })->export('xls');            
+            endif;
         }
-
+        
 		view()->share('startDate',$startDate);
 		view()->share('endDate',$endDate);
         view()->share('status',$status);
         view()->share('mode',$mode);
         view()->share('kode_campaign',$kode_campaign);
         view()->share('campaign',$campaign);
+        view()->share('category',$category);
 
 		return view ('backend.report.index');
     }
 
 	public function datatable() {
         $db2 = env('DB_DATABASE_2');
-        $data = CustomerOmzet::select('tbuser.cabang', 'customer_omzet.id', 'campaign_h.kode_campaign', 'campaign_h.nama_campaign','campaign_h.jenis','customer_omzet.periode_awal','customer_omzet.periode_akhir','campaign_h.brosur','customer_omzet.omzet_netto','customer_omzet.poin', DB::raw('count(distinct campaign_d_hadiah.id) as jum_emas'),DB::raw('count(distinct redeem_detail.id) as jum_redeem_detail'),DB::raw('count(distinct redeem_emas.id) as jum_redeem_emas'),'customer_omzet.kode_customer')
+        $data = CustomerOmzet::select('tbuser.cabang', 'customer_omzet.id', 'campaign_h.kode_campaign', 'campaign_h.nama_campaign','campaign_h.jenis','campaign_h.category','customer_omzet.periode_awal','customer_omzet.periode_akhir','campaign_h.brosur','customer_omzet.omzet_netto','customer_omzet.poin', DB::raw('count(distinct campaign_d_hadiah.id) as jum_emas'),DB::raw('count(distinct redeem_detail.id) as jum_redeem_detail'),DB::raw('count(distinct redeem_emas.id) as jum_redeem_emas'),'customer_omzet.kode_customer')
                 ->leftJoin('campaign_h','customer_omzet.kode_campaign','=','campaign_h.kode_campaign')
                 ->leftJoin('campaign_d_hadiah', function($join){
                     $join->on('campaign_d_hadiah.id_campaign', '=', 'campaign_h.id');
@@ -298,6 +525,7 @@ class ReportController extends Controller
                 ->groupBy('customer_omzet.kode_campaign');
         $kode_campaign = "";                
         $status = 999;
+        $category = "CAT";
     	$startDate = "01"."-".date('m-Y');
         $endDate = date('d-m-Y');
         $mode = "limited";
@@ -318,6 +546,9 @@ class ReportController extends Controller
 			if (isset($_GET['kode_campaign'])){
 				$kode_campaign = $_GET['kode_campaign'];
             }
+            if (isset($_GET['category'])){
+                $category = $_GET['category'];
+            }
         }
 
         if ($kode_campaign != ""){
@@ -329,6 +560,8 @@ class ReportController extends Controller
             $data = $data->where('customer_omzet.periode_awal','>=', date('Y-m-d 00:00:00',strtotime($startDate)));
             $data = $data->where('customer_omzet.periode_akhir','<=',date('Y-m-d 23:59:59',strtotime($endDate)));
         }
+
+        $data = $data->where('campaign_h.category', $category);
 
         if ($status == "1"){
             $data = $data->havingRaw('(jum_redeem_detail > 0 and jum_emas = 0) or jum_redeem_emas > 0');

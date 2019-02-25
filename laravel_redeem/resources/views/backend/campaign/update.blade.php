@@ -32,6 +32,7 @@
         $kode_campaign = old('kode_campaign');
         $nama_campaign = old('nama_campaign');
         $jenis = "omzet";
+        $category = "CAT";
         $TPP = 0;
         $brosur = "";
 		$method = "POST";
@@ -41,6 +42,7 @@
             $kode_campaign = $data[0]->kode_campaign;
             $nama_campaign = $data[0]->nama_campaign;
             $jenis = $data[0]->jenis;
+            $category = $data[0]->category;
             $TPP = $data[0]->TPP;
             $brosur = $data[0]->brosur;
 			$method = "PUT";
@@ -115,7 +117,21 @@
 									array(
 										'class' => 'form-control',
 									))
-								}}								
+								}}
+							</div>
+                        </div>
+						<div class="form-group">
+							<label class="control-label col-sm-3 col-xs-12">Kategori : </label>
+							<div class="col-sm-2 col-xs-12">
+								{{
+								Form::select(
+									'category',
+									['CAT' => 'CAT', 'PIPA' => 'PIPA'],
+									$category,
+									array(
+										'class' => 'form-control',
+									))
+								}}
 							</div>
 						</div>
 						<div class="form-group">

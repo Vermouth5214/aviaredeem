@@ -38,6 +38,7 @@
 								<th>Kode</th>
                                 <th>Nama</th>
                                 <th>Jenis</th>
+                                <th>Kategori</th>
                                 <th>Brosur</th>
 								<th>Status</th>
 								<th>Actions</th>
@@ -69,6 +70,7 @@
 				{data: 'kode_campaign', name: 'kode_campaign'},
                 {data: 'nama_campaign', name: 'nama_campaign'},
                 {data: 'jenis', name: 'jenis'},
+                {data: 'category', name: 'category'},
                 {data: 'brosur', name: 'brosur'},
 				{data:  'active', render: function ( data, type, row ) {
 					var text = "";

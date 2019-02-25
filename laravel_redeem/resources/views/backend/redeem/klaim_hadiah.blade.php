@@ -204,7 +204,7 @@
                     alert('Penukaran hadiah melebihi omzet / poin')
                     return false;
                 }
-                if (sisa > harga_terendah ){
+                if (sisa >= harga_terendah ){
                     alert('Sisa omzet / poin masih bisa ditukarkan dengan hadiah lain')
                     return false;
                 }

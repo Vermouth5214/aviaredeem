@@ -51,6 +51,30 @@
                         <br/>
                         <div class="row">
                             <div class="col-xs-12 col-sm-2 text-right" style="margin-top:7px;">
+                                Kategori 
+                            </div>
+                            <div class="col-xs-12 col-sm-5">
+                                <select name="category" class="form-control">
+                                    <?php
+                                        $selected = "";
+                                        if ($category == "CAT"){
+                                            $selected = "selected";
+                                        }
+                                    ?>
+                                    <option value="CAT" <?=$selected;?>>CAT</option>
+                                    <?php
+                                        $selected = "";
+                                        if ($category == "PIPA"){
+                                            $selected = "selected";
+                                        }
+                                    ?>
+                                    <option value="PIPA" <?=$selected;?>>PIPA</option>
+                                </select>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-2 text-right" style="margin-top:7px;">
                                 Status 
                             </div>
                             <div class="col-xs-12 col-sm-5">
@@ -155,6 +179,7 @@
                                 <th>Kode Campaign</th>
                                 <th>Nama</th>
                                 <th>Jenis</th>
+                                <th>Kategori</th>
                                 <th>Awal</th>
                                 <th>Akhir</th>
                                 <th>Brosur</th>
@@ -188,7 +213,7 @@
             serverSide: true,
             "lengthMenu": [[35, 75, 100], [35, 75, 100]],
             "pageLength": 35,
-            ajax: "<?=url('backend/general-report/datatable?startDate='.$startDate.'&endDate='.$endDate.'&status='.$status.'&mode='.$mode.'&kode_campaign='.$kode_campaign);?>",
+            ajax: "<?=url('backend/general-report/datatable?category='.$category.'&startDate='.$startDate.'&endDate='.$endDate.'&status='.$status.'&mode='.$mode.'&kode_campaign='.$kode_campaign);?>",
 			columns: [
 				{data:  'status', render: function ( data, type, row ) {
 					var text = "";
@@ -217,6 +242,7 @@
 				{data: 'kode_campaign', name: 'kode_campaign'},
                 {data: 'nama_campaign', name: 'campaign_h.nama_campaign'},
                 {data: 'jenis', name: 'campaign_h.jenis'},
+                {data: 'category', name: 'campaign_h.category'},
                 {data: 'periode_awal', name: 'periode_awal'},
                 {data: 'periode_akhir', name: 'periode_akhir'},
                 {data: 'brosur', name: 'campaign_h.brosur'},

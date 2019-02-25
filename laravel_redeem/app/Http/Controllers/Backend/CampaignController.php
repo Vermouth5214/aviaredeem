@@ -44,6 +44,7 @@ class CampaignController extends Controller
             $data->kode_campaign = $request->kode_campaign;
             $data->nama_campaign = $request->nama_campaign;
             $data->jenis = $request->jenis;
+            $data->category = $request->category;
             $data->TPP = $request->TPP;
             if ($request->hasFile('brosur')) {
                 $file = $request->file('brosur');
@@ -99,6 +100,7 @@ class CampaignController extends Controller
             $data->kode_campaign = $request->kode_campaign;
             $data->nama_campaign = $request->nama_campaign;
             $data->jenis = $request->jenis;
+            $data->category = $request->category;
             $data->TPP = $request->TPP;
             if ($request->hasFile('brosur')) {
                 $file = $request->file('brosur');
@@ -262,7 +264,6 @@ class CampaignController extends Controller
                 $data_h->active = 5;
                 $data_h->save();
             }
-            
             
             $list_agen = UserAvex::where('utrace', 1)->where('posisi','AGEN')->groupBy('reldag')->orderBy('reldag','ASC')->get();
             foreach ($list_agen as $agen):
