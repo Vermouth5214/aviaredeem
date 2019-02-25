@@ -258,7 +258,12 @@ class CampaignController extends Controller
             if ($data_h->active == 2){
                 $data_h->active = 3;
                 $data_h->save();
+            } else {
+                $data_h->active = 5;
+                $data_h->save();
             }
+            
+            
             $list_agen = UserAvex::where('utrace', 1)->where('posisi','AGEN')->groupBy('reldag')->orderBy('reldag','ASC')->get();
             foreach ($list_agen as $agen):
                 if (isset($_POST['hadiah_'.$agen->reldag])){
