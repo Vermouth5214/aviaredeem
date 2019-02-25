@@ -156,7 +156,7 @@ class ReportController extends Controller
 
                                     $total = $total + ($jumlah_emas * $detail_emas->harga);
                                     //generate header emas
-                                    $data_emas_header_item = [$document_no, $campaign->kode_customer, $campaign->kode_campaign, date('Y-m-d'), $total, "New", "0", $tipe, "AAP-TTO", "MBTRHSL", "DEFAULT", "AAP-FGBAIK", "AAP", $campaign->agen->salesperson];
+                                    $data_emas_header_item = [$document_no, $campaign->kode_customer, $campaign->kode_campaign, date('d-m-Y'), $total, "New", "0", $tipe, "AAP-TTO", "MBTRHSL", "DEFAULT", "AAP-FGBAIK", "AAP", $campaign->agen->salesperson];
                                     array_push($data_emas_header, $data_emas_header_item);
 
                                     $jumlah_emas = 0;
@@ -180,12 +180,14 @@ class ReportController extends Controller
                                 $ctr = $ctr + 1;
                             endif;
                         endforeach;
-                        $document_no = "TTO-AAP-".date('ym')."-".strval($digit);
-                        //generate header emas
-                        $data_emas_header_item = [$document_no, $campaign->kode_customer, $campaign->kode_campaign, date('Y-m-d'), $total, "New", "0", $tipe, "AAP-TTO", "MBTRHSL", "DEFAULT", "AAP-FGBAIK", "AAP", $campaign->agen->salesperson];
-                        array_push($data_emas_header, $data_emas_header_item);
+                        if ($total > 0):
+                            $document_no = "TTO-AAP-".date('ym')."-".strval($digit);
+                            //generate header emas
+                            $data_emas_header_item = [$document_no, $campaign->kode_customer, $campaign->kode_campaign, date('d-m-Y'), $total, "New", "0", $tipe, "AAP-TTO", "MBTRHSL", "DEFAULT", "AAP-FGBAIK", "AAP", $campaign->agen->salesperson];
+                            array_push($data_emas_header, $data_emas_header_item);
 
-                        $digit = $digit + 1;
+                            $digit = $digit + 1;
+                        endif;
                     endforeach;
                     
         
@@ -243,7 +245,7 @@ class ReportController extends Controller
                         endforeach;
                         if ($total > 0){
                             $digit = $digit + 1;
-                            $data_non_emas_header_item = [$document_no, $campaign->kode_customer, $campaign->kode_campaign, date('Y-m-d'), $total, "New", "0", $tipe, "AAP-TTO", "MBTRHSL", "DEFAULT", "AAP-FGBAIK", "AAP", $campaign->agen->salesperson];
+                            $data_non_emas_header_item = [$document_no, $campaign->kode_customer, $campaign->kode_campaign, date('d-m-Y'), $total, "New", "0", $tipe, "AAP-TTO", "MBTRHSL", "DEFAULT", "AAP-FGBAIK", "AAP", $campaign->agen->salesperson];
                             array_push($data_non_emas_header, $data_non_emas_header_item);
                         }
                     endforeach;
@@ -374,7 +376,7 @@ class ReportController extends Controller
 
                                     $total = $total + ($jumlah_emas * $detail_emas->harga);
                                     //generate header emas
-                                    $data_emas_header_item = [$document_no, $campaign->kode_customer, $campaign->kode_campaign, date('Y-m-d'), $total, "New", "0", $tipe, "IPP-TTO", "MBTRHSL", "DEFAULT", "IPP-FG", "IPP", $campaign->agen->salesperson];
+                                    $data_emas_header_item = [$document_no, $campaign->kode_customer, $campaign->kode_campaign, date('d-m-Y'), $total, "New", "0", $tipe, "IPP-TTO", "MBTRHSL", "DEFAULT", "IPP-FG", "IPP", $campaign->agen->salesperson];
                                     array_push($data_emas_header, $data_emas_header_item);
 
                                     $jumlah_emas = 0;
@@ -398,12 +400,14 @@ class ReportController extends Controller
                                 $ctr = $ctr + 1;
                             endif;
                         endforeach;
-                        $document_no = "TTO-IPP-".date('ym')."-".strval($digit);
-                        //generate header emas
-                        $data_emas_header_item = [$document_no, $campaign->kode_customer, $campaign->kode_campaign, date('Y-m-d'), $total, "New", "0", $tipe, "IPP-TTO", "MBTRHSL", "DEFAULT", "IPP-FG", "IPP", $campaign->agen->salesperson];
-                        array_push($data_emas_header, $data_emas_header_item);
+                        if ($total > 0):
+                            $document_no = "TTO-IPP-".date('ym')."-".strval($digit);
+                            //generate header emas
+                            $data_emas_header_item = [$document_no, $campaign->kode_customer, $campaign->kode_campaign, date('d-m-Y'), $total, "New", "0", $tipe, "IPP-TTO", "MBTRHSL", "DEFAULT", "IPP-FG", "IPP", $campaign->agen->salesperson];
+                            array_push($data_emas_header, $data_emas_header_item);
 
-                        $digit = $digit + 1;
+                            $digit = $digit + 1;
+                        endif;
                     endforeach;
                     
         
@@ -461,7 +465,7 @@ class ReportController extends Controller
                         endforeach;
                         if ($total > 0){
                             $digit = $digit + 1;
-                            $data_non_emas_header_item = [$document_no, $campaign->kode_customer, $campaign->kode_campaign, date('Y-m-d'), $total, "New", "0", $tipe, "IPP-TTO", "MBTRHSL", "DEFAULT", "IPP-FG", "IPP", $campaign->agen->salesperson];
+                            $data_non_emas_header_item = [$document_no, $campaign->kode_customer, $campaign->kode_campaign, date('d-m-Y'), $total, "New", "0", $tipe, "IPP-TTO", "MBTRHSL", "DEFAULT", "IPP-FG", "IPP", $campaign->agen->salesperson];
                             array_push($data_non_emas_header, $data_non_emas_header_item);
                         }
                     endforeach;

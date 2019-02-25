@@ -165,7 +165,7 @@
                         </div>
                     </form>
                     <br/>
-                    <p class="small blue"> - Proses Generate TTO hanya menggunakan parameter <b><i><u>Kode Campaign</u></i></b> dan <b><i><u>Periode</u></i></b><br/>
+                    <p class="small blue"> - Proses Generate TTO hanya menggunakan parameter <b><i><u>Kode Campaign, Kategori</u></i></b> dan <b><i><u>Periode</u></i></b><br/>
                         - TTO yang digerenate hanya untuk campaign dengan status <b>SUDAH KLAIM</b>
                     </p>
                     <br/>
