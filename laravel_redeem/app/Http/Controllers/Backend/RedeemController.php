@@ -68,12 +68,15 @@ class RedeemController extends Controller
             $data = $data->havingRaw("jum_redeem_detail = 0 and customer_omzet.periode_akhir <'". date('Y-m-d') ."'" );
         }
         if ($status == '3'){
-            $data = $data->havingRaw("jum_redeem_detail = 0 and customer_omzet.periode_akhir >='". date('Y-m-d') ."'" );
+            $data = $data->havingRaw("(jum_redeem_detail > 0 and jum_redeem_emas = 0) and jum_emas > 0 and customer_omzet.periode_akhir <'". date('Y-m-d') ."'" );
         }
         if ($status == '4'){
-            $data = $data->havingRaw('jum_emas > 0 and jum_redeem_detail > 0 and jum_redeem_emas = 0');
+            $data = $data->havingRaw("jum_redeem_detail = 0 and customer_omzet.periode_akhir >='". date('Y-m-d') ."'" );
         }
         if ($status == '5'){
+            $data = $data->havingRaw("jum_emas > 0 and jum_redeem_detail > 0 and jum_redeem_emas = 0 and customer_omzet.periode_akhir >='". date('Y-m-d') ."'");
+        }
+        if ($status == '6'){
             $data = $data->havingRaw("customer_omzet.periode_awal >'".date('Y-m-d')."'");
         }
         
@@ -100,18 +103,21 @@ class RedeemController extends Controller
                 $status = 0;
                 if (($data->jum_redeem_detail > 0 && $data->jum_emas == 0) || ($data->jum_redeem_emas > 0)){
                     $status = 1;
-                }
+                } else
                 if ($data->jum_redeem_detail == 0 && (date('Y-m-d',strtotime($data->periode_akhir)) < date('Y-m-d'))){
                     $status = 2;
-                }
-                if ($data->jum_redeem_detail == 0 && (date('Y-m-d',strtotime($data->periode_akhir)) >= date('Y-m-d'))){
+                } else 
+                if ($data->jum_redeem_detail > 0 && $data->jum_emas > 0 && $data->jum_redeem_emas == 0 && (date('Y-m-d',strtotime($data->periode_akhir)) < date('Y-m-d'))){
                     $status = 3;
-                }
-                if (($data->jum_emas > 0) && ($data->jum_redeem_detail > 0) && ($data->jum_redeem_emas == 0)){
+                } else 
+                if ($data->jum_redeem_detail == 0 && (date('Y-m-d',strtotime($data->periode_akhir)) >= date('Y-m-d'))){
                     $status = 4;
-                }
-                if (date('Y-m-d') < date('Y-m-d',strtotime($data->periode_awal))){
+                } else 
+                if (($data->jum_emas > 0) && ($data->jum_redeem_detail > 0) && ($data->jum_redeem_emas == 0) && (date('Y-m-d',strtotime($data->periode_akhir)) >= date('Y-m-d'))){
                     $status = 5;
+                } else 
+                if (date('Y-m-d') < date('Y-m-d',strtotime($data->periode_awal))){
+                    $status = 6;
                 }
 
                 return $status;
@@ -120,18 +126,21 @@ class RedeemController extends Controller
                 $status = 0;
                 if (($data->jum_redeem_detail > 0 && $data->jum_emas == 0) || ($data->jum_redeem_emas > 0)){
                     $status = 1;
-                }
+                } else
                 if ($data->jum_redeem_detail == 0 && (date('Y-m-d',strtotime($data->periode_akhir)) < date('Y-m-d'))){
                     $status = 2;
-                }
-                if ($data->jum_redeem_detail == 0 && (date('Y-m-d',strtotime($data->periode_akhir)) >= date('Y-m-d'))){
+                } else
+                if ($data->jum_redeem_detail > 0 && $data->jum_emas > 0 && $data->jum_redeem_emas == 0 && (date('Y-m-d',strtotime($data->periode_akhir)) < date('Y-m-d'))){
                     $status = 3;
-                }
-                if (($data->jum_emas > 0) && ($data->jum_redeem_detail > 0) && ($data->jum_redeem_emas == 0)){
+                } else
+                if ($data->jum_redeem_detail == 0 && (date('Y-m-d',strtotime($data->periode_akhir)) >= date('Y-m-d'))){
                     $status = 4;
-                }
-                if (date('Y-m-d') < date('Y-m-d',strtotime($data->periode_awal))){
+                } else
+                if (($data->jum_emas > 0) && ($data->jum_redeem_detail > 0) && ($data->jum_redeem_emas == 0) && (date('Y-m-d',strtotime($data->periode_akhir)) >= date('Y-m-d'))){
                     $status = 5;
+                } else
+                if (date('Y-m-d') < date('Y-m-d',strtotime($data->periode_awal))){
+                    $status = 6;
                 }
 
                 $url_view = url('backend/redeem-hadiah/'.$data->id);
@@ -150,13 +159,17 @@ class RedeemController extends Controller
                     $klaim = "";
                     $konvert = "";
                 }
-                if ($status == 3){
+                if ($status == 3 ){
+                    $klaim = "";
                     $konvert = "";
                 }
                 if ($status == 4){
-                    $klaim = "";
+                    $konvert = "";
                 }
                 if ($status == 5){
+                    $klaim = "";
+                }
+                if ($status == 6){
                     $klaim = "";
                     $konvert = "";
                 }
@@ -186,6 +199,11 @@ class RedeemController extends Controller
 
             //cek tanggal klaim
             if (date('Y-m-d') < date('Y-m-d',strtotime($data_omzet[0]->periode_awal))){
+                return Redirect::to('/backend/redeem-hadiah/');
+            }
+
+            //cek kedaluarsa
+            if (date('Y-m-d') > date('Y-m-d',strtotime($data_omzet[0]->periode_akhir))){
                 return Redirect::to('/backend/redeem-hadiah/');
             }
 
@@ -239,6 +257,11 @@ class RedeemController extends Controller
                 return Redirect::to('/backend/redeem-hadiah/');
             }
 
+            //cek kedaluarsa
+            if (date('Y-m-d') > date('Y-m-d',strtotime($data_omzet[0]->periode_akhir))){
+                return Redirect::to('/backend/redeem-hadiah/');
+            }
+
             //data list hadiah
             $data_list_hadiah_emas =  CampaignDHadiah::select('id','nama_hadiah','harga')
                                     ->where('id_campaign', $data_header[0]->id)
@@ -268,7 +291,7 @@ class RedeemController extends Controller
                 $total = $data_omzet[0]->poin;
             }
             foreach ($_POST['id'] as $ctr=>$id_hadiah):
-                $subtotal = $subtotal + (($_POST['jumlah'][$ctr] / 1) * $_POST['harga'][$ctr]);
+                $subtotal = $subtotal + ( floor($_POST['jumlah'][$ctr] / 1) * $_POST['harga'][$ctr]);
             endforeach;
 
             $sisa = $total - $subtotal;
@@ -285,7 +308,7 @@ class RedeemController extends Controller
                 $data->kode_customer = $data_omzet[0]->kode_customer;
                 $data->id_campaign = $data_header[0]->id;
                 $data->id_campaign_hadiah = $id_hadiah;
-                $data->jumlah = $_POST['jumlah'][$ctr];
+                $data->jumlah = floor($_POST['jumlah'][$ctr] / 1);
                 $data->save();
             endforeach;
 
@@ -315,6 +338,12 @@ class RedeemController extends Controller
             if ($jum_konversi > 0){
                 return Redirect::to('/backend/redeem-hadiah/');
             }
+
+            //cek kadaluarsa
+            if (date('Y-m-d') > date('Y-m-d',strtotime($data_omzet[0]->periode_akhir))){
+                return Redirect::to('/backend/redeem-hadiah/');
+            }
+
 
             //hitung total gram emas
             $data_redeem = RedeemDetail::with('campaign_hadiah')->where('id_campaign', $data_header[0]->id)->where('kode_customer',$userinfo['reldag'])->get();
@@ -359,6 +388,11 @@ class RedeemController extends Controller
                 return Redirect::to('/backend/redeem-hadiah/');
             }
 
+            //cek kedaluarsa
+            if (date('Y-m-d') > date('Y-m-d',strtotime($data_omzet[0]->periode_akhir))){
+                return Redirect::to('/backend/redeem-hadiah/');
+            }
+
             //hitung total gram emas
             $data_redeem = RedeemDetail::with('campaign_hadiah')->where('id_campaign', $data_header[0]->id)->where('kode_customer',$userinfo['reldag'])->get();
             $total_gram = 0;
@@ -370,7 +404,7 @@ class RedeemController extends Controller
 
             $subtotal = 0;
             foreach ($_POST['id'] as $ctr=>$id_hadiah):
-                $subtotal = $subtotal + (($_POST['jumlah'][$ctr] / 1) * $_POST['jumlah_emas'][$ctr]);
+                $subtotal = $subtotal + ( floor($_POST['jumlah'][$ctr] / 1) * $_POST['jumlah_emas'][$ctr]);
             endforeach;
 
             $sisa = $total_gram - $subtotal;
@@ -387,7 +421,7 @@ class RedeemController extends Controller
                 $data->kode_customer = $data_omzet[0]->kode_customer;
                 $data->id_campaign = $data_header[0]->id;
                 $data->id_campaign_emas = $id_hadiah;
-                $data->jumlah = $_POST['jumlah'][$ctr];
+                $data->jumlah = floor($_POST['jumlah'][$ctr] / 1);
                 $data->save();
             endforeach;
 

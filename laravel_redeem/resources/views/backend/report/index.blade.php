@@ -54,7 +54,14 @@
                                 Kategori 
                             </div>
                             <div class="col-xs-12 col-sm-5">
-                                <select name="category" class="form-control">
+                                <select name="category" class="form-control" id="category">
+                                    <?php
+                                        $selected = "";
+                                        if ($category == 999){
+                                            $selected = "selected";
+                                        }
+                                    ?>
+                                    <option value="999" <?=$selected;?>>Semua</option>
                                     <?php
                                         $selected = "";
                                         if ($category == "CAT"){
@@ -78,7 +85,14 @@
                                 Jenis 
                             </div>
                             <div class="col-xs-12 col-sm-5">
-                                <select name="jenis" class="form-control">
+                                <select name="jenis" class="form-control" id="jenis">
+                                    <?php
+                                        $selected = "";
+                                        if ($jenis == 999){
+                                            $selected = "selected";
+                                        }
+                                    ?>
+                                    <option value="999" <?=$selected;?>>Semua</option>
                                     <?php
                                         $selected = "";
                                         if ($jenis == "omzet"){
@@ -123,21 +137,28 @@
                                             $selected = "selected";
                                         }
                                     ?>
-                                    <option value="2" <?=$selected;?>>Kedaluwarsa</option>
+                                    <option value="2" <?=$selected;?>>Kedaluwarsa (Belum Klaim)</option>
                                     <?php
                                         $selected = "";
                                         if ($status == 3){
                                             $selected = "selected";
                                         }
                                     ?>
-                                    <option value="3" <?=$selected;?>>Belum Klaim</option>
+                                    <option value="3" <?=$selected;?>>Kedaluwarsa (Belum Konversi)</option>
                                     <?php
                                         $selected = "";
                                         if ($status == 4){
                                             $selected = "selected";
                                         }
                                     ?>
-                                    <option value="4" <?=$selected;?>>Belum Konversi</option>
+                                    <option value="4" <?=$selected;?>>Belum Klaim</option>
+                                    <?php
+                                        $selected = "";
+                                        if ($status == 5){
+                                            $selected = "selected";
+                                        }
+                                    ?>
+                                    <option value="5" <?=$selected;?>>Belum Konversi</option>
                                 </select>
                             </div>
                         </div>
@@ -181,7 +202,7 @@
                                     $userinfo = Session::get('userinfo');
                                     if ($userinfo['uname'] != "mkt01"):
                                 ?>
-                                <input type="submit" class="btn btn-success btn-block" name="export" value="Generate TTO">
+                                <input type="submit" class="btn btn-success btn-block" id="btn-export" name="export" value="Generate XLS">
                                 <?php
                                     endif;
                                 ?>
@@ -189,8 +210,9 @@
                         </div>
                     </form>
                     <br/>
-                    <p class="small blue"> - Proses Generate TTO hanya menggunakan parameter <b><i><u>Kode Campaign, Kategori, Jenis</u></i></b> dan <b><i><u>Periode</u></i></b><br/>
-                        - TTO yang digerenate hanya untuk campaign dengan status <b>SUDAH KLAIM</b>
+                    <p class="small blue"> - Proses Generate XLS hanya menggunakan parameter <b><i><u>Kode Campaign, Kategori, Jenis</u></i></b> dan <b><i><u>Periode</u></i></b><br/>
+                        - TTO yang digerenate hanya untuk campaign dengan status <b>SUDAH KLAIM</b><br/>
+                        - Harap memilih KATEGORI dan JENIS terlebih dahulu sebelum melalukan proses Generate XLS
                     </p>
                     <br/>
                     <table class="table table-striped table-hover table-bordered dt-responsive nowrap dataTable" cellspacing="0" width="100%">
@@ -235,8 +257,6 @@
 		$('.dataTable').dataTable({
 			processing: true,
             serverSide: true,
-            "lengthMenu": [[35, 75, 100], [35, 75, 100]],
-            "pageLength": 35,
             ajax: "<?=url('backend/general-report/datatable?jenis='.$jenis.'&category='.$category.'&startDate='.$startDate.'&endDate='.$endDate.'&status='.$status.'&mode='.$mode.'&kode_campaign='.$kode_campaign);?>",
 			columns: [
 				{data:  'status', render: function ( data, type, row ) {
@@ -247,17 +267,22 @@
 						label = "success";
 					} else 
                     if (data == 2){    
-						text = "Kedaluwarsa";
+						text = "Kedaluwarsa (Belum Klaim)";
 						label = "error";
 					} else 
-                    if (data == 3){
+                    if (data == 3){    
+						text = "Kedaluwarsa (Belum Konversi)";
+						label = "error";
+					} else 
+                    if (data == 4){
                         text = "Belum Klaim";
                         label = "info";
                     }
-                    if (data == 4){
+                    if (data == 5){
                         text = "Belum Konversi";
                         label = "warning";
                     }
+
 					return "<span class='badge badge-" + label + "'>"+ text + "</span>";
                 }},
 				{data: 'action', name: 'action', orderable: false, searchable: false},                
@@ -286,5 +311,18 @@
             format: 'DD-MM-YYYY'
         });
 
+        $('#btn-export').on('click', function(e){
+            var category = $('#category').val();
+            var jenis = $('#jenis').val();
+            if (category == 999){
+                alert('Harap memilih Kategori terlebih dahulu');
+                return false;
+            } else
+            if (jenis == 999){
+                alert('Harap memilih Jenis terlebih dahulu');
+                return false;
+            }
+            return true;
+        });
 	</script>
 @endsection

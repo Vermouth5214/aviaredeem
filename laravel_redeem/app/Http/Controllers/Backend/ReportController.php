@@ -29,8 +29,8 @@ class ReportController extends Controller
         //
         $kode_campaign = "";
         $status = 999;
-        $category = "CAT";
-        $jenis = "omzet";
+        $category = 999;
+        $jenis = 999;
     	$startDate = "01"."-".date('m-Y');
         $endDate = date('d-m-Y');
         $mode = "limited";
@@ -91,11 +91,25 @@ class ReportController extends Controller
                         }
                         
                         //ambil data list campaign CAT dulu
-                        $data_list_campaign = CustomerOmzet::select('customer_omzet.kode_campaign','customer_omzet.kode_customer','campaign_h.jenis')->with('agen')
+                        $data_list_campaign = CustomerOmzet::select('customer_omzet.kode_campaign','customer_omzet.kode_customer','campaign_h.jenis', DB::raw('count(distinct campaign_d_hadiah.id) as jum_emas'),DB::raw('count(distinct redeem_detail.id) as jum_redeem_detail'),DB::raw('count(distinct redeem_emas.id) as jum_redeem_emas'))->with('agen')
                                                 ->leftJoin('campaign_h','customer_omzet.kode_campaign','campaign_h.kode_campaign')
+                                                ->leftJoin('campaign_d_hadiah', function($join){
+                                                    $join->on('campaign_d_hadiah.id_campaign', '=', 'campaign_h.id');
+                                                    $join->on('campaign_d_hadiah.emas','=', DB::raw('1'));
+                                                })
+                                                ->leftJoin('redeem_detail', function($join){
+                                                    $join->on('redeem_detail.kode_customer', '=', 'customer_omzet.kode_customer');
+                                                    $join->on('redeem_detail.id_campaign','=','campaign_h.id');
+                                                })
+                                                ->leftJoin('redeem_emas', function($join){
+                                                    $join->on('redeem_emas.kode_customer', '=', 'customer_omzet.kode_customer');
+                                                    $join->on('redeem_emas.id_campaign','=','campaign_h.id');
+                                                })
                                                 ->where('campaign_h.active', 1)
                                                 ->where('campaign_h.category', "CAT")
-                                                ->where('campaign_h.jenis', "omzet");
+                                                ->where('campaign_h.jenis', "omzet")
+                                                ->groupBy('customer_omzet.kode_customer')
+                                                ->groupBy('customer_omzet.kode_campaign');
                         if ($mode != "all"){
                             $data_list_campaign = $data_list_campaign->where('customer_omzet.periode_awal','>=', date('Y-m-d 00:00:00',strtotime($startDate)));
                             $data_list_campaign = $data_list_campaign->where('customer_omzet.periode_akhir','<=',date('Y-m-d 23:59:59',strtotime($endDate)));
@@ -104,7 +118,7 @@ class ReportController extends Controller
                         if ($kode_campaign != ""){
                             $data_list_campaign = $data_list_campaign->where('customer_omzet.kode_campaign','=',$kode_campaign);
                         }
-                
+                        $data_list_campaign = $data_list_campaign->havingRaw('(jum_redeem_detail > 0 and jum_emas = 0) or jum_redeem_emas > 0');
                         $data_list_campaign = $data_list_campaign->get();
 
                         //generate no TTO Emas
@@ -969,8 +983,8 @@ class ReportController extends Controller
                 ->groupBy('customer_omzet.kode_campaign');
         $kode_campaign = "";                
         $status = 999;
-        $category = "CAT";
-        $jenis = "omzet";
+        $category = 999;
+        $jenis = 999;
     	$startDate = "01"."-".date('m-Y');
         $endDate = date('d-m-Y');
         $mode = "limited";
@@ -1009,8 +1023,12 @@ class ReportController extends Controller
             $data = $data->where('customer_omzet.periode_akhir','<=',date('Y-m-d 23:59:59',strtotime($endDate)));
         }
 
-        $data = $data->where('campaign_h.category', $category);
-        $data = $data->where('campaign_h.jenis', $jenis);
+        if ($category != 999){
+            $data = $data->where('campaign_h.category', $category);
+        }
+        if ($jenis != 999){
+            $data = $data->where('campaign_h.jenis', $jenis);
+        }
 
         if ($status == "1"){
             $data = $data->havingRaw('(jum_redeem_detail > 0 and jum_emas = 0) or jum_redeem_emas > 0');
@@ -1019,15 +1037,18 @@ class ReportController extends Controller
             $data = $data->havingRaw("jum_redeem_detail = 0 and customer_omzet.periode_akhir <'". date('Y-m-d') ."'" );
         }
         if ($status == '3'){
-            $data = $data->havingRaw("jum_redeem_detail = 0 and customer_omzet.periode_akhir >='". date('Y-m-d') ."'" );
+            $data = $data->havingRaw("(jum_redeem_detail > 0 and jum_redeem_emas = 0) and jum_emas > 0 and customer_omzet.periode_akhir <'". date('Y-m-d') ."'" );
         }
         if ($status == '4'){
-            $data = $data->havingRaw('jum_emas > 0 and jum_redeem_detail > 0 and jum_redeem_emas = 0');
+            $data = $data->havingRaw("jum_redeem_detail = 0 and customer_omzet.periode_akhir >='". date('Y-m-d') ."'" );
         }
         if ($status == '5'){
+            $data = $data->havingRaw("jum_emas > 0 and jum_redeem_detail > 0 and jum_redeem_emas = 0 and customer_omzet.periode_akhir >='". date('Y-m-d') ."'");
+        }
+        if ($status == '6'){
             $data = $data->havingRaw("customer_omzet.periode_awal >'".date('Y-m-d')."'");
         }
-       
+
         return Datatables::of($data)
             ->editColumn('jenis', function($data) {
                 return strtoupper($data->jenis);
@@ -1058,20 +1079,22 @@ class ReportController extends Controller
                 $status = 0;
                 if (($data->jum_redeem_detail > 0 && $data->jum_emas == 0) || ($data->jum_redeem_emas > 0)){
                     $status = 1;
-                }
+                } else
                 if ($data->jum_redeem_detail == 0 && (date('Y-m-d',strtotime($data->periode_akhir)) < date('Y-m-d'))){
                     $status = 2;
-                }
-                if ($data->jum_redeem_detail == 0 && (date('Y-m-d',strtotime($data->periode_akhir)) >= date('Y-m-d'))){
+                } else 
+                if ($data->jum_redeem_detail > 0 && $data->jum_emas > 0 && $data->jum_redeem_emas == 0 && (date('Y-m-d',strtotime($data->periode_akhir)) < date('Y-m-d'))){
                     $status = 3;
-                }
-                if (($data->jum_emas > 0) && ($data->jum_redeem_detail > 0) && ($data->jum_redeem_emas == 0)){
+                } else 
+                if ($data->jum_redeem_detail == 0 && (date('Y-m-d',strtotime($data->periode_akhir)) >= date('Y-m-d'))){
                     $status = 4;
-                }
-                if (date('Y-m-d') < date('Y-m-d',strtotime($data->periode_awal))){
+                } else 
+                if (($data->jum_emas > 0) && ($data->jum_redeem_detail > 0) && ($data->jum_redeem_emas == 0) && (date('Y-m-d',strtotime($data->periode_akhir)) >= date('Y-m-d'))){
                     $status = 5;
+                } else 
+                if (date('Y-m-d') < date('Y-m-d',strtotime($data->periode_awal))){
+                    $status = 6;
                 }
-
                 return $status;
             })			
             ->rawColumns(['brosur','action'])

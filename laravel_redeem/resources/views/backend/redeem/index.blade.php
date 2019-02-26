@@ -57,21 +57,28 @@
                                             $selected = "selected";
                                         }
                                     ?>
-                                    <option value="2" <?=$selected;?>>Kedaluwarsa</option>
+                                    <option value="2" <?=$selected;?>>Kedaluwarsa (Belum Klaim)</option>
                                     <?php
                                         $selected = "";
                                         if ($status == 3){
                                             $selected = "selected";
                                         }
                                     ?>
-                                    <option value="3" <?=$selected;?>>Belum Klaim</option>
+                                    <option value="3" <?=$selected;?>>Kedaluwarsa (Belum Konversi)</option>
                                     <?php
                                         $selected = "";
                                         if ($status == 4){
                                             $selected = "selected";
                                         }
                                     ?>
-                                    <option value="4" <?=$selected;?>>Belum Konversi</option>
+                                    <option value="4" <?=$selected;?>>Belum Klaim</option>
+                                    <?php
+                                        $selected = "";
+                                        if ($status == 5){
+                                            $selected = "selected";
+                                        }
+                                    ?>
+                                    <option value="5" <?=$selected;?>>Belum Konversi</option>
                                 </select>
                             </div>
                             <div class="col-xs-12 col-sm-2">
@@ -118,8 +125,6 @@
 		$('.dataTable').dataTable({
 			processing: true,
             serverSide: true,
-            "lengthMenu": [[35, 75, 100], [35, 75, 100]],
-            "pageLength": 35,
             ajax: "<?=url('backend/redeem-hadiah/datatable?status='.$status);?>",
 			columns: [
 				{data:  'status', render: function ( data, type, row ) {
@@ -130,14 +135,18 @@
 						label = "success";
 					} else 
                     if (data == 2){    
-						text = "Kedaluwarsa";
+						text = "Kedaluwarsa (Belum Klaim)";
 						label = "error";
 					} else 
-                    if (data == 3){
+                    if (data == 3){    
+						text = "Kedaluwarsa (Belum Konversi)";
+						label = "error";
+					} else 
+                    if (data == 4){
                         text = "Belum Klaim";
                         label = "info";
                     }
-                    if (data == 4){
+                    if (data == 5){
                         text = "Belum Konversi";
                         label = "warning";
                     }
