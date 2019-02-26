@@ -319,12 +319,25 @@ class ReportController extends Controller
                             }
                         }
                         
-                        //ambil data list campaign CAT dulu
-                        $data_list_campaign = CustomerOmzet::select('customer_omzet.kode_campaign','customer_omzet.kode_customer','campaign_h.jenis')->with('agen')
+                        $data_list_campaign = CustomerOmzet::select('customer_omzet.kode_campaign','customer_omzet.kode_customer','campaign_h.jenis', DB::raw('count(distinct campaign_d_hadiah.id) as jum_emas'),DB::raw('count(distinct redeem_detail.id) as jum_redeem_detail'),DB::raw('count(distinct redeem_emas.id) as jum_redeem_emas'))->with('agen')
                                                 ->leftJoin('campaign_h','customer_omzet.kode_campaign','campaign_h.kode_campaign')
+                                                ->leftJoin('campaign_d_hadiah', function($join){
+                                                    $join->on('campaign_d_hadiah.id_campaign', '=', 'campaign_h.id');
+                                                    $join->on('campaign_d_hadiah.emas','=', DB::raw('1'));
+                                                })
+                                                ->leftJoin('redeem_detail', function($join){
+                                                    $join->on('redeem_detail.kode_customer', '=', 'customer_omzet.kode_customer');
+                                                    $join->on('redeem_detail.id_campaign','=','campaign_h.id');
+                                                })
+                                                ->leftJoin('redeem_emas', function($join){
+                                                    $join->on('redeem_emas.kode_customer', '=', 'customer_omzet.kode_customer');
+                                                    $join->on('redeem_emas.id_campaign','=','campaign_h.id');
+                                                })
                                                 ->where('campaign_h.active', 1)
                                                 ->where('campaign_h.category', "CAT")
-                                                ->where('campaign_h.jenis', "poin");
+                                                ->where('campaign_h.jenis', "poin")
+                                                ->groupBy('customer_omzet.kode_customer')
+                                                ->groupBy('customer_omzet.kode_campaign');
                         if ($mode != "all"){
                             $data_list_campaign = $data_list_campaign->where('customer_omzet.periode_awal','>=', date('Y-m-d 00:00:00',strtotime($startDate)));
                             $data_list_campaign = $data_list_campaign->where('customer_omzet.periode_akhir','<=',date('Y-m-d 23:59:59',strtotime($endDate)));
@@ -333,7 +346,7 @@ class ReportController extends Controller
                         if ($kode_campaign != ""){
                             $data_list_campaign = $data_list_campaign->where('customer_omzet.kode_campaign','=',$kode_campaign);
                         }
-                
+                        $data_list_campaign = $data_list_campaign->havingRaw('(jum_redeem_detail > 0 and jum_emas = 0) or jum_redeem_emas > 0');
                         $data_list_campaign = $data_list_campaign->get();
 
                         //generate no TTO Emas
@@ -540,12 +553,25 @@ class ReportController extends Controller
                             }
                         }
                         
-                        //ambil data list campaign CAT dulu
-                        $data_list_campaign = CustomerOmzet::select('customer_omzet.kode_campaign','customer_omzet.kode_customer','campaign_h.jenis')->with('agen')
+                        $data_list_campaign = CustomerOmzet::select('customer_omzet.kode_campaign','customer_omzet.kode_customer','campaign_h.jenis', DB::raw('count(distinct campaign_d_hadiah.id) as jum_emas'),DB::raw('count(distinct redeem_detail.id) as jum_redeem_detail'),DB::raw('count(distinct redeem_emas.id) as jum_redeem_emas'))->with('agen')
                                                 ->leftJoin('campaign_h','customer_omzet.kode_campaign','campaign_h.kode_campaign')
+                                                ->leftJoin('campaign_d_hadiah', function($join){
+                                                    $join->on('campaign_d_hadiah.id_campaign', '=', 'campaign_h.id');
+                                                    $join->on('campaign_d_hadiah.emas','=', DB::raw('1'));
+                                                })
+                                                ->leftJoin('redeem_detail', function($join){
+                                                    $join->on('redeem_detail.kode_customer', '=', 'customer_omzet.kode_customer');
+                                                    $join->on('redeem_detail.id_campaign','=','campaign_h.id');
+                                                })
+                                                ->leftJoin('redeem_emas', function($join){
+                                                    $join->on('redeem_emas.kode_customer', '=', 'customer_omzet.kode_customer');
+                                                    $join->on('redeem_emas.id_campaign','=','campaign_h.id');
+                                                })
                                                 ->where('campaign_h.active', 1)
                                                 ->where('campaign_h.category', "PIPA")
-                                                ->where('campaign_h.jenis', "omzet");
+                                                ->where('campaign_h.jenis', "omzet")
+                                                ->groupBy('customer_omzet.kode_customer')
+                                                ->groupBy('customer_omzet.kode_campaign');
                         if ($mode != "all"){
                             $data_list_campaign = $data_list_campaign->where('customer_omzet.periode_awal','>=', date('Y-m-d 00:00:00',strtotime($startDate)));
                             $data_list_campaign = $data_list_campaign->where('customer_omzet.periode_akhir','<=',date('Y-m-d 23:59:59',strtotime($endDate)));
@@ -554,9 +580,9 @@ class ReportController extends Controller
                         if ($kode_campaign != ""){
                             $data_list_campaign = $data_list_campaign->where('customer_omzet.kode_campaign','=',$kode_campaign);
                         }
-                
+                        $data_list_campaign = $data_list_campaign->havingRaw('(jum_redeem_detail > 0 and jum_emas = 0) or jum_redeem_emas > 0');
                         $data_list_campaign = $data_list_campaign->get();
-
+                        
                         //generate no TTO Emas
                         $no_tto_emas = "TTO-IPP-".date('ym')."-2";
                         $last_tto_emas = TTOLast::whereRaw("no_tto like'".$no_tto_emas."%'")->latest()->first();
@@ -756,12 +782,25 @@ class ReportController extends Controller
                             }
                         }
                         
-                        //ambil data list campaign CAT dulu
-                        $data_list_campaign = CustomerOmzet::select('customer_omzet.kode_campaign','customer_omzet.kode_customer','campaign_h.jenis')->with('agen')
+                        $data_list_campaign = CustomerOmzet::select('customer_omzet.kode_campaign','customer_omzet.kode_customer','campaign_h.jenis', DB::raw('count(distinct campaign_d_hadiah.id) as jum_emas'),DB::raw('count(distinct redeem_detail.id) as jum_redeem_detail'),DB::raw('count(distinct redeem_emas.id) as jum_redeem_emas'))->with('agen')
                                                 ->leftJoin('campaign_h','customer_omzet.kode_campaign','campaign_h.kode_campaign')
+                                                ->leftJoin('campaign_d_hadiah', function($join){
+                                                    $join->on('campaign_d_hadiah.id_campaign', '=', 'campaign_h.id');
+                                                    $join->on('campaign_d_hadiah.emas','=', DB::raw('1'));
+                                                })
+                                                ->leftJoin('redeem_detail', function($join){
+                                                    $join->on('redeem_detail.kode_customer', '=', 'customer_omzet.kode_customer');
+                                                    $join->on('redeem_detail.id_campaign','=','campaign_h.id');
+                                                })
+                                                ->leftJoin('redeem_emas', function($join){
+                                                    $join->on('redeem_emas.kode_customer', '=', 'customer_omzet.kode_customer');
+                                                    $join->on('redeem_emas.id_campaign','=','campaign_h.id');
+                                                })
                                                 ->where('campaign_h.active', 1)
                                                 ->where('campaign_h.category', "PIPA")
-                                                ->where('campaign_h.jenis', "poin");
+                                                ->where('campaign_h.jenis', "poin")
+                                                ->groupBy('customer_omzet.kode_customer')
+                                                ->groupBy('customer_omzet.kode_campaign');
                         if ($mode != "all"){
                             $data_list_campaign = $data_list_campaign->where('customer_omzet.periode_awal','>=', date('Y-m-d 00:00:00',strtotime($startDate)));
                             $data_list_campaign = $data_list_campaign->where('customer_omzet.periode_akhir','<=',date('Y-m-d 23:59:59',strtotime($endDate)));
@@ -770,7 +809,7 @@ class ReportController extends Controller
                         if ($kode_campaign != ""){
                             $data_list_campaign = $data_list_campaign->where('customer_omzet.kode_campaign','=',$kode_campaign);
                         }
-                
+                        $data_list_campaign = $data_list_campaign->havingRaw('(jum_redeem_detail > 0 and jum_emas = 0) or jum_redeem_emas > 0');
                         $data_list_campaign = $data_list_campaign->get();
 
                         //generate no TTO Emas
