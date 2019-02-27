@@ -65,7 +65,7 @@ class ReportController extends Controller
         if (isset($_GET['export'])){
             if ($category == "CAT"):
                 if ($jenis == "omzet"):
-                    Excel::create('Campaign CAT TTO', function($excel) {
+                    Excel::create('Campaign CAT TTO '.date('Y-m-d'), function($excel) {
                         $kode_campaign = "";
                         $status = 999;
                         $startDate = "01"."-".date('m-Y');
@@ -128,15 +128,6 @@ class ReportController extends Controller
                             $no_tto_emas = "TTO-AAP-".date('ym')."-".strval((int)(substr($last_tto_emas->no_tto, -5)) + 1);
                         } else {
                             $no_tto_emas = $no_tto_emas."0000";
-                        }
-
-                        //generate no TTO Non Emas
-                        $no_tto_non_emas = "TTO-AAP-".date('ym')."-5";
-                        $last_tto_non_emas = TTOLast::whereRaw("no_tto like'".$no_tto_non_emas."%'")->latest()->first();
-                        if ($last_tto_non_emas){
-                            $no_tto_non_emas = "TTO-AAP-".date('ym')."-".strval((int)(substr($last_tto_non_emas->no_tto, -5)) + 1);
-                        } else {
-                            $no_tto_non_emas = $no_tto_non_emas."0000";
                         }
 
                         //generate Header Detail Emas
@@ -233,12 +224,22 @@ class ReportController extends Controller
                         }
 
                         //generate Header Detail Non Emas
+
+                        //generate no TTO Emas
+                        $no_tto_emas = "TTO-AAP-".date('ym')."-2";
+                        $last_tto_emas = TTOLast::whereRaw("no_tto like'".$no_tto_emas."%'")->latest()->first();
+                        if ($last_tto_emas){
+                            $no_tto_emas = "TTO-AAP-".date('ym')."-".strval((int)(substr($last_tto_emas->no_tto, -5)) + 1);
+                        } else {
+                            $no_tto_emas = $no_tto_emas."0000";
+                        }
+
                         $document_no = "";
                         $data_non_emas_header = [];
                         $data_non_emas_detail = [];
                         $data_non_emas_header_item = [];
                         $data_non_emas_detail_item = [];
-                        $digit = (int)substr($no_tto_non_emas, -5);
+                        $digit = (int)substr($no_tto_emas, -5);
                         foreach ($data_list_campaign as $campaign):
                             $data_redeem_non_emas = RedeemDetail::select('campaign_d_hadiah.kode_catalogue','campaign_d_hadiah.kode_hadiah','redeem_detail.jumlah','campaign_h.jenis','campaign_d_hadiah.harga','campaign_d_hadiah.satuan', DB::raw('campaign_d_hadiah.jumlah as jum_paket'))
                                                     ->leftJoin('campaign_h', 'campaign_h.id','=','redeem_detail.id_campaign')
@@ -294,7 +295,7 @@ class ReportController extends Controller
                     })->export('xls');
                 endif;
                 if ($jenis == "poin"):
-                    Excel::create('Campaign CAT TTP', function($excel) {
+                    Excel::create('Campaign CAT TTP '.date('Y-m-d'), function($excel) {
                         $kode_campaign = "";
                         $status = 999;
                         $startDate = "01"."-".date('m-Y');
@@ -356,15 +357,6 @@ class ReportController extends Controller
                             $no_tto_emas = "TTP-AAP-".date('ym')."-".strval((int)(substr($last_tto_emas->no_tto, -5)) + 1);
                         } else {
                             $no_tto_emas = $no_tto_emas."0000";
-                        }
-
-                        //generate no TTO Non Emas
-                        $no_tto_non_emas = "TTP-AAP-".date('ym')."-5";
-                        $last_tto_non_emas = TTOLast::whereRaw("no_tto like'".$no_tto_non_emas."%'")->latest()->first();
-                        if ($last_tto_non_emas){
-                            $no_tto_non_emas = "TTP-AAP-".date('ym')."-".strval((int)(substr($last_tto_non_emas->no_tto, -5)) + 1);
-                        } else {
-                            $no_tto_non_emas = $no_tto_non_emas."0000";
                         }
 
                         //generate Header Detail Emas
@@ -460,13 +452,22 @@ class ReportController extends Controller
                             $insert->save();
                         }
 
+                        //generate no TTO Emas
+                        $no_tto_emas = "TTP-AAP-".date('ym')."-2";
+                        $last_tto_emas = TTOLast::whereRaw("no_tto like'".$no_tto_emas."%'")->latest()->first();
+                        if ($last_tto_emas){
+                            $no_tto_emas = "TTP-AAP-".date('ym')."-".strval((int)(substr($last_tto_emas->no_tto, -5)) + 1);
+                        } else {
+                            $no_tto_emas = $no_tto_emas."0000";
+                        }
+
                         //generate Header Detail Non Emas
                         $document_no = "";
                         $data_non_emas_header = [];
                         $data_non_emas_detail = [];
                         $data_non_emas_header_item = [];
                         $data_non_emas_detail_item = [];
-                        $digit = (int)substr($no_tto_non_emas, -5);
+                        $digit = (int)substr($no_tto_emas, -5);
                         foreach ($data_list_campaign as $campaign):
                             $data_redeem_non_emas = RedeemDetail::select('campaign_d_hadiah.kode_catalogue','campaign_d_hadiah.kode_hadiah','redeem_detail.jumlah','campaign_h.jenis','campaign_d_hadiah.harga','campaign_d_hadiah.satuan', DB::raw('campaign_d_hadiah.jumlah as jum_paket'))
                                                     ->leftJoin('campaign_h', 'campaign_h.id','=','redeem_detail.id_campaign')
@@ -528,7 +529,7 @@ class ReportController extends Controller
                 /*                      PIPA                              */
                 /*========================================================*/
                 if ($jenis == "omzet"):
-                    Excel::create('Campaign PIPA TTO', function($excel) {
+                    Excel::create('Campaign PIPA TTO '.date('Y-m-d'), function($excel) {
                         $kode_campaign = "";
                         $status = 999;
                         $startDate = "01"."-".date('m-Y');
@@ -590,15 +591,6 @@ class ReportController extends Controller
                             $no_tto_emas = "TTO-IPP-".date('ym')."-".strval((int)(substr($last_tto_emas->no_tto, -5)) + 1);
                         } else {
                             $no_tto_emas = $no_tto_emas."0000";
-                        }
-
-                        //generate no TTO Non Emas
-                        $no_tto_non_emas = "TTO-IPP-".date('ym')."-5";
-                        $last_tto_non_emas = TTOLast::whereRaw("no_tto like'".$no_tto_non_emas."%'")->latest()->first();
-                        if ($last_tto_non_emas){
-                            $no_tto_non_emas = "TTO-IPP-".date('ym')."-".strval((int)(substr($last_tto_non_emas->no_tto, -5)) + 1);
-                        } else {
-                            $no_tto_non_emas = $no_tto_non_emas."0000";
                         }
 
                         //generate Header Detail Emas
@@ -694,13 +686,22 @@ class ReportController extends Controller
                             $insert->save();
                         }
 
+                        //generate no TTO Emas
+                        $no_tto_emas = "TTO-IPP-".date('ym')."-2";
+                        $last_tto_emas = TTOLast::whereRaw("no_tto like'".$no_tto_emas."%'")->latest()->first();
+                        if ($last_tto_emas){
+                            $no_tto_emas = "TTO-IPP-".date('ym')."-".strval((int)(substr($last_tto_emas->no_tto, -5)) + 1);
+                        } else {
+                            $no_tto_emas = $no_tto_emas."0000";
+                        }
+
                         //generate Header Detail Non Emas
                         $document_no = "";
                         $data_non_emas_header = [];
                         $data_non_emas_detail = [];
                         $data_non_emas_header_item = [];
                         $data_non_emas_detail_item = [];
-                        $digit = (int)substr($no_tto_non_emas, -5);
+                        $digit = (int)substr($no_tto_emas, -5);
                         foreach ($data_list_campaign as $campaign):
                             $data_redeem_non_emas = RedeemDetail::select('campaign_d_hadiah.kode_catalogue','campaign_d_hadiah.kode_hadiah','redeem_detail.jumlah','campaign_h.jenis','campaign_d_hadiah.harga','campaign_d_hadiah.satuan', DB::raw('campaign_d_hadiah.jumlah as jum_paket'))
                                                     ->leftJoin('campaign_h', 'campaign_h.id','=','redeem_detail.id_campaign')
@@ -757,7 +758,7 @@ class ReportController extends Controller
                     })->export('xls');
                 endif;
                 if ($jenis == "poin"):
-                    Excel::create('Campaign PIPA TTP', function($excel) {
+                    Excel::create('Campaign PIPA TTP '.date('Y-m-d'), function($excel) {
                         $kode_campaign = "";
                         $status = 999;
                         $startDate = "01"."-".date('m-Y');
@@ -819,15 +820,6 @@ class ReportController extends Controller
                             $no_tto_emas = "TTP-IPP-".date('ym')."-".strval((int)(substr($last_tto_emas->no_tto, -5)) + 1);
                         } else {
                             $no_tto_emas = $no_tto_emas."0000";
-                        }
-
-                        //generate no TTO Non Emas
-                        $no_tto_non_emas = "TTP-IPP-".date('ym')."-5";
-                        $last_tto_non_emas = TTOLast::whereRaw("no_tto like'".$no_tto_non_emas."%'")->latest()->first();
-                        if ($last_tto_non_emas){
-                            $no_tto_non_emas = "TTP-IPP-".date('ym')."-".strval((int)(substr($last_tto_non_emas->no_tto, -5)) + 1);
-                        } else {
-                            $no_tto_non_emas = $no_tto_non_emas."0000";
                         }
 
                         //generate Header Detail Emas
@@ -923,13 +915,22 @@ class ReportController extends Controller
                             $insert->save();
                         }
 
+                        //generate no TTO Emas
+                        $no_tto_emas = "TTP-IPP-".date('ym')."-2";
+                        $last_tto_emas = TTOLast::whereRaw("no_tto like'".$no_tto_emas."%'")->latest()->first();
+                        if ($last_tto_emas){
+                            $no_tto_emas = "TTP-IPP-".date('ym')."-".strval((int)(substr($last_tto_emas->no_tto, -5)) + 1);
+                        } else {
+                            $no_tto_emas = $no_tto_emas."0000";
+                        }
+
                         //generate Header Detail Non Emas
                         $document_no = "";
                         $data_non_emas_header = [];
                         $data_non_emas_detail = [];
                         $data_non_emas_header_item = [];
                         $data_non_emas_detail_item = [];
-                        $digit = (int)substr($no_tto_non_emas, -5);
+                        $digit = (int)substr($no_tto_emas, -5);
                         foreach ($data_list_campaign as $campaign):
                             $data_redeem_non_emas = RedeemDetail::select('campaign_d_hadiah.kode_catalogue','campaign_d_hadiah.kode_hadiah','redeem_detail.jumlah','campaign_h.jenis','campaign_d_hadiah.harga','campaign_d_hadiah.satuan', DB::raw('campaign_d_hadiah.jumlah as jum_paket'))
                                                     ->leftJoin('campaign_h', 'campaign_h.id','=','redeem_detail.id_campaign')
