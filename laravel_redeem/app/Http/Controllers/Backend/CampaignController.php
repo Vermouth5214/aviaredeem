@@ -125,6 +125,15 @@ class CampaignController extends Controller
         $cek = CampaignH::where('kode_campaign', trim($request->kode_campaign))->where('id','<>',$id)->where('active','>',0)->count();
         if ($cek == 0){
             $data = CampaignH::find($id);
+            //hapus file brosur;
+            $brosur_saat_ini = explode(';', $data->brosur);
+            foreach ($brosur_saat_ini as $ctr=>$image):
+                if ($ctr > 0){
+                    if(file_exists('upload/Brosur/'.$image)){
+                        unlink('upload/Brosur/'.$image);
+                    }
+                }
+            endforeach;
             $data->kode_campaign = $request->kode_campaign;
             $data->nama_campaign = $request->nama_campaign;
             $data->jenis = $request->jenis;
