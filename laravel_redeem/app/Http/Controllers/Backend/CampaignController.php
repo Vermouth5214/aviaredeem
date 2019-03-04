@@ -57,7 +57,15 @@ class CampaignController extends Controller
             $data->active = 2;
             $data->user_modified = Session::get('userinfo')['uname'];
             if($data->save()){
+                $cek_emas = 0;
+                $cek_pilihan = 0;
                 foreach ($_POST['kode_catalogue'] as $ctr=>$kode_catalogue):
+                    if ($_POST['pilihan'][$ctr] == 1){
+                        $cek_pilihan = 1;
+                    }
+                    if ($_POST['emas'][$ctr] == 1){
+                        $cek_emas = 1;
+                    }
                     $insert = new CampaignDHadiah;
                     $insert->id_campaign = $data->id;
                     $insert->kode_catalogue = $_POST['kode_catalogue'][$ctr];
@@ -71,6 +79,21 @@ class CampaignController extends Controller
                     $insert->user_modified = Session::get('userinfo')['uname'];
                     $insert->save();
                 endforeach;
+
+                //jika ga ada pilihan dan ga ada emas langsung approval
+                if (($cek_pilihan == 0) && ($cek_emas == 0)){
+                    $status = CampaignH::find($data->id);
+                    $status->active = 5;
+                    $status->user_modified = Session::get('userinfo')['uname'];
+                    $status->save();
+                } else 
+                if (($cek_pilihan == 0) && ($cek_emas > 0)){
+                    //update status ke 3
+                    $status = CampaignH::find($data->id);
+                    $status->active = 3;
+                    $status->user_modified = Session::get('userinfo')['uname'];
+                    $status->save();
+                }
                 return Redirect::to('/backend/campaign/')->with('success', "Data saved successfully")->with('mode', 'success');
             }
         } else {
@@ -152,7 +175,16 @@ class CampaignController extends Controller
             $dataH->user_modified = Session::get('userinfo')['uname'];
             $dataH->save();
 
+            $cek_pilihan = 0;
+            $cek_emas = 0;
             foreach ($_POST['kode_catalogue'] as $ctr=>$kode_catalogue):
+                if ($_POST['pilihan'][$ctr] == 1){
+                    $cek_pilihan = 1;
+                }
+                if ($_POST['emas'][$ctr] == 1){
+                    $cek_emas = 1;
+                }
+
                 $data = new CampaignDHadiah;
                 $data->id_campaign = $id;
                 $data->kode_catalogue = $_POST['kode_catalogue'][$ctr];
@@ -166,6 +198,21 @@ class CampaignController extends Controller
                 $data->user_modified = Session::get('userinfo')['uname'];
                 $data->save();
             endforeach;
+
+            //jika ga ada pilihan dan ga ada emas langsung approval
+            if (($cek_pilihan == 0) && ($cek_emas == 0)){
+                $status = CampaignH::find($id);
+                $status->active = 5;
+                $status->user_modified = Session::get('userinfo')['uname'];
+                $status->save();
+            } else 
+            if (($cek_pilihan == 0) && ($cek_emas > 0)){
+                $status = CampaignH::find($id);
+                $status->active = 3;
+                $status->user_modified = Session::get('userinfo')['uname'];
+                $status->save();
+            }
+
             return Redirect::to('/backend/campaign/')->with('success', "Data saved successfully")->with('mode', 'success');
         } else {
             return Redirect::to('/backend/campaign/'.$id.'/edit')->with('success', "Kode Campaign sudah ada")->with('mode', 'danger');
@@ -216,7 +263,8 @@ class CampaignController extends Controller
                 }
                 $edit_master_emas = "";
                 //cek jika status campaign = 3 atau status campaign = 5 atau jumlah pilihan nya 0 (alias tidak perlu edit pembagian hadiah) atau status = 1
-                if (($count == 0) || ($data->active == 3) || ($data->active == 1) || ($data->active == 5)){
+                $count_emas = CampaignDHadiah::where('id_campaign', $data->id)->where('emas',1)->count();
+                if ($data->active == 3){
                     $edit_master_emas = "<a class='btn-action btn btn-info btn-edit' href='".$url_edit_master_emas."' title='Edit Master Emas'><i class='fa fa-edit'></i> Edit Master Emas</a>";
                 }
                 $delete = "<button data-url='".$url."' onclick='deleteData(this)' class='btn-action btn btn-danger btn-delete' title='Delete'><i class='fa fa-trash-o'></i> Delete</button>";
@@ -258,7 +306,13 @@ class CampaignController extends Controller
             //ubah status header campaign
             $data_h = CampaignH::find($id);
             if ($data_h->active == 2){
-                $data_h->active = 3;
+                $cek_emas = CampaignDHadiah::where('emas',1)->where('id_campaign', $id)->count();
+                if ($cek_emas > 0){
+                    $data_h->active = 3;
+                } else 
+                if ($cek_emas == 0){
+                    $data_h->active = 5;
+                }
                 $data_h->save();
             } else {
                 $data_h->active = 5;
