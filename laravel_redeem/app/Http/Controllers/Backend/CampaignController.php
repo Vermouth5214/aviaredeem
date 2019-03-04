@@ -46,14 +46,19 @@ class CampaignController extends Controller
             $data->jenis = $request->jenis;
             $data->category = $request->category;
             $data->TPP = $request->TPP;
+            $save_name_all = "";
             if ($request->hasFile('brosur')) {
-                $file = $request->file('brosur');
-                $ext = $file->getClientOriginalExtension();
-                $save_name = 'BROSUR-'.str_replace('/','',$request->kode_campaign)."-".time().".".$ext;
-                $image = Image::make($file)->resize(1000, null,function ($constraint) {$constraint->aspectRatio();});
-                $image->save('upload/Brosur/'.$save_name);
-                $data->brosur = $save_name;
+                $ctr = 0;
+                foreach($request->file('brosur') as $image){
+                    $ext = $image->getClientOriginalExtension();
+                    $save_name = 'BROSUR-'.str_replace('/','',$request->kode_campaign)."-".$ctr.".".$ext;
+                    $image = Image::make($image)->resize(1000, null,function ($constraint) {$constraint->aspectRatio();});
+                    $image->save('upload/Brosur/'.$save_name);
+                    $save_name_all = $save_name_all.";".$save_name;
+                    $ctr++;
+                }
             }
+            $data->brosur = $save_name_all;
             $data->active = 2;
             $data->user_modified = Session::get('userinfo')['uname'];
             if($data->save()){
@@ -125,13 +130,18 @@ class CampaignController extends Controller
             $data->jenis = $request->jenis;
             $data->category = $request->category;
             $data->TPP = $request->TPP;
+            $save_name_all = "";
             if ($request->hasFile('brosur')) {
-                $file = $request->file('brosur');
-                $ext = $file->getClientOriginalExtension();
-                $save_name = 'BROSUR-'.str_replace('/','',$request->kode_campaign)."-".time().".".$ext;
-                $image = Image::make($file)->resize(1000, null,function ($constraint) {$constraint->aspectRatio();});
-                $image->save('upload/Brosur/'.$save_name);
-                $data->brosur = $save_name;
+                $ctr = 0;
+                foreach($request->file('brosur') as $image){
+                    $ext = $image->getClientOriginalExtension();
+                    $save_name = 'BROSUR-'.str_replace('/','',$request->kode_campaign)."-".$ctr.".".$ext;
+                    $image = Image::make($image)->resize(1000, null,function ($constraint) {$constraint->aspectRatio();});
+                    $image->save('upload/Brosur/'.$save_name);
+                    $save_name_all = $save_name_all.";".$save_name;
+                    $ctr++;
+                }
+                $data->brosur = $save_name_all;
             }
             $data->user_modified = Session::get('userinfo')['uname'];
             if($data->save()){
@@ -242,7 +252,14 @@ class CampaignController extends Controller
                 return strtoupper($data->jenis);
             })
             ->editColumn('brosur', function($data) {
-                return "<a href='".url('upload/Brosur/'.$data->brosur)."' target='_blank'>".$data->brosur."</a>";
+                $brosur = explode(";",$data->brosur);
+                $im = "";
+                foreach ($brosur as $ctr=>$image):
+                    if ($ctr > 0):
+                        $im = $im . '<a href="'.url('upload/Brosur/'.$image).'" target="_blank">'.$image.'</a><br/>';
+                    endif;
+                endforeach;
+                return $im;
             })
 			->addColumn('action', function ($data) {
                 $userinfo = Session::get('userinfo');

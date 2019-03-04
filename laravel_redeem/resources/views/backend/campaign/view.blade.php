@@ -52,7 +52,21 @@
                                     echo "<b>Ya</b>";
                                 }
                             ?></h5>
-                            <h5>Brosur : <a href="<?=url('upload/Brosur/'.$data_header[0]->brosur);?>" target="_blank"><?=$data_header[0]->brosur;?></a></h5>
+                            <h5>Brosur : 
+                                <br/>
+                                <?php
+                                    $brosur = explode(";",$data_header[0]->brosur);
+                                    foreach ($brosur as $ctr=>$image):
+                                        if ($ctr > 0):
+                                ?>
+                                    <a href="<?=url('upload/Brosur/'.$image);?>" target="_blank"><?=$image;?></a><br/>
+                                <?php
+                                        endif;
+                                    endforeach;
+
+                                ?>
+                            </h5>
+                            <br/>
                             <h5>Status :
                             <?php
                                 if ($data_header[0]->active == 1){

@@ -153,14 +153,24 @@
 						<div class="form-group">
 							<label class="control-label col-sm-3 col-xs-12">Brosur : </label>
 							<div class="col-sm-5 col-xs-12">
-                                <input type="file" name="brosur" class="form-control" capture="filesystem" accept="image/jpg, image/jpeg">
+                                <input type="file" name="brosur[]" class="form-control" capture="filesystem" accept="image/jpg, image/jpeg, image/png" multiple="multiple">
                                 <b><p class="small blue">
                                     Ekstensi file .jpg / .jpeg
                                 </p></b>
                                 <?php
                                     if ($brosur != ""):
                                 ?>
-                                    <a style="font-size:17px;font-weight:bold;" href="<?=url('upload/Brosur/'.$brosur);?>" target='_blank'><i class="fa fa-paperclip" style="font-style:italic"> <?=$brosur;?></i></a>
+                                <?php
+                                    $brosur_exp = explode(";",$brosur);
+                                    foreach ($brosur_exp as $ctr=>$image):
+                                        if ($ctr > 0):
+                                ?>
+                                    <a style="font-size:17px;font-weight:bold;" href="<?=url('upload/Brosur/'.$image);?>" target="_blank"><i class="fa fa-paperclip" style="font-style:italic"><?=$image;?></i></a><br/>
+                                <?php
+                                        endif;
+                                    endforeach;
+
+                                ?>
                                 <?php
                                     endif;
                                 ?>
