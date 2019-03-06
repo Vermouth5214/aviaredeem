@@ -290,7 +290,7 @@ class CampaignController extends Controller
                 $edit_master_emas = "";
                 //cek jika status campaign = 3 atau status campaign = 5 atau jumlah pilihan nya 0 (alias tidak perlu edit pembagian hadiah) atau status = 1
                 $count_emas = CampaignDHadiah::where('id_campaign', $data->id)->where('emas',1)->count();
-                if ($data->active == 3){
+                if ((($data->active == 3) || ($data->active == 1) || ($data->active == 5)) && ($count_emas > 0)){
                     $edit_master_emas = "<a class='btn-action btn btn-info btn-edit' href='".$url_edit_master_emas."' title='Edit Master Emas'><i class='fa fa-edit'></i> Edit Master Emas</a>";
                 }
                 $delete = "<button data-url='".$url."' onclick='deleteData(this)' class='btn-action btn btn-danger btn-delete' title='Delete'><i class='fa fa-trash-o'></i> Delete</button>";
