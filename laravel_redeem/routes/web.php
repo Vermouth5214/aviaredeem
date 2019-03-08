@@ -15,12 +15,9 @@ Route::get('/', function () {
 	return redirect('backend/');
 });
 
-Route::get('/cek-sqlserver','Backend\CheckController@index');
-
 Route::match(array('GET','POST'),'/backend/login','Backend\LoginController@index');
 //logout
 Route::get('/logout','Backend\LoginController@logout');
-
 
 /* SUPER ADMIN */
 Route::group(array('prefix' => 'backend','middleware'=> ['token_super_admin']), function()
