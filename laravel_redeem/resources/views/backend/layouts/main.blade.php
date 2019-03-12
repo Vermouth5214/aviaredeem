@@ -46,6 +46,18 @@
 
         <!-- jQuery -->
         <script src="<?=url('vendors/jquery/dist/jquery.min.js');?>"></script>
+        <style>
+            .left_col {
+                background : #004230;
+            }
+            body {
+                background : #004230;
+            }
+
+            .nav.side-menu>li.active>a{
+                background : inherit;
+            }
+        </style>
     </head>
     <body class="nav-md">
         <div class="container body">
@@ -53,7 +65,7 @@
                 <div class="col-md-3 left_col">
                     <div class="left_col scroll-view">
                         <div class="navbar nav_title" style="border: 0;">
-                            <a href="<?=url('/')?>" class="site_title"><img src="<?=url('img/avian.png');?>" width="50px;"> <span>&nbsp;<img src="<?=url(getData('logo'));?>"; style="max-width:120px;"></span></a>
+                            <a href="https://www.avianbrands.com/customercare/" class="site_title"><img src="<?=url('img/avian.png');?>" width="50px;"> <span>&nbsp;<img src="<?=url(getData('logo'));?>"; style="max-width:120px;"></span></a>
                         </div>
                         <div class="clearfix"></div>
                         <!-- menu profile quick info -->

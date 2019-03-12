@@ -34,6 +34,7 @@ Route::group(array('prefix' => 'backend','middleware'=> ['token_super']), functi
     Route::get('/master-omzet/upload','Backend\OmzetController@upload');	
     Route::post('/master-omzet/upload','Backend\OmzetController@upload_store');	
     Route::get('/master-omzet/datatable','Backend\OmzetController@datatable');	
+    Route::post('/master-omzet/delete','Backend\OmzetController@deleteAll');
     Route::resource('master-omzet', 'Backend\OmzetController');
 
 });

@@ -25,7 +25,10 @@
     <div class="menu_section">
         <h3>MASTER</h3>
 		<ul class="nav side-menu">
-            <?php
+            <li class="{{ ($segment == 'campaign' ? 'active' : '') }}">
+                <a href="<?=url('backend/campaign');?>"><i class="fa fa-book"></i> Master Campaign</a>
+            </li>
+                <?php
                 //ADMIN //
                 if (($userinfo['priv'] == "VSUPER") || ($userinfo['priv'] == "VSUPERT")):
             ?>
@@ -35,9 +38,7 @@
             <?php
                 endif;
             ?>
-                <li class="{{ ($segment == 'campaign' ? 'active' : '') }}">
-                    <a href="<?=url('backend/campaign');?>"><i class="fa fa-book"></i> Master Campaign</a>
-                </li>
+
         </ul>
     </div>
     <?php

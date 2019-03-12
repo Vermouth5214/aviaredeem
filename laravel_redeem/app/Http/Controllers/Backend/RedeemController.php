@@ -53,6 +53,7 @@ class RedeemController extends Controller
                     $join->on('redeem_emas.id_campaign','=','campaign_h.id');
                 })
                 ->where('campaign_h.active','=',1)
+                ->where('customer_omzet.active','=',1)
                 ->where('customer_omzet.periode_awal','<=',date('Y-m-d'))
                 ->where('customer_omzet.kode_customer',$userinfo['reldag'])
                 ->groupBy('customer_omzet.kode_campaign');
@@ -84,14 +85,21 @@ class RedeemController extends Controller
             ->editColumn('jenis', function($data) {
                 return strtoupper($data->jenis);
             })
+            ->editColumn('brosur', function($data) {
+                $brosur = explode(";",$data->brosur);
+                $im = "";
+                foreach ($brosur as $ctr=>$image):
+                    if ($ctr > 0):
+                        $im = $im . '<a href="'.url('upload/Brosur/'.$image).'" target="_blank">'.$image.'</a><br/>';
+                    endif;
+                endforeach;
+                return $im;
+            })
             ->editColumn('periode_awal', function($data) {
                 return date('d M Y',strtotime($data->periode_awal));
             })
             ->editColumn('periode_akhir', function($data) {
                 return date('d M Y',strtotime($data->periode_akhir));
-            })
-            ->editColumn('brosur', function($data) {
-                return "<a href='".url('upload/Brosur/'.$data->brosur)."' target='_blank'>".$data->brosur."</a>";
             })
             ->editColumn('omzet_netto', function($data) {
                 return number_format($data->omzet_netto,0,',','.');

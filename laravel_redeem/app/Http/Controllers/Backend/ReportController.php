@@ -106,6 +106,7 @@ class ReportController extends Controller
                                                     $join->on('redeem_emas.id_campaign','=','campaign_h.id');
                                                 })
                                                 ->where('campaign_h.active', 1)
+                                                ->where('customer_omzet.active', 1)
                                                 ->where('campaign_h.category', "CAT")
                                                 ->where('campaign_h.jenis', "omzet")
                                                 ->groupBy('customer_omzet.kode_customer')
@@ -335,6 +336,7 @@ class ReportController extends Controller
                                                     $join->on('redeem_emas.id_campaign','=','campaign_h.id');
                                                 })
                                                 ->where('campaign_h.active', 1)
+                                                ->where('customer_omzet.active', 1)
                                                 ->where('campaign_h.category', "CAT")
                                                 ->where('campaign_h.jenis', "poin")
                                                 ->groupBy('customer_omzet.kode_customer')
@@ -569,6 +571,7 @@ class ReportController extends Controller
                                                     $join->on('redeem_emas.id_campaign','=','campaign_h.id');
                                                 })
                                                 ->where('campaign_h.active', 1)
+                                                ->where('customer_omzet.active', 1)
                                                 ->where('campaign_h.category', "PIPA")
                                                 ->where('campaign_h.jenis', "omzet")
                                                 ->groupBy('customer_omzet.kode_customer')
@@ -798,6 +801,7 @@ class ReportController extends Controller
                                                     $join->on('redeem_emas.id_campaign','=','campaign_h.id');
                                                 })
                                                 ->where('campaign_h.active', 1)
+                                                ->where('customer_omzet.active', 1)
                                                 ->where('campaign_h.category', "PIPA")
                                                 ->where('campaign_h.jenis', "poin")
                                                 ->groupBy('customer_omzet.kode_customer')
@@ -1019,6 +1023,7 @@ class ReportController extends Controller
                 })
                 ->leftJoin($db2.'.tbuser','customer_omzet.kode_customer','tbuser.reldag')
                 ->where('campaign_h.active','=',1)
+                ->where('customer_omzet.active','=',1)
                 ->groupBy('customer_omzet.kode_customer')
                 ->groupBy('customer_omzet.kode_campaign');
         $kode_campaign = "";                
@@ -1100,7 +1105,14 @@ class ReportController extends Controller
                 return date('d M Y',strtotime($data->periode_akhir));
             })
             ->editColumn('brosur', function($data) {
-                return "<a href='".url('upload/Brosur/'.$data->brosur)."' target='_blank'>".$data->brosur."</a>";
+                $brosur = explode(";",$data->brosur);
+                $im = "";
+                foreach ($brosur as $ctr=>$image):
+                    if ($ctr > 0):
+                        $im = $im . '<a href="'.url('upload/Brosur/'.$image).'" target="_blank">'.$image.'</a><br/>';
+                    endif;
+                endforeach;
+                return $im;
             })
             ->editColumn('omzet_netto', function($data) {
                 return number_format($data->omzet_netto,0,',','.');

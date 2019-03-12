@@ -8,6 +8,9 @@ use App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use App\Model\CustomerOmzet;
+use App\Model\RedeemDetail;
+use App\Model\CampaignH;
+use App\Model\UserAvex;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Redirect;
@@ -33,6 +36,14 @@ class OmzetController extends Controller
         //kode customer dan kode campaign sudah ada
         $cek = CustomerOmzet::where('kode_campaign', $request->kode_campaign)->where('kode_customer',$request->kode_customer)->where('active',1)->count();
         if ($cek == 0){
+            $cek_campaign = CampaignH::where('kode_campaign', $request->kode_campaign)->where('active',1)->count();
+            $cek_user = UserAvex::where('reldag', $request->kode_customer)->count();
+            if ($cek_campaign == 0){
+                return Redirect::to('/backend/master-omzet/create')->with('success', "Kode Campaign tidak ditemukan")->with('mode', 'danger');
+            } else 
+            if ($cek_user == 0){
+                return Redirect::to('/backend/master-omzet/create')->with('success', "Kode Customer tidak ditemukan")->with('mode', 'danger');
+            } else
             if (strtotime($request->periode_akhir) < strtotime($request->periode_awal)){
                 //periode akhir < periode awal
                 return Redirect::to('/backend/master-omzet/create')->with('success', "Periode Akhir tidak boleh lebih kecil dari Periode Awal")->with('mode', 'danger');
@@ -94,6 +105,14 @@ class OmzetController extends Controller
         //
         $cek = CustomerOmzet::where('kode_campaign', $request->kode_campaign)->where('kode_customer',$request->kode_customer)->where('id','<>',$id)->where('active',1)->count();
         if ($cek == 0){
+            $cek_campaign = CampaignH::where('kode_campaign', $request->kode_campaign)->where('active', 1)->count();
+            $cek_user = UserAvex::where('reldag', $request->kode_customer)->count();
+            if ($cek_campaign == 0){
+                return Redirect::to('/backend/master-omzet/create')->with('success', "Kode Campaign tidak ditemukan")->with('mode', 'danger');
+            } else 
+            if ($cek_user == 0){
+                return Redirect::to('/backend/master-omzet/create')->with('success', "Kode Customer tidak ditemukan")->with('mode', 'danger');
+            } else
             if (strtotime($request->periode_akhir) < strtotime($request->periode_awal)){
                 //periode akhir < periode awal
                 return Redirect::to('/backend/master-omzet/'.$id.'/edit')->with('success', "Periode Akhir tidak boleh lebih kecil dari Periode Awal")->with('mode', 'danger');
@@ -133,17 +152,59 @@ class OmzetController extends Controller
     public function destroy(Request $request, $id)
     {
         //
-		$data = CustomerOmzet::find($id);
-    	$data->active = 0;
-		$data->user_modified = Session::get('userinfo')['uname'];
-        if($data->save()){
-            Session::flash('success', 'Data deleted successfully');
-            Session::flash('mode', 'success');
+        $data = CustomerOmzet::find($id);
+        $kode_campaign = CampaignH::where('kode_campaign',$data->kode_campaign)->first();
+        $check_redeem = 0;
+        if ($kode_campaign){
+            $check_redeem = RedeemDetail::where('kode_customer', $data->kode_customer)->where('id_campaign', $kode_campaign->id)->count();
+        }
+        if ($check_redeem == 0){
+            $data->active = 0;
+            $data->user_modified = Session::get('userinfo')['uname'];
+            if($data->save()){
+                Session::flash('success', 'Data deleted successfully');
+                Session::flash('mode', 'success');
+                return new JsonResponse(["status"=>true]);
+            }else{
+                return new JsonResponse(["status"=>false]);
+            }
+        } else {
+            Session::flash('success', 'Data tidak dapat dihapus karena Customer sudah melakukan redeem');
+            Session::flash('mode', 'danger');
             return new JsonResponse(["status"=>true]);
-        }else{
-            return new JsonResponse(["status"=>false]);
         }
 		return new JsonResponse(["status"=>false]);		
+    }
+
+    public function deleteAll(Request $request)
+    {
+		if (!(empty($_POST['checkall'])))
+		{
+            $notdelete = 0;
+			foreach($_POST['checkall'] as $item)
+			{ 
+                $data = CustomerOmzet::find($item);
+                $kode_campaign = CampaignH::where('kode_campaign',$data->kode_campaign)->first();
+                $check_redeem = 0;
+                if ($kode_campaign){
+                    $check_redeem = RedeemDetail::where('kode_customer', $data->kode_customer)->where('id_campaign', $kode_campaign->id)->count();
+                }
+                if ($check_redeem == 0){
+                    $data->active = 0;
+                    $data->user_modified = Session::get('userinfo')['uname'];
+                    $data->save();
+                } else {
+                    $notdelete = 1;
+                }
+            } 
+            if ($notdelete == 0){
+                return Redirect::to('/backend/master-omzet/')->with('success', "Data(s) deleted successfully")->with('mode', 'success');
+            } else {
+                return Redirect::to('/backend/master-omzet/')->with('success', "Ada omzet yang tidak bisa di hapus")->with('mode', 'danger');
+            }
+		} else {
+            return Redirect::to('/backend/master-omzet/');
+        }
     }
 	
 	public function datatable() {	
@@ -172,10 +233,27 @@ class OmzetController extends Controller
 				$url = url('backend/master-omzet/'.$data->id);
 				$view = "<a class='btn-action btn btn-primary btn-view' href='".$url."' title='View'><i class='fa fa-eye'></i></a>";
 				$edit = "<a class='btn-action btn btn-info btn-edit' href='".$url_edit."' title='Edit'><i class='fa fa-edit'></i></a>";
-				$delete = "<button data-url='".$url."' onclick='deleteData(this)' class='btn-action btn btn-danger btn-delete' title='Delete'><i class='fa fa-trash-o'></i></button>";
+                $delete = "<button type='button' data-url='".$url."' onclick='deleteData(this)' class='btn-action btn btn-danger btn-delete' title='Delete'><i class='fa fa-trash-o'></i></button>";
+                
+                $kode_campaign = CampaignH::where('kode_campaign',$data->kode_campaign)->first();
+                $check_redeem = 0;
+                if ($kode_campaign){
+                    $check_redeem = RedeemDetail::where('kode_customer', $data->kode_customer)->where('id_campaign', $kode_campaign->id)->count();
+                }
+                if ($check_redeem > 0){
+                    $edit = "";
+                    $delete = "";
+                }
 				return $view." ".$edit." ".$delete;
-            })			
-            ->rawColumns(['action'])
+            })
+            ->addColumn('check', function ($data) {
+                return "
+                    <span class='uni'>
+                        <input type='checkbox' value='".$data->id."' name='checkall[]' />
+                    </span>
+                ";
+            })
+            ->rawColumns(['action', 'check'])
             ->make(true);
 	}
 
@@ -196,7 +274,17 @@ class OmzetController extends Controller
             $j = 1;
             $error = array();
             foreach ($result as $row):
+                $cek_campaign = CampaignH::where('kode_campaign', trim($row[0]))->where('active' , 1)->count();
+                $cek_user = UserAvex::where('reldag', trim($row[1]))->count();
                 $cek = CustomerOmzet::where('kode_campaign', trim($row[0]))->where('kode_customer', trim($row[1]))->where('active',1)->count();
+                if ($cek_campaign == 0){
+                    $text = "Baris ".$i." : Kode Campaign tidak ditemukan";
+                    array_push($error,$text);
+                } else 
+                if ($cek_user == 0){
+                    $text = "Baris ".$i." : Kode Customer tidak ditemukan";
+                    array_push($error,$text);
+                } else
                 if ($cek > 0){
                     //kembar
                     $text = "Baris ".$i." : Data sudah ada";

@@ -33,7 +33,7 @@ class DashboardController extends Controller {
                             on `redeem_detail`.`kode_customer` = `customer_omzet`.`kode_customer` and `redeem_detail`.`id_campaign` = `campaign_h`.`id` 
                             left join `redeem_emas` 
                             on `redeem_emas`.`kode_customer` = `customer_omzet`.`kode_customer` and `redeem_emas`.`id_campaign` = `campaign_h`.`id` 
-                        where `campaign_h`.`active` = 1
+                        where `campaign_h`.`active` = 1 and customer_omzet.active = 1
                         group by `customer_omzet`.`kode_customer`, `customer_omzet`.`kode_campaign`
                         having (jum_redeem_detail > 0 and jum_emas = 0) or jum_redeem_emas > 0
                     ) a
@@ -54,8 +54,8 @@ class DashboardController extends Controller {
                             left join `redeem_detail` 
                             on `redeem_detail`.`kode_customer` = `customer_omzet`.`kode_customer` and `redeem_detail`.`id_campaign` = `campaign_h`.`id` 
                             left join `redeem_emas` 
-                            on `redeem_emas`.`kode_customer` = `customer_omzet`.`kode_customer` and `redeem_emas`.`id_campaign` = `campaign_h`.`id` 
-                        where `campaign_h`.`active` = 1
+                            on `redeem_emas`.`kode_customer` = `customer_omzet`.`kode_customer` and `redeem_emas`.`id_campaign` = `campaign_h`.`id`  
+                        where `campaign_h`.`active` = 1 and customer_omzet.active = 1
                         group by `customer_omzet`.`kode_customer`, `customer_omzet`.`kode_campaign`
                         having jum_redeem_detail = 0 and customer_omzet.periode_akhir < '".date('Y-m-d')."'
                     ) b
@@ -76,8 +76,8 @@ class DashboardController extends Controller {
                             left join `redeem_detail` 
                             on `redeem_detail`.`kode_customer` = `customer_omzet`.`kode_customer` and `redeem_detail`.`id_campaign` = `campaign_h`.`id` 
                             left join `redeem_emas` 
-                            on `redeem_emas`.`kode_customer` = `customer_omzet`.`kode_customer` and `redeem_emas`.`id_campaign` = `campaign_h`.`id` 
-                        where `campaign_h`.`active` = 1
+                            on `redeem_emas`.`kode_customer` = `customer_omzet`.`kode_customer` and `redeem_emas`.`id_campaign` = `campaign_h`.`id`  
+                        where `campaign_h`.`active` = 1 and customer_omzet.active = 1
                         group by `customer_omzet`.`kode_customer`, `customer_omzet`.`kode_campaign`
                         having (jum_redeem_detail > 0 and jum_redeem_emas = 0) and jum_emas > 0 and customer_omzet.periode_akhir < '".date('Y-m-d')."'
                     ) c
@@ -99,7 +99,7 @@ class DashboardController extends Controller {
                             on `redeem_detail`.`kode_customer` = `customer_omzet`.`kode_customer` and `redeem_detail`.`id_campaign` = `campaign_h`.`id` 
                             left join `redeem_emas` 
                             on `redeem_emas`.`kode_customer` = `customer_omzet`.`kode_customer` and `redeem_emas`.`id_campaign` = `campaign_h`.`id` 
-                        where `campaign_h`.`active` = 1
+                        where `campaign_h`.`active` = 1 and customer_omzet.active = 1
                         group by `customer_omzet`.`kode_customer`, `customer_omzet`.`kode_campaign`
                         having jum_redeem_detail = 0 and customer_omzet.periode_akhir >= '".date('Y-m-d')."'
                     ) d
@@ -121,7 +121,7 @@ class DashboardController extends Controller {
                             on `redeem_detail`.`kode_customer` = `customer_omzet`.`kode_customer` and `redeem_detail`.`id_campaign` = `campaign_h`.`id` 
                             left join `redeem_emas` 
                             on `redeem_emas`.`kode_customer` = `customer_omzet`.`kode_customer` and `redeem_emas`.`id_campaign` = `campaign_h`.`id` 
-                        where `campaign_h`.`active` = 1
+                        where `campaign_h`.`active` = 1 and customer_omzet.active = 1
                         group by `customer_omzet`.`kode_customer`, `customer_omzet`.`kode_campaign`
                         having jum_emas > 0 and jum_redeem_detail > 0 and jum_redeem_emas = 0 and customer_omzet.periode_akhir >= '".date('Y-m-d')."'
                     ) e

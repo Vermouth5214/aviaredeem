@@ -38,16 +38,22 @@
                         <div class="clearfix"></div>
                         <h2>Customer : <b><i><?=$data_omzet[0]->kode_customer." | ".$data_omzet[0]->agen->cabang;?></i></b></h2>
                         <div class="clearfix"></div>
-                        <h2>Brosur : <b><i>
+                        <h2>Brosur : 
+                            <br/>
                             <?php
-                                if ($data_header[0]->brosur != ""):
+                                $brosur = explode(";",$data_header[0]->brosur);
+                                foreach ($brosur as $ctr=>$image):
+                                    if ($ctr > 0):
                             ?>
-                                <a style="font-size:17px;font-weight:bold;" href="<?=url('upload/Brosur/'.$data_header[0]->brosur);?>" target='_blank'><i class="fa fa-paperclip" style="font-style:italic"> <?=$data_header[0]->brosur;?></i></a>
+                                <a style="font-size:17px;font-weight:bold;" href="<?=url('upload/Brosur/'.$image);?>" target="_blank"><i class="fa fa-paperclip" style="font-style:italic"></i> <?=$image;?></a><br/>
                             <?php
-                                endif;
+                                    endif;
+                                endforeach;
+
                             ?>
-                        </i></b></h2>
+                        </h2>
                         <br/><br/>
+                        <div class="clearfix"></div>
                     </div>
                     <br/>
                     <div class="row">
