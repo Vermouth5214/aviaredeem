@@ -3,7 +3,8 @@
 	$breadcrumb[0]['title'] = 'Dashboard';
 	$breadcrumb[0]['url'] = url('backend/dashboard');
 	$breadcrumb[1]['title'] = 'Konversi Emas';
-	$breadcrumb[1]['url'] = url('backend/konversi-emas');
+    $breadcrumb[1]['url'] = url('backend/konversi-emas');
+    $userinfo = Session::get('userinfo');
 ?>
 
 <!-- LAYOUT -->
@@ -53,6 +54,17 @@
                         <br/><br/>
                         <div class="clearfix"></div>
                     </div>
+                    <?php
+                        if (($userinfo['reldag'] == '27A01060006') || ($userinfo['reldag'] == '23A01010002')) {
+                    ?>
+                    <i><h2><b>* hadiah yang diberikan adalah subject PPH 21</b></h2></i>
+                    <?php
+                        } else {
+                    ?>
+                    <i><h2><b>* hadiah yang diberikan adalah subject PPH 23 15%</b></h2></i>
+                    <?php
+                        }
+                    ?>
                     <br/>
                     <div class="row">
                         <div class="col-xs-12">

@@ -317,6 +317,7 @@ class RedeemController extends Controller
                 $data->id_campaign = $data_header[0]->id;
                 $data->id_campaign_hadiah = $id_hadiah;
                 $data->jumlah = floor($_POST['jumlah'][$ctr] / 1);
+                $data->keterangan = $request->keterangan;
                 $data->save();
             endforeach;
 

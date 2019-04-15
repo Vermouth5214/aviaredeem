@@ -3,7 +3,7 @@
 	$breadcrumb[0]['title'] = 'Dashboard';
 	$breadcrumb[0]['url'] = url('backend/dashboard');
 	$breadcrumb[1]['title'] = 'View';
-	$breadcrumb[1]['url'] = url('backend/view');
+    $breadcrumb[1]['url'] = url('backend/view');
 ?>
 
 <!-- LAYOUT -->
@@ -135,7 +135,9 @@
                                 <tbody>
                                     <?php
                                         $total = 0;
+                                        $keterangan = '';
                                         foreach ($data_redeem as $hadiah):
+                                            $keterangan = $hadiah->keterangan;
                                     ?>      
                                             <tr>
                                                 <td width = "60%" class="text-right">
@@ -161,6 +163,21 @@
                                     <th class="text-right">  <?=number_format($total,0,',','.');?></th>
                                 </thead>
                             </table>
+                            <?php
+                                // GROUP AAA ada kolom keterangan
+                                if (($data_omzet[0]->kode_customer == '14F01020002') || ($data_omzet[0]->kode_customer == '14B02010003') || ($data_omzet[0]->kode_customer == '22A02010002')) :
+                            ?>
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-6">
+                                    <h2>Keterangan :</h2>
+                                    <textarea class="form-control" name="keterangan" rows = 5 disabled><?=$keterangan;?></textarea>
+                                </div>
+                            </div>
+                            <br/>
+                            <?php
+                                endif;
+                            ?>
+
                             <br/>
                             <h2>Daftar Konversi Emas</h2>
                             <table class="table table-striped table-hover table-bordered dt-responsive nowrap" cellspacing="0" width="100%">

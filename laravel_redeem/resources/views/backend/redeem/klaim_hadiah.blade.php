@@ -3,7 +3,8 @@
 	$breadcrumb[0]['title'] = 'Dashboard';
 	$breadcrumb[0]['url'] = url('backend/dashboard');
 	$breadcrumb[1]['title'] = 'Klaim Hadiah';
-	$breadcrumb[1]['url'] = url('backend/klaim-hadiah');
+    $breadcrumb[1]['url'] = url('backend/klaim-hadiah');
+    $userinfo = Session::get('userinfo');
 ?>
 
 <!-- LAYOUT -->
@@ -53,6 +54,17 @@
                         <br/><br/>
                         <div class="clearfix"></div>
                     </div>
+                    <?php
+                        if (($userinfo['reldag'] == '27A01060006') || ($userinfo['reldag'] == '23A01010002')) {
+                    ?>
+                    <i><h2><b>* hadiah yang diberikan adalah subject PPH 21</b></h2></i>
+                    <?php
+                        } else {
+                    ?>
+                    <i><h2><b>* hadiah yang diberikan adalah subject PPH 23 15%</b></h2></i>
+                    <?php
+                        }
+                    ?>
                     <br/>
                     <div class="row">
                         <div class="col-xs-12">
@@ -148,6 +160,20 @@
                             ?>
                                 </tbody>
                                 </table>
+                                <?php
+                                    // GROUP AAA ada kolom keterangan
+                                    if (($userinfo['reldag'] == '14F01020002') || ($userinfo['reldag'] == '14B02010003') || ($userinfo['reldag'] == '22A02010002')) :
+                                ?>
+                                <div class="form-group">
+                                    <div class="col-xs-12 col-sm-6">
+                                        <h2>Keterangan :</h2>
+                                        <textarea class="form-control" name="keterangan" rows = 5></textarea>
+                                    </div>
+                                </div>
+                                <br/>
+                                <?php
+                                    endif;
+                                ?>
                                 <div class="form-group">
                                     <div class="col-sm-6 col-xs-12 col-sm-offset-6 text-right">
                                         <a href="<?=url('/backend/redeem-hadiah')?>" class="btn btn-warning">&nbsp;&nbsp;&nbsp;&nbsp;Cancel&nbsp;&nbsp;&nbsp;&nbsp;</a>
