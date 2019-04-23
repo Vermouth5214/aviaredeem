@@ -126,6 +126,7 @@
                             <?php
                                 endif;
                             ?>
+                            
                             <br/>
                             <h2>List Hadiah</h2>
                                 <table class="table table-striped table-hover table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
@@ -160,20 +161,6 @@
                             ?>
                                 </tbody>
                                 </table>
-                                <?php
-                                    // GROUP AAA ada kolom keterangan
-                                    if (($userinfo['reldag'] == '14F01020002') || ($userinfo['reldag'] == '14B02010003') || ($userinfo['reldag'] == '22A02010002')) :
-                                ?>
-                                <div class="form-group">
-                                    <div class="col-xs-12 col-sm-6">
-                                        <h2>Keterangan :</h2>
-                                        <textarea class="form-control" name="keterangan" rows = 5></textarea>
-                                    </div>
-                                </div>
-                                <br/>
-                                <?php
-                                    endif;
-                                ?>
                                 <div class="form-group">
                                     <div class="col-sm-6 col-xs-12 col-sm-offset-6 text-right">
                                         <a href="<?=url('/backend/redeem-hadiah')?>" class="btn btn-warning">&nbsp;&nbsp;&nbsp;&nbsp;Cancel&nbsp;&nbsp;&nbsp;&nbsp;</a>

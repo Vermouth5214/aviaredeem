@@ -311,17 +311,28 @@ class RedeemController extends Controller
             }
 
             //insert data
+            $ada_emas = 0;
             foreach ($_POST['id'] as $ctr=>$id_hadiah):
                 $data = new RedeemDetail();
                 $data->kode_customer = $data_omzet[0]->kode_customer;
                 $data->id_campaign = $data_header[0]->id;
                 $data->id_campaign_hadiah = $id_hadiah;
                 $data->jumlah = floor($_POST['jumlah'][$ctr] / 1);
-                $data->keterangan = $request->keterangan;
+                //cek ada redeem emas atau ga
+                $cek_emas = CampaignDHadiah::where('id', $id_hadiah)->get();
+                if ($cek_emas){
+                    if (($data->jumlah > 0) && ($cek_emas[0]->emas == 1)) {
+                        $ada_emas = 1;
+                    }
+                }
                 $data->save();
             endforeach;
 
-            return Redirect::to('/backend/redeem-hadiah/')->with('success', "Data saved successfully")->with('mode', 'success');            
+            if ($ada_emas == 0){
+                return Redirect::to('/backend/redeem-hadiah/')->with('success', "Data saved successfully")->with('mode', 'success');
+            } else {
+                return Redirect::to('/backend/redeem-hadiah/'.$id.'/konversi-emas');
+            }
         }
     }
 
@@ -370,6 +381,7 @@ class RedeemController extends Controller
             view()->share('data_konversi', $data_konversi);
             view()->share('data_omzet', $data_omzet);
             view()->share('data_header', $data_header);
+            view()->share('data_redeem', $data_redeem);
             return view ('backend.redeem.konversi_emas');
         }
     }
@@ -432,6 +444,12 @@ class RedeemController extends Controller
                 $data->id_campaign_emas = $id_hadiah;
                 $data->jumlah = floor($_POST['jumlah'][$ctr] / 1);
                 $data->save();
+            endforeach;
+
+            foreach ($data_redeem as $detail):
+                $update_keterangan = RedeemDetail::find($detail->id);
+                $update_keterangan->keterangan = $request->keterangan;
+                $update_keterangan->save();
             endforeach;
 
             return Redirect::to('/backend/redeem-hadiah/')->with('success', "Data saved successfully")->with('mode', 'success');            

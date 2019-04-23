@@ -173,20 +173,6 @@
                                     <th class="text-right">  <?=number_format($total,0,',','.');?></th>
                                 </thead>
                             </table>
-                            <?php
-                                // GROUP AAA ada kolom keterangan
-                                if (($userinfo['reldag'] == '14F01020002') || ($userinfo['reldag'] == '14B02010003') || ($userinfo['reldag'] == '22A02010002')) :
-                            ?>
-                            <div class="row">
-                                <div class="col-xs-12 col-sm-6">
-                                    <h2>Keterangan :</h2>
-                                    <textarea class="form-control" name="keterangan" rows = 5 disabled><?=$keterangan;?></textarea>
-                                </div>
-                            </div>
-                            <br/>
-                            <?php
-                                endif;
-                            ?>
                             <br/>
                             <h2>Daftar Konversi Emas</h2>
                             <table class="table table-striped table-hover table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
@@ -215,6 +201,20 @@
                                     ?>
                                 </tbody>
                             </table>
+                            <?php
+                                // GROUP AAA ada kolom keterangan
+                                if (($userinfo['reldag'] == '14F01020002') || ($userinfo['reldag'] == '14B02010003') || ($userinfo['reldag'] == '22A02010002')) :
+                            ?>
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-6">
+                                    <h2>Keterangan :</h2>
+                                    <textarea class="form-control" name="keterangan" rows = 5 disabled><?=$keterangan;?></textarea>
+                                </div>
+                            </div>
+                            <br/>
+                            <?php
+                                endif;
+                            ?>
                         </div>
                     </div>
 				</div>
