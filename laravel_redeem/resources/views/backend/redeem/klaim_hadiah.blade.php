@@ -123,10 +123,22 @@
                                 if ($data_header[0]->TPP == 1):
                             ?>
                             <i><p class="small blue">Sisa Omzet / Poin akan dikonversikan ke dalam hadiah Tambahan Potongan Penjualan</p></i>
+                            <br/>                            
                             <?php
                                 endif;
                             ?>
-                            
+                            <h3 class="blue"><i>Saran (max redeem per hadiah dari sisa omzet / poin) :</i></h3>
+                            <span class="blue" id="suggestion">
+                            <?php
+                                foreach ($data_list_hadiah as $hadiah):
+                                    echo "<h4>";
+                                    echo $hadiah->nama_hadiah;
+                                    echo " : ";
+                                    echo "<b>".number_format(floor($total / $hadiah->harga),0,',','.')."</b>";
+                                    echo "</h4>";
+                                endforeach;
+                            ?>
+                            </span>
                             <br/>
                             <h2>List Hadiah</h2>
                                 <table class="table table-striped table-hover table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
@@ -210,7 +222,25 @@
             } else {
                 $('#omzet_poin').html(numberWithCommas(sisa));
             }
-            
+            $('#suggestion').html(function(){
+                var total = <?=$total;?>;
+                var subtotal = hitung_sub_total();
+                var sisa = total - subtotal;
+                var text = '';
+                var nama_hadiah = '';
+                var harga = '';
+                <?php
+                    foreach ($data_list_hadiah as $hadiah):
+                ?>
+                    var hadiah = <?=$hadiah;?>;
+                    nama_hadiah = hadiah.nama_hadiah;
+                    harga = hadiah.harga;
+                    text = text + "<h4>" + nama_hadiah + ' : <b>' + Math.floor( sisa / harga) + '</b></h4>';
+                <?php
+                    endforeach;
+                ?>
+                return text;
+            })
         })
 
         $('#form-submit').on('submit',function(){
