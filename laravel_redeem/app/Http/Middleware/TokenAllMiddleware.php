@@ -27,7 +27,7 @@ class TokenAllMiddleware
         } else {
             $userinfo = Session::get('userinfo');
             //bukan user redeem
-            if ((($userinfo['priv'] == 'VSUPER') || ($userinfo['priv'] == 'VSUPERT') || ($userinfo['priv'] == 'VREDEEM')) || ($userinfo['priv'] == 'RECV' && $userinfo['posisi'] == 'AGEN' && $userinfo['utrace'] == 1)){
+            if ((($userinfo['priv'] == 'VSUPER') || ($userinfo['priv'] == 'VSUPERT') || ($userinfo['priv'] == 'ADMIN') || ($userinfo['priv'] == 'VREDEEM')) || ($userinfo['priv'] == 'RECV' && $userinfo['posisi'] == 'AGEN' && $userinfo['utrace'] == 1)){
 
             } else {
                 if (env('APP_STATUS') == "local"):

@@ -5,7 +5,7 @@
 ?>
 <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
     <?php 
-        if (($userinfo['priv'] == "VSUPER") || ($userinfo['priv'] == "VSUPERT")):
+        if (($userinfo['priv'] == "VSUPER") || ($userinfo['priv'] == "VSUPERT") || ($userinfo['priv'] == "ADMIN")):
     ?>
     <div class="menu_section">
         <h3>GENERAL</h3>
@@ -60,7 +60,7 @@
         endif;
     ?>
     <?php
-        if (($userinfo['priv'] == "VSUPER") || ($userinfo['priv'] == "VSUPERT")):
+        if (($userinfo['priv'] == "VSUPER") || ($userinfo['priv'] == "VSUPERT") || ($userinfo['priv'] == "ADMIN")):
     ?>
     <div class="menu_section">
         <h3>REPORT</h3>

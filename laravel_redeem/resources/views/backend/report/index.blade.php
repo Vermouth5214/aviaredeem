@@ -200,7 +200,7 @@
                             <div class="col-xs-12 col-sm-2">
                                 <?php
                                     $userinfo = Session::get('userinfo');
-                                    if ($userinfo['uname'] != "mkt01"):
+                                    if (($userinfo['uname'] != "mkt01") && ($userinfo['priv'] != "ADMIN")):
                                 ?>
                                 <input type="submit" class="btn btn-success btn-block" id="btn-export" name="export" value="Generate XLS">
                                 <?php
