@@ -153,11 +153,13 @@ class RedeemController extends Controller
 
                 $url_view = url('backend/redeem-hadiah/'.$data->id);
                 $url_klaim = url('backend/redeem-hadiah/'.$data->id.'/klaim-hadiah');
+                $url_edit_klaim = url('backend/redeem-hadiah/'.$data->id.'/edit/klaim-hadiah');
                 $url_konvert = url('backend/redeem-hadiah/'.$data->id.'/konversi-emas');
 
                 $view = "<a class='btn-action btn btn-primary' href='".$url_view."' title='View'><i class='fa fa-eye'></i> View</a>";  
                 $klaim = "<a class='btn-action btn btn-warning' href='".$url_klaim."' title='Klaim Hadiah'><i class='fa fa-gift'></i> Klaim Hadiah</a>";  
                 $konvert = "<a class='btn-action btn btn-danger' href='".$url_konvert."' title='Konversi Emas'><i class='fa fa-exchange'></i> Konversi Emas</a>";  
+                $edit_klaim = "";  
 
                 if ($status == 1){
                     $klaim = "";
@@ -176,13 +178,14 @@ class RedeemController extends Controller
                 }
                 if ($status == 5){
                     $klaim = "";
+                    $edit_klaim = "<a class='btn-action btn btn-warning' href='".$url_edit_klaim."' title='Edit Klaim Hadiah'><i class='fa fa-gift'></i> Edit Klaim Hadiah</a>";  
                 }
                 if ($status == 6){
                     $klaim = "";
                     $konvert = "";
                 }
 
-                return $view." ".$klaim." ".$konvert;
+                return $view." ".$klaim." ".$edit_klaim." ".$konvert;
             })			
             ->rawColumns(['action','brosur'])
             ->make(true);
@@ -366,7 +369,7 @@ class RedeemController extends Controller
 
 
             //hitung total gram emas
-            $data_redeem = RedeemDetail::with('campaign_hadiah')->where('id_campaign', $data_header[0]->id)->where('kode_customer',$userinfo['reldag'])->get();
+            $data_redeem = RedeemDetail::with('campaign_hadiah')->where('id_campaign', $data_header[0]->id)->where('kode_customer',$userinfo['reldag'])->orderBy('id_campaign_hadiah', 'ASC')->get();
             $total_gram = 0;
             foreach ($data_redeem as $detail):
                 if ($detail->campaign_hadiah->emas == 1){
@@ -480,4 +483,182 @@ class RedeemController extends Controller
             return view ('backend.redeem.view');
         }
     }
+
+    public function edit_klaim_hadiah($id){
+        $data_omzet = CustomerOmzet::where('id', $id)->where('active',1)->get();
+        if (count($data_omzet)){
+            //cek data sendiri atau bukan
+            $userinfo = Session::get('userinfo');
+            if ($data_omzet[0]->kode_customer != $userinfo['reldag']){
+                return Redirect::to('/backend/redeem-hadiah/');
+            }
+
+            $data_header = CampaignH::where('kode_campaign', '=', $data_omzet[0]->kode_campaign)->get();
+
+            //cek sudah di konversi atau belum
+            $jum_konversi = RedeemEmas::where('kode_customer',$userinfo['reldag'])->where('id_campaign',$data_header[0]->id)->count();
+            if ($jum_konversi > 0){
+                return Redirect::to('/backend/redeem-hadiah/');
+            }
+
+            //cek sudah di redeem atau belum
+            $jum_redeem = RedeemDetail::where('kode_customer',$userinfo['reldag'])->where('id_campaign',$data_header[0]->id)->count();
+            if ($jum_redeem == 0){
+                return Redirect::to('/backend/redeem-hadiah/');
+            }
+
+            //cek tanggal klaim
+            if (date('Y-m-d') < date('Y-m-d',strtotime($data_omzet[0]->periode_awal))){
+                return Redirect::to('/backend/redeem-hadiah/');
+            }
+
+            //cek kedaluarsa
+            if (date('Y-m-d') > date('Y-m-d',strtotime($data_omzet[0]->periode_akhir))){
+                return Redirect::to('/backend/redeem-hadiah/');
+            }
+
+            //data list hadiah
+            $data_list_hadiah_emas =  CampaignDHadiah::select('id','nama_hadiah','harga','satuan')
+                                    ->where('id_campaign', $data_header[0]->id)
+                                    ->where('pilihan',0)->orderBy('id','ASC')->get();
+            
+            $data_list_hadiah_pilihan = CampaignDBagi::select('campaign_d_hadiah.id','campaign_d_hadiah.nama_hadiah','campaign_d_hadiah.harga','campaign_d_hadiah.satuan')
+                                        ->leftJoin('campaign_d_hadiah','campaign_d_bagi.id_campaign_d_hadiah','=','campaign_d_hadiah.id')
+                                        ->where('campaign_d_bagi.id_campaign',$data_header[0]->id)
+                                        ->where('campaign_d_bagi.kode_agen',$userinfo['reldag'])->orderBy('campaign_d_hadiah.id','ASC')->get();
+
+            $data_list_hadiah = $data_list_hadiah_emas->merge($data_list_hadiah_pilihan);
+
+            //ambil harga terendah
+            $harga_terendah = 999999999;
+            foreach ($data_list_hadiah as $hadiah ):
+                if ($hadiah['harga'] < $harga_terendah){
+                    $harga_terendah = $hadiah['harga'];
+                }
+            endforeach;
+
+            //data redeem hadiah
+            $data_redeem = RedeemDetail::where('kode_customer',$userinfo['reldag'])->where('id_campaign',$data_header[0]->id)->get();
+
+            view()->share('harga_terendah', $harga_terendah);
+            view()->share('data_list_hadiah', $data_list_hadiah);
+            view()->share('data_omzet', $data_omzet);
+            view()->share('data_header', $data_header);
+            view()->share('data_redeem', $data_redeem);
+            return view ('backend.redeem.klaim_hadiah');
+        }
+    }
+
+    public function edit_klaim_hadiah_update($id, Request $request){
+        $data_omzet = CustomerOmzet::where('id', $id)->where('active',1)->get();
+        if (count($data_omzet)){
+            //cek data sendiri atau bukan
+            $userinfo = Session::get('userinfo');
+            if ($data_omzet[0]->kode_customer != $userinfo['reldag']){
+                return Redirect::to('/backend/redeem-hadiah/');
+            }
+
+            $data_header = CampaignH::where('kode_campaign', '=', $data_omzet[0]->kode_campaign)->get();
+
+            //cek sudah di konversi atau belum
+            $jum_konversi = RedeemEmas::where('kode_customer',$userinfo['reldag'])->where('id_campaign',$data_header[0]->id)->count();
+            if ($jum_konversi > 0){
+                return Redirect::to('/backend/redeem-hadiah/');
+            }
+
+            //cek sudah di redeem atau belum
+            $jum_redeem = RedeemDetail::where('kode_customer',$userinfo['reldag'])->where('id_campaign',$data_header[0]->id)->count();
+            if ($jum_redeem == 0){
+                return Redirect::to('/backend/redeem-hadiah/');
+            }
+
+            //cek tanggal klaim
+            if (date('Y-m-d') < date('Y-m-d',strtotime($data_omzet[0]->periode_awal))){
+                return Redirect::to('/backend/redeem-hadiah/');
+            }
+
+            //cek kedaluarsa
+            if (date('Y-m-d') > date('Y-m-d',strtotime($data_omzet[0]->periode_akhir))){
+                return Redirect::to('/backend/redeem-hadiah/');
+            }
+
+            //data list hadiah
+            $data_list_hadiah_emas =  CampaignDHadiah::select('id','nama_hadiah','harga')
+                                    ->where('id_campaign', $data_header[0]->id)
+                                    ->where('pilihan',0)->orderBy('id','ASC');
+            $data_list_hadiah_pilihan = CampaignDBagi::select('campaign_d_hadiah.id','campaign_d_hadiah.nama_hadiah','campaign_d_hadiah.harga')
+                                        ->leftJoin('campaign_d_hadiah','campaign_d_bagi.id_campaign_d_hadiah','=','campaign_d_hadiah.id')
+                                        ->where('campaign_d_bagi.id_campaign',$data_header[0]->id)
+                                        ->where('campaign_d_bagi.kode_agen',$userinfo['reldag'])->orderBy('campaign_d_hadiah.id','ASC');
+
+            $data_list_hadiah = $data_list_hadiah_emas->union($data_list_hadiah_pilihan)->get();
+
+            //ambil harga terendah
+            $harga_terendah = 999999999;
+            foreach ($data_list_hadiah as $hadiah ):
+                if ($hadiah['harga'] < $harga_terendah){
+                    $harga_terendah = $hadiah['harga'];
+                }
+            endforeach;
+
+            //cek total
+            $total = 0;
+            $subtotal = 0;
+            if ($data_header[0]->jenis == "omzet"){
+                $total = $data_omzet[0]->omzet_netto;
+            }
+            if ($data_header[0]->jenis == "poin"){
+                $total = $data_omzet[0]->poin;
+            }
+            foreach ($_POST['id'] as $ctr=>$id_hadiah):
+                $subtotal = $subtotal + ( floor($_POST['jumlah'][$ctr] / 1) * $_POST['harga'][$ctr]);
+            endforeach;
+
+            $sisa = $total - $subtotal;
+            if ($sisa < 0){
+                return Redirect::to('/backend/redeem-hadiah/'.$id.'/klaim-hadiah')->with('success', "Penukaran hadiah melebihi omzet / poin")->with('mode', 'danger');
+            }
+            if ($sisa >= $harga_terendah){
+                return Redirect::to('/backend/redeem-hadiah/'.$id.'/klaim-hadiah')->with('success', "Sisa omzet / poin masih bisa ditukarkan dengan hadiah lain")->with('mode', 'danger');
+            }
+
+            //insert data
+            $ada_emas = 0;
+            RedeemDetail::where('kode_customer',$userinfo['reldag'])->where('id_campaign',$data_header[0]->id)->delete();
+            foreach ($_POST['id'] as $ctr=>$id_hadiah):
+                $data = new RedeemDetail();
+                $data->kode_customer = $data_omzet[0]->kode_customer;
+                $data->id_campaign = $data_header[0]->id;
+                $data->id_campaign_hadiah = $id_hadiah;
+                $data->jumlah = floor($_POST['jumlah'][$ctr] / 1);
+                //cek ada redeem emas atau ga
+                $cek_emas = CampaignDHadiah::where('id', $id_hadiah)->get();
+                if ($cek_emas){
+                    if (($data->jumlah > 0) && ($cek_emas[0]->emas == 1)) {
+                        $ada_emas = 1;
+                    }
+                }
+                $data->save();
+            endforeach;
+
+            if ($ada_emas == 0){
+                //simpan redeem emas menjadi 0 agar jadi status sudah klaim
+                // $data_konversi = CampaignDEmas::where('id_campaign',$data_header[0]->id)->orderBy('id','ASC')->get();
+                // if ($data_konversi){
+                //     foreach ($data_konversi as $detail):
+                //         $data = new RedeemEmas();
+                //         $data->kode_customer = $data_omzet[0]->kode_customer;
+                //         $data->id_campaign = $data_header[0]->id;
+                //         $data->id_campaign_emas = $detail->id;
+                //         $data->jumlah = 0;
+                //         $data->save();
+                //     endforeach;
+                // }
+                return Redirect::to('/backend/redeem-hadiah/')->with('success', "Data saved successfully")->with('mode', 'success');
+            } else {
+                return Redirect::to('/backend/redeem-hadiah/'.$id.'/konversi-emas');
+            }
+        }
+    }
+
 }

@@ -111,6 +111,9 @@ Route::group(array('prefix' => 'backend','middleware'=> ['token_user']), functio
     Route::get('/redeem-hadiah/{id}/klaim-hadiah','Backend\RedeemController@klaim_hadiah');
     Route::post('/redeem-hadiah/{id}/klaim-hadiah','Backend\RedeemController@klaim_hadiah_update');
 
+    Route::get('/redeem-hadiah/{id}/edit/klaim-hadiah','Backend\RedeemController@edit_klaim_hadiah');
+    Route::post('/redeem-hadiah/{id}/edit/klaim-hadiah','Backend\RedeemController@edit_klaim_hadiah_update');
+
     Route::get('/redeem-hadiah/{id}/konversi-emas','Backend\RedeemController@konversi_emas');
     Route::post('/redeem-hadiah/{id}/konversi-emas','Backend\RedeemController@konversi_emas_update');
 

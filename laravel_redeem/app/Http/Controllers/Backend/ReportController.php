@@ -1159,7 +1159,7 @@ class ReportController extends Controller
             $data_header = CampaignH::where('kode_campaign', '=', $data_omzet[0]->kode_campaign)->get();
 
             //data redeem hadiah
-            $data_redeem = RedeemDetail::with('campaign_hadiah')->where('id_campaign', $data_header[0]->id)->where('kode_customer', $data_omzet[0]->kode_customer)->get();
+            $data_redeem = RedeemDetail::with('campaign_hadiah')->where('id_campaign', $data_header[0]->id)->where('kode_customer', $data_omzet[0]->kode_customer)->orderBy('id_campaign_hadiah', 'ASC')->get();
 
             //data konversi emas
             $data_konversi = RedeemEmas::with('campaign_hadiah')->where('id_campaign', $data_header[0]->id)->where('kode_customer', $data_omzet[0]->kode_customer)->get();

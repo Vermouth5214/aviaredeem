@@ -4,6 +4,12 @@
 	$breadcrumb[0]['url'] = url('backend/dashboard');
 	$breadcrumb[1]['title'] = 'Klaim Hadiah';
     $breadcrumb[1]['url'] = url('backend/klaim-hadiah');
+
+	if (isset($data_redeem)){
+		$breadcrumb[1]['title'] = 'Edit Klaim Hadiah';
+		$breadcrumb[1]['url'] = url('backend/edit/klaim-hadiah');
+	}
+
     $userinfo = Session::get('userinfo');
 ?>
 
@@ -100,22 +106,41 @@
                         <div class="col-xs-12">
                             <?php
                                 $url = "backend/redeem-hadiah/".$data_omzet[0]->id."/klaim-hadiah";
+                                if (isset($data_redeem)){
+                                    $url = "backend/redeem-hadiah/".$data_omzet[0]->id."/edit/klaim-hadiah";
+                                }
                                 $total = 0;
                             ?>
                             {{ Form::open(['url' => $url, 'method' => 'POST','class' => 'form-horizontal form-label-left', 'id' => 'form-submit']) }}
                             <?php
                                 if ($data_header[0]->jenis == "omzet"):
-                                    $total = $data_omzet[0]->omzet_netto;
+                                    $total = floor($data_omzet[0]->omzet_netto);
+                                    $sisa = $total;
+                                    if (isset($data_redeem)){
+                                        $subtotal = 0;
+                                        foreach ($data_redeem as $detail):
+                                            $subtotal = $subtotal + ($detail->jumlah * $detail->campaign_hadiah->harga);
+                                        endforeach;
+                                        $sisa = $total - $subtotal;
+                                    }
                             ?>
-                            <h3>Sisa Omzet : <span id="omzet_poin"><?=number_format($data_omzet[0]->omzet_netto,0,',','.');?></span></h3>
+                            <h3>Sisa Omzet : <span id="omzet_poin"><?=number_format($sisa,0,',','.');?></span></h3>
                             <?php
                                 endif;
                             ?>
                             <?php
                                 if ($data_header[0]->jenis == "poin"):
                                     $total = $data_omzet[0]->poin;
+                                    $sisa = $total;
+                                    if (isset($data_redeem)){
+                                        $subtotal = 0;
+                                        foreach ($data_redeem as $detail):
+                                            $subtotal = $subtotal + ($detail->jumlah * $detail->campaign_hadiah->harga);
+                                        endforeach;
+                                        $sisa = $total - $subtotal;
+                                    }
                             ?>
-                            <h3>Sisa Poin : <span id="omzet_poin"><?=number_format($data_omzet[0]->poin,0,',','.');?></span></h3>
+                            <h3>Sisa Poin : <span id="omzet_poin"><?=number_format($sisa,0,',','.');?></span></h3>
                             <?php
                                 endif;
                             ?>
@@ -151,6 +176,14 @@
                                 <tbody>
                             <?php
                                 foreach ($data_list_hadiah as $hadiah):
+                                    $jumlah = 0;
+                                    if (isset($data_redeem)){
+                                        foreach ($data_redeem as $detail):
+                                            if ($hadiah->id == $detail->id_campaign_hadiah){
+                                                $jumlah = $detail->jumlah;
+                                            }
+                                        endforeach;
+                                    }
                             ?>      
                                     <tr>
                                         <td width = "60%" class="text-right">
@@ -158,7 +191,7 @@
                                             <?=$hadiah->nama_hadiah;?>
                                         </td>
                                         <td>
-                                            <input type="number" class="form-control jumlah" name="jumlah[]" min=0 value=0 required="required">
+                                            <input type="number" class="form-control jumlah" name="jumlah[]" min=0 value=<?=$jumlah;?> required="required">
                                         </td>
                                         <td class="text-right">
                                             <input type="hidden" value="<?=$hadiah->harga;?>" class="harga" name="harga[]">
@@ -213,7 +246,7 @@
             return subtotal;
         }
 
-        $('.jumlah').on('change',function(e){
+        function hitung_total(){
             var total = <?=$total;?>;
             var subtotal = hitung_sub_total();
             var sisa = total - subtotal;
@@ -241,6 +274,12 @@
                 ?>
                 return text;
             })
+        }
+
+        hitung_total();
+        
+        $('.jumlah').on('change',function(e){
+            hitung_total();
         })
 
         $('#form-submit').on('submit',function(){
