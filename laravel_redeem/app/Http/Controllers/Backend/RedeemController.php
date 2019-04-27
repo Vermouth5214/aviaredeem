@@ -332,6 +332,18 @@ class RedeemController extends Controller
             endforeach;
 
             if ($ada_emas == 0){
+                //simpan redeem emas menjadi 0 agar jadi status sudah klaim
+                $data_konversi = CampaignDEmas::where('id_campaign',$data_header[0]->id)->orderBy('id','ASC')->get();
+                if ($data_konversi){
+                    foreach ($data_konversi as $detail):
+                        $data = new RedeemEmas();
+                        $data->kode_customer = $data_omzet[0]->kode_customer;
+                        $data->id_campaign = $data_header[0]->id;
+                        $data->id_campaign_emas = $detail->id;
+                        $data->jumlah = 0;
+                        $data->save();
+                    endforeach;
+                }
                 return Redirect::to('/backend/redeem-hadiah/')->with('success', "Data saved successfully")->with('mode', 'success');
             } else {
                 return Redirect::to('/backend/redeem-hadiah/'.$id.'/konversi-emas');
@@ -643,17 +655,17 @@ class RedeemController extends Controller
 
             if ($ada_emas == 0){
                 //simpan redeem emas menjadi 0 agar jadi status sudah klaim
-                // $data_konversi = CampaignDEmas::where('id_campaign',$data_header[0]->id)->orderBy('id','ASC')->get();
-                // if ($data_konversi){
-                //     foreach ($data_konversi as $detail):
-                //         $data = new RedeemEmas();
-                //         $data->kode_customer = $data_omzet[0]->kode_customer;
-                //         $data->id_campaign = $data_header[0]->id;
-                //         $data->id_campaign_emas = $detail->id;
-                //         $data->jumlah = 0;
-                //         $data->save();
-                //     endforeach;
-                // }
+                $data_konversi = CampaignDEmas::where('id_campaign',$data_header[0]->id)->orderBy('id','ASC')->get();
+                if ($data_konversi){
+                    foreach ($data_konversi as $detail):
+                        $data = new RedeemEmas();
+                        $data->kode_customer = $data_omzet[0]->kode_customer;
+                        $data->id_campaign = $data_header[0]->id;
+                        $data->id_campaign_emas = $detail->id;
+                        $data->jumlah = 0;
+                        $data->save();
+                    endforeach;
+                }
                 return Redirect::to('/backend/redeem-hadiah/')->with('success', "Data saved successfully")->with('mode', 'success');
             } else {
                 return Redirect::to('/backend/redeem-hadiah/'.$id.'/konversi-emas');
