@@ -1,5 +1,10 @@
 <?php
 
+use App\Model\CampaignDHadiah;
+use App\Model\CampaignDEmas;
+use App\Model\RedeemDetail;
+use App\Model\RedeemEmas;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -14,6 +19,43 @@
 Route::get('/', function () {
 	return redirect('backend/');
 });
+
+Route::get('/auto-redeem', function () {
+    $data = DB::select("
+        SELECT ch.id, c.kode_campaign, c.kode_customer, c.omzet_netto, c.poin, count(distinct rd.id) as jum_redeem, min_hadiah.harga
+        FROM customer_omzet c 
+        LEFT JOIN campaign_h ch on ch.kode_campaign = c.kode_campaign
+        LEFT JOIN redeem_detail rd on rd.kode_customer = c.kode_customer and rd.id_campaign = ch.id
+        LEFT JOIN (select id_campaign, min(harga) as harga from campaign_d_hadiah group by id_campaign) min_hadiah on min_hadiah.id_campaign = ch.id
+        WHERE c.active = 1 and ch.active = 1
+        GROUP BY c.kode_campaign, c.kode_customer
+        HAVING jum_redeem = 0 and c.omzet_netto < harga and c.poin < harga
+        ORDER BY ch.id ASC;    
+    ");
+    if ($data){
+        foreach ($data as $detail): 
+            $data_hadiah = CampaignDHadiah::where('id_campaign', $detail->id)->orderBy('id', 'ASC')->get();
+            foreach ($data_hadiah as $hadiah):
+                $insert_redeem = new RedeemDetail();
+                $insert_redeem->kode_customer = $detail->kode_customer;
+                $insert_redeem->id_campaign = $detail->id;
+                $insert_redeem->id_campaign_hadiah = $hadiah->id;
+                $insert_redeem->jumlah = 0;
+                $insert_redeem->save();
+            endforeach;
+
+            $data_hadiah_emas = CampaignDEmas::where('id_campaign', $detail->id)->orderBy('id', 'ASC')->get();
+            foreach ($data_hadiah_emas as $hadiah):
+                $insert_redeem_emas = new RedeemEmas();
+                $insert_redeem_emas->kode_customer = $detail->kode_customer;
+                $insert_redeem_emas->id_campaign = $detail->id;
+                $insert_redeem_emas->id_campaign_emas = $hadiah->id;
+                $insert_redeem_emas->jumlah = 0;
+                $insert_redeem_emas->save();
+            endforeach;
+        endforeach;
+    }
+}); 
 
 Route::get('/backup-database', function () {
     $tables = false;
