@@ -57,7 +57,8 @@
 									<span class="uni">
 									  <input type='checkbox' value='checkall' onclick='checkAll(this)' />
 									</span>
-								</th>
+                                </th>
+                                <th>Id</th>
 								<th>Actions</th>                                
                                 <th>Kode Campaign</th>
                                 <th>Kode Customer</th>
@@ -92,6 +93,7 @@
 			ajax: "<?=url('backend/master-omzet/datatable');?>",
 			columns: [
                 {data: 'check', name: 'check', orderable: false, searchable: false},
+                {data: 'id', name: 'id'},
 				{data: 'action', name: 'action', orderable: false, searchable: false},
 				{data: 'kode_campaign', name: 'kode_campaign'},
                 {data: 'kode_customer', name: 'kode_customer'},
@@ -103,7 +105,7 @@
                 {data: 'omzet_netto', name: 'omzet_netto'},
                 {data: 'poin', name: 'poin'}
 			],
-            order: [[ 2, "desc" ]],
+            order: [[ 1, "desc" ]],
 			responsive: false
 		});
 

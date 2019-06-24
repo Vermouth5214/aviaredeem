@@ -218,6 +218,7 @@
                     <table class="table table-striped table-hover table-bordered dt-responsive nowrap dataTable" cellspacing="0" width="100%">
 						<thead>
 							<tr>
+                                <th>ID</th>
                                 <th>Status</th>
                                 <th>Action</th>
                                 <th>Kode Customer</th>
@@ -259,6 +260,7 @@
             serverSide: true,
             ajax: "<?=url('backend/general-report/datatable?jenis='.$jenis.'&category='.$category.'&startDate='.$startDate.'&endDate='.$endDate.'&status='.$status.'&mode='.$mode.'&kode_campaign='.$kode_campaign);?>",
 			columns: [
+                {data: 'id', name: 'id'},
 				{data:  'status', render: function ( data, type, row ) {
 					var text = "";
 					var label = "";

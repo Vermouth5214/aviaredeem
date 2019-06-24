@@ -35,6 +35,9 @@
                 <li class="{{ ($segment == 'master-omzet' ? 'active' : '') }}">
                     <a href="<?=url('backend/master-omzet');?>"><i class="fa fa-money"></i> Master Customer Omzet</a>
                 </li>
+                <li class="{{ ($segment == 'last-tto' ? 'active' : '') }}">
+                    <a href="<?=url('backend/last-tto');?>"><i class="fa fa-list-alt"></i> Last TTO / TTP Number</a>
+                </li>
             <?php
                 endif;
             ?>

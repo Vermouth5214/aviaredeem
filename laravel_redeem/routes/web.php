@@ -28,6 +28,7 @@ Route::get('/auto-redeem', function () {
         LEFT JOIN redeem_detail rd on rd.kode_customer = c.kode_customer and rd.id_campaign = ch.id
         LEFT JOIN (select id_campaign, min(harga) as harga from campaign_d_hadiah group by id_campaign) min_hadiah on min_hadiah.id_campaign = ch.id
         WHERE c.active = 1 and ch.active = 1
+            AND '".date('Y-m-d')."' >= c.periode_awal and '".date('Y-m-d')."' <= c.periode_akhir
         GROUP BY c.kode_campaign, c.kode_customer
         HAVING jum_redeem = 0 and c.omzet_netto < harga and c.poin < harga
         ORDER BY ch.id ASC;    
@@ -108,6 +109,9 @@ Route::group(array('prefix' => 'backend','middleware'=> ['token_super']), functi
     Route::get('/master-omzet/datatable','Backend\OmzetController@datatable');	
     Route::post('/master-omzet/delete','Backend\OmzetController@deleteAll');
     Route::resource('master-omzet', 'Backend\OmzetController');
+
+    Route::get('/last-tto/datatable','Backend\TTOController@datatable');	
+    Route::resource('last-tto', 'Backend\TTOController');
 
 });
 

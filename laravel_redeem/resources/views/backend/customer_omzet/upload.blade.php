@@ -39,6 +39,7 @@
                         <label class="control-label col-sm-3 col-xs-12">Upload file : <span class="required">*</span><br/>
                             <p class="small blue">Isi dari file excel harus tanpa header</p>
                             <p class="small blue">Urutan : Kode Campaign, Kode Customer, Periode Awal, Periode Akhir, Omzet Tepat Waktu, Disc Pembelian, Disc Penjualan, Omzet Netto dengan Disc, Poin</p>
+                            <p class="small blue"><b><u><i>Format tanggal yyyy-mm-dd</i></u></b></p>
                         </label>
                         <div class="col-sm-5 col-xs-12">
                             <input type="file" name="upload_file" required="required" class="form-control" autofocus>

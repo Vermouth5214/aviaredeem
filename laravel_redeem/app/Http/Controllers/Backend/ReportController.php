@@ -124,7 +124,7 @@ class ReportController extends Controller
 
                         //generate no TTO Emas
                         $no_tto_emas = "TTO-AAP-".date('ym')."-2";
-                        $last_tto_emas = TTOLast::whereRaw("no_tto like'".$no_tto_emas."%'")->latest()->first();
+                        $last_tto_emas = TTOLast::whereRaw("no_tto like'".$no_tto_emas."%'")->orderBy('id', 'DESC')->first();
                         if ($last_tto_emas){
                             $no_tto_emas = "TTO-AAP-".date('ym')."-".strval((int)(substr($last_tto_emas->no_tto, -5)) + 1);
                         } else {
@@ -228,7 +228,7 @@ class ReportController extends Controller
 
                         //generate no TTO Emas
                         $no_tto_emas = "TTO-AAP-".date('ym')."-2";
-                        $last_tto_emas = TTOLast::whereRaw("no_tto like'".$no_tto_emas."%'")->latest()->first();
+                        $last_tto_emas = TTOLast::whereRaw("no_tto like'".$no_tto_emas."%'")->orderBy('id', 'DESC')->first();
                         if ($last_tto_emas){
                             $no_tto_emas = "TTO-AAP-".date('ym')."-".strval((int)(substr($last_tto_emas->no_tto, -5)) + 1);
                         } else {
@@ -354,7 +354,7 @@ class ReportController extends Controller
 
                         //generate no TTO Emas
                         $no_tto_emas = "TTP-AAP-".date('ym')."-2";
-                        $last_tto_emas = TTOLast::whereRaw("no_tto like'".$no_tto_emas."%'")->latest()->first();
+                        $last_tto_emas = TTOLast::whereRaw("no_tto like'".$no_tto_emas."%'")->orderBy('id', 'DESC')->first();
                         if ($last_tto_emas){
                             $no_tto_emas = "TTP-AAP-".date('ym')."-".strval((int)(substr($last_tto_emas->no_tto, -5)) + 1);
                         } else {
@@ -398,7 +398,7 @@ class ReportController extends Controller
 
                                         $total = $total + ($jumlah_emas * $detail_emas->harga);
                                         //generate header emas
-                                        $data_emas_header_item = [$document_no, $campaign->kode_customer, $campaign->kode_campaign, date('d-m-Y'), $total, "New", "0", $tipe, "AAP-TTP", "MBTRHSL", "DEFAULT", "AAP-FGBAIK", "AAP", $campaign->agen->salesperson];
+                                        $data_emas_header_item = [$document_no, $campaign->kode_customer, $campaign->kode_campaign, date('d-m-Y'), "New", $tipe, "AAP-TTP", "MBTRPOIN", "DEFAULT", "AAP-FGBAIK", "AAP", $campaign->agen->salesperson];
                                         array_push($data_emas_header, $data_emas_header_item);
 
                                         $jumlah_emas = 0;
@@ -425,7 +425,7 @@ class ReportController extends Controller
                             if ($total > 0):
                                 $document_no = "TTP-AAP-".date('ym')."-".strval($digit);
                                 //generate header emas
-                                $data_emas_header_item = [$document_no, $campaign->kode_customer, $campaign->kode_campaign, date('d-m-Y'), $total, "New", "0", $tipe, "AAP-TTP", "MBTRHSL", "DEFAULT", "AAP-FGBAIK", "AAP", $campaign->agen->salesperson];
+                                $data_emas_header_item = [$document_no, $campaign->kode_customer, $campaign->kode_campaign, date('d-m-Y'), "New", $tipe, "AAP-TTP", "MBTRPOIN", "DEFAULT", "AAP-FGBAIK", "AAP", $campaign->agen->salesperson];
                                 array_push($data_emas_header, $data_emas_header_item);
 
                                 $digit = $digit + 1;
@@ -435,7 +435,7 @@ class ReportController extends Controller
             
                         $excel->sheet('Header Emas', function($sheet) use($data_emas_header) {
                             $sheet->row(1, array(
-                                'Document No.', 'Customer No.', 'Campaign Code', 'Posting Date', 'Total OQ', 'Status', 'Discount %', 'Type', 'No. Series', 'Journal Template Name', 'Journal Batch Name', 'Location Code', 'Branch Code', 'Salesperson Code'
+                                'Document No.', 'Customer No.', 'Campaign Code', 'Posting Date', 'Status', 'Type', 'No. Series', 'Journal Template Name', 'Journal Batch Name', 'Location Code', 'Branch Code', 'Salesperson Code'
                             ));                    
                             $sheet->fromArray($data_emas_header, null, 'A2', false, false);
                         });
@@ -456,7 +456,7 @@ class ReportController extends Controller
 
                         //generate no TTO Emas
                         $no_tto_emas = "TTP-AAP-".date('ym')."-2";
-                        $last_tto_emas = TTOLast::whereRaw("no_tto like'".$no_tto_emas."%'")->latest()->first();
+                        $last_tto_emas = TTOLast::whereRaw("no_tto like'".$no_tto_emas."%'")->orderBy('id', 'DESC')->first();
                         if ($last_tto_emas){
                             $no_tto_emas = "TTP-AAP-".date('ym')."-".strval((int)(substr($last_tto_emas->no_tto, -5)) + 1);
                         } else {
@@ -496,14 +496,14 @@ class ReportController extends Controller
                             endforeach;
                             if ($total > 0){
                                 $digit = $digit + 1;
-                                $data_non_emas_header_item = [$document_no, $campaign->kode_customer, $campaign->kode_campaign, date('d-m-Y'), $total, "New", "0", $tipe, "AAP-TTP", "MBTRHSL", "DEFAULT", "AAP-FGBAIK", "AAP", $campaign->agen->salesperson];
+                                $data_non_emas_header_item = [$document_no, $campaign->kode_customer, $campaign->kode_campaign, date('d-m-Y'), "New", $tipe, "AAP-TTP", "MBTRPOIN", "DEFAULT", "AAP-FGBAIK", "AAP", $campaign->agen->salesperson];
                                 array_push($data_non_emas_header, $data_non_emas_header_item);
                             }
                         endforeach;
 
                         $excel->sheet('Header Non Emas', function($sheet) use($data_non_emas_header) {
                             $sheet->row(1, array(
-                                'Document No.', 'Customer No.', 'Campaign Code', 'Posting Date', 'Total OQ', 'Status', 'Discount %', 'Type', 'No. Series', 'Journal Template Name', 'Journal Batch Name', 'Location Code', 'Branch Code', 'Salesperson Code'
+                                'Document No.', 'Customer No.', 'Campaign Code', 'Posting Date', 'Status', 'Type', 'No. Series', 'Journal Template Name', 'Journal Batch Name', 'Location Code', 'Branch Code', 'Salesperson Code'
                             ));                    
                             $sheet->fromArray($data_non_emas_header, null, 'A2', false, false);
                         });
@@ -589,7 +589,7 @@ class ReportController extends Controller
                         
                         //generate no TTO Emas
                         $no_tto_emas = "TTO-IPP-".date('ym')."-2";
-                        $last_tto_emas = TTOLast::whereRaw("no_tto like'".$no_tto_emas."%'")->latest()->first();
+                        $last_tto_emas = TTOLast::whereRaw("no_tto like'".$no_tto_emas."%'")->orderBy('id', 'DESC')->first();
                         if ($last_tto_emas){
                             $no_tto_emas = "TTO-IPP-".date('ym')."-".strval((int)(substr($last_tto_emas->no_tto, -5)) + 1);
                         } else {
@@ -691,7 +691,7 @@ class ReportController extends Controller
 
                         //generate no TTO Emas
                         $no_tto_emas = "TTO-IPP-".date('ym')."-2";
-                        $last_tto_emas = TTOLast::whereRaw("no_tto like'".$no_tto_emas."%'")->latest()->first();
+                        $last_tto_emas = TTOLast::whereRaw("no_tto like'".$no_tto_emas."%'")->orderBy('id', 'DESC')->first();
                         if ($last_tto_emas){
                             $no_tto_emas = "TTO-IPP-".date('ym')."-".strval((int)(substr($last_tto_emas->no_tto, -5)) + 1);
                         } else {
@@ -819,7 +819,7 @@ class ReportController extends Controller
 
                         //generate no TTO Emas
                         $no_tto_emas = "TTP-IPP-".date('ym')."-2";
-                        $last_tto_emas = TTOLast::whereRaw("no_tto like'".$no_tto_emas."%'")->latest()->first();
+                        $last_tto_emas = TTOLast::whereRaw("no_tto like'".$no_tto_emas."%'")->orderBy('id', 'DESC')->first();
                         if ($last_tto_emas){
                             $no_tto_emas = "TTP-IPP-".date('ym')."-".strval((int)(substr($last_tto_emas->no_tto, -5)) + 1);
                         } else {
@@ -863,7 +863,7 @@ class ReportController extends Controller
 
                                         $total = $total + ($jumlah_emas * $detail_emas->harga);
                                         //generate header emas
-                                        $data_emas_header_item = [$document_no, $campaign->kode_customer, $campaign->kode_campaign, date('d-m-Y'), $total, "New", "0", $tipe, "IPP-TTP", "MBTRHSL", "DEFAULT", "IPP-FG", "IPP", $campaign->agen->salesperson];
+                                        $data_emas_header_item = [$document_no, $campaign->kode_customer, $campaign->kode_campaign, date('d-m-Y'), "New", $tipe, "IPP-TTP", "MBTRPOIN", "DEFAULT", "IPP-FG", "IPP", $campaign->agen->salesperson];
                                         array_push($data_emas_header, $data_emas_header_item);
 
                                         $jumlah_emas = 0;
@@ -890,7 +890,7 @@ class ReportController extends Controller
                             if ($total > 0):
                                 $document_no = "TTP-IPP-".date('ym')."-".strval($digit);
                                 //generate header emas
-                                $data_emas_header_item = [$document_no, $campaign->kode_customer, $campaign->kode_campaign, date('d-m-Y'), $total, "New", "0", $tipe, "IPP-TTP", "MBTRHSL", "DEFAULT", "IPP-FG", "IPP", $campaign->agen->salesperson];
+                                $data_emas_header_item = [$document_no, $campaign->kode_customer, $campaign->kode_campaign, date('d-m-Y'), "New", $tipe, "IPP-TTP", "MBTRPOIN", "DEFAULT", "IPP-FG", "IPP", $campaign->agen->salesperson];
                                 array_push($data_emas_header, $data_emas_header_item);
 
                                 $digit = $digit + 1;
@@ -900,7 +900,7 @@ class ReportController extends Controller
             
                         $excel->sheet('Header Emas', function($sheet) use($data_emas_header) {
                             $sheet->row(1, array(
-                                'Document No.', 'Customer No.', 'Campaign Code', 'Posting Date', 'Total OQ', 'Status', 'Discount %', 'Type', 'No. Series', 'Journal Template Name', 'Journal Batch Name', 'Location Code', 'Branch Code', 'Salesperson Code'
+                                'Document No.', 'Customer No.', 'Campaign Code', 'Posting Date', 'Status', 'Type', 'No. Series', 'Journal Template Name', 'Journal Batch Name', 'Location Code', 'Branch Code', 'Salesperson Code'
                             ));                    
                             $sheet->fromArray($data_emas_header, null, 'A2', false, false);
                         });
@@ -921,7 +921,7 @@ class ReportController extends Controller
 
                         //generate no TTO Emas
                         $no_tto_emas = "TTP-IPP-".date('ym')."-2";
-                        $last_tto_emas = TTOLast::whereRaw("no_tto like'".$no_tto_emas."%'")->latest()->first();
+                        $last_tto_emas = TTOLast::whereRaw("no_tto like'".$no_tto_emas."%'")->orderBy('id', 'DESC')->first();
                         if ($last_tto_emas){
                             $no_tto_emas = "TTP-IPP-".date('ym')."-".strval((int)(substr($last_tto_emas->no_tto, -5)) + 1);
                         } else {
@@ -961,14 +961,14 @@ class ReportController extends Controller
                             endforeach;
                             if ($total > 0){
                                 $digit = $digit + 1;
-                                $data_non_emas_header_item = [$document_no, $campaign->kode_customer, $campaign->kode_campaign, date('d-m-Y'), $total, "New", "0", $tipe, "IPP-TTP", "MBTRHSL", "DEFAULT", "IPP-FG", "IPP", $campaign->agen->salesperson];
+                                $data_non_emas_header_item = [$document_no, $campaign->kode_customer, $campaign->kode_campaign, date('d-m-Y'), "New", $tipe, "IPP-TTP", "MBTRPOIN", "DEFAULT", "IPP-FG", "IPP", $campaign->agen->salesperson];
                                 array_push($data_non_emas_header, $data_non_emas_header_item);
                             }
                         endforeach;
 
                         $excel->sheet('Header Non Emas', function($sheet) use($data_non_emas_header) {
                             $sheet->row(1, array(
-                                'Document No.', 'Customer No.', 'Campaign Code', 'Posting Date', 'Total OQ', 'Status', 'Discount %', 'Type', 'No. Series', 'Journal Template Name', 'Journal Batch Name', 'Location Code', 'Branch Code', 'Salesperson Code'
+                                'Document No.', 'Customer No.', 'Campaign Code', 'Posting Date', 'Status', 'Type', 'No. Series', 'Journal Template Name', 'Journal Batch Name', 'Location Code', 'Branch Code', 'Salesperson Code'
                             ));                    
                             $sheet->fromArray($data_non_emas_header, null, 'A2', false, false);
                         });
@@ -1162,7 +1162,7 @@ class ReportController extends Controller
             $data_redeem = RedeemDetail::with('campaign_hadiah')->where('id_campaign', $data_header[0]->id)->where('kode_customer', $data_omzet[0]->kode_customer)->orderBy('id_campaign_hadiah', 'ASC')->get();
 
             //data konversi emas
-            $data_konversi = RedeemEmas::with('campaign_hadiah')->where('id_campaign', $data_header[0]->id)->where('kode_customer', $data_omzet[0]->kode_customer)->get();
+            $data_konversi = RedeemEmas::with('campaign_hadiah')->where('id_campaign', $data_header[0]->id)->where('kode_customer', $data_omzet[0]->kode_customer)->orderBy('id_campaign_emas', 'ASC')->get();
 
             view()->share('data_omzet', $data_omzet);
             view()->share('data_header', $data_header);

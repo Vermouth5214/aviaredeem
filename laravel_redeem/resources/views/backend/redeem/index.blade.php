@@ -95,6 +95,7 @@
                     <table class="table table-striped table-hover table-bordered dt-responsive nowrap dataTable" cellspacing="0" width="100%">
 						<thead>
 							<tr>
+                                <th>ID</th>
                                 <th>Status</th>
                                 <th>Action</th>
                                 <th>Kode</th>
@@ -127,6 +128,7 @@
             serverSide: true,
             ajax: "<?=url('backend/redeem-hadiah/datatable?status='.$status);?>",
 			columns: [
+                {data: 'id', name: 'id'},                
 				{data:  'status', render: function ( data, type, row ) {
 					var text = "";
 					var label = "";
@@ -152,7 +154,7 @@
                     }
 					return "<span class='badge badge-" + label + "'>"+ text + "</span>";
                 }},
-				{data: 'action', name: 'action', orderable: false, searchable: false},                
+				{data: 'action', name: 'action', orderable: false, searchable: false},
 				{data: 'kode_campaign', name: 'campaign_h.kode_campaign'},
                 {data: 'nama_campaign', name: 'campaign_h.nama_campaign'},
                 {data: 'jenis', name: 'campaign_h.jenis'},
