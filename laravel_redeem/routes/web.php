@@ -4,6 +4,7 @@ use App\Model\CampaignDHadiah;
 use App\Model\CampaignDEmas;
 use App\Model\RedeemDetail;
 use App\Model\RedeemEmas;
+use App\Model\UserAvex;
 
 /*
 |--------------------------------------------------------------------------
@@ -57,6 +58,320 @@ Route::get('/auto-redeem', function () {
         endforeach;
     }
 }); 
+
+Route::get('/email-reminder', function () {
+    $sekarang = date('Y-m-d');
+    $sekarang_1 = $sekarang;
+    $sekarang_2 = $sekarang;
+    $sekarang_3 = $sekarang;
+
+    // $sekarang = '2019-06-30';
+    // $sekarang_1 = '2019-06-29';
+    // $sekarang_2 = '2019-06-28';
+    // $sekarang_3 = '2019-06-22';
+
+    $email_01 = "oeidonny.winarto@gmail.com";
+    $email_02 = "mkt1@avianbrands.com";
+
+    // EMAIL NOTIFIKASI SUDAH BISA MULAI REDEEM    
+    $data_campaign = DB::select("
+        select * 
+        from customer_omzet 
+        where active = 1
+            and date_add(periode_awal, interval 1 day) = '".$sekarang_3."'
+    ");
+    foreach ($data_campaign as $data_email):
+        $user = UserAvex::where('reldag', $data_email->kode_customer)->first();
+        $email = $user->email;
+        $email_to = array_filter(explode(";", $email));
+        $message_2 = " 
+            Dear Customer,<br/><br/>
+            Proses penukaran hadiah campaign <b><u>".$data_email->kode_campaign."</u></b> sudah bisa dilakukan,<br/><br/>
+            Mohon segera melakukan penukaran hadiah pada program AviaRedeem.<br/><br/>
+            
+            Terima kasih<br/><br/>
+
+            Harap jangan balas email ini karena kami tidak dapat menanggapi pesan yang dikirim ke alamat email ini.
+        ";
+        $headers = "From: Info Avian<info@avianbrands.com>\r\n";
+        $headers .= "MIME-Version: 1.0" . "\r\n";
+        $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+        foreach ($email_to as $email):
+            mail($email, "Notifikasi Penukaran Hadiah Campaign ".$data_email->kode_campaign." di AviaRedeem Customer ".$data_email->kode_customer, $message_2, $headers);
+        endforeach;
+
+        mail($email_02, "Notifikasi Penukaran Hadiah Campaign ".$data_email->kode_campaign." di AviaRedeem Customer ".$data_email->kode_customer, $message_2, $headers);
+
+    endforeach;
+
+    //================= BELUM KLAIM ====================//
+    $data_belum_klaim_0 = DB::select("
+        select  `campaign_h`.`kode_campaign`, 
+            `customer_omzet`.`periode_awal`, 
+            `customer_omzet`.`periode_akhir`, count(distinct campaign_d_hadiah.id) as jum_emas, 
+            count(distinct redeem_detail.id) as jum_redeem_detail, 
+            count(distinct redeem_emas.id) as jum_redeem_emas, `customer_omzet`.`kode_customer` 
+        from `customer_omzet` 
+        left join `campaign_h` 
+        on `customer_omzet`.`kode_campaign` = `campaign_h`.`kode_campaign` 
+        left join `campaign_d_hadiah` 
+        on `campaign_d_hadiah`.`id_campaign` = `campaign_h`.`id` and `campaign_d_hadiah`.`emas` = 1 
+        left join `redeem_detail` 
+        on `redeem_detail`.`kode_customer` = `customer_omzet`.`kode_customer` and `redeem_detail`.`id_campaign` = `campaign_h`.`id` 
+        left join `redeem_emas` 
+        on `redeem_emas`.`kode_customer` = `customer_omzet`.`kode_customer` and `redeem_emas`.`id_campaign` = `campaign_h`.`id` 
+        where `campaign_h`.`active` = 1 and customer_omzet.active = 1
+        group by `customer_omzet`.`kode_customer`, `customer_omzet`.`kode_campaign`
+        having jum_redeem_detail = 0 and customer_omzet.periode_akhir = '".$sekarang."'
+    ");
+
+    foreach ($data_belum_klaim_0 as $data_email):
+        $user = UserAvex::where('reldag', $data_email->kode_customer)->first();
+        $email = $user->email;
+        $email_to = array_filter(explode(";", $email));
+        $message_2 = " 
+            Dear Customer,<br/><br/>
+            Batas waktu penukaran hadiah campaign <b><u>".$data_email->kode_campaign."</u></b> adalah hari ini,<br/><br/>
+            Mohon segera melakukan penukaran hadiah pada program AviaRedeem.<br/><br/>
+            
+            Terima kasih<br/><br/>
+
+            Harap jangan balas email ini karena kami tidak dapat menanggapi pesan yang dikirim ke alamat email ini.
+        ";
+        $headers = "From: Info Avian<info@avianbrands.com>\r\n";
+        $headers .= "MIME-Version: 1.0" . "\r\n";
+        $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+        foreach ($email_to as $email):
+            mail($email, "Reminder Hari Terakhir Penukaran Hadiah Campaign ".$data_email->kode_campaign." di AviaRedeem Customer ".$data_email->kode_customer, $message_2, $headers);
+        endforeach;
+
+        mail($email_02, "Reminder Hari Terakhir Penukaran Hadiah Campaign ".$data_email->kode_campaign." di AviaRedeem Customer ".$data_email->kode_customer, $message_2, $headers);
+
+    endforeach;
+
+    $data_belum_klaim_1 = DB::select("
+        select  `campaign_h`.`kode_campaign`, 
+            `customer_omzet`.`periode_awal`, 
+            `customer_omzet`.`periode_akhir`, count(distinct campaign_d_hadiah.id) as jum_emas, 
+            count(distinct redeem_detail.id) as jum_redeem_detail, 
+            count(distinct redeem_emas.id) as jum_redeem_emas, `customer_omzet`.`kode_customer` 
+        from `customer_omzet` 
+        left join `campaign_h` 
+        on `customer_omzet`.`kode_campaign` = `campaign_h`.`kode_campaign` 
+        left join `campaign_d_hadiah` 
+        on `campaign_d_hadiah`.`id_campaign` = `campaign_h`.`id` and `campaign_d_hadiah`.`emas` = 1 
+        left join `redeem_detail` 
+        on `redeem_detail`.`kode_customer` = `customer_omzet`.`kode_customer` and `redeem_detail`.`id_campaign` = `campaign_h`.`id` 
+        left join `redeem_emas` 
+        on `redeem_emas`.`kode_customer` = `customer_omzet`.`kode_customer` and `redeem_emas`.`id_campaign` = `campaign_h`.`id` 
+        where `campaign_h`.`active` = 1 and customer_omzet.active = 1
+        group by `customer_omzet`.`kode_customer`, `customer_omzet`.`kode_campaign`
+        having jum_redeem_detail = 0 and date_sub(customer_omzet.periode_akhir, interval 1 day) = '".$sekarang_1."'        
+    ");
+    foreach ($data_belum_klaim_1 as $data_email):
+        $user = UserAvex::where('reldag', $data_email->kode_customer)->first();
+        $email = $user->email;
+        $email_to = array_filter(explode(";", $email));
+        $message_2 = " 
+            Dear Customer,<br/><br/>
+            Batas waktu penukaran hadiah campaign <b><u>".$data_email->kode_campaign."</u></b> kurang 1 hari,<br/><br/>
+            Mohon segera melakukan penukaran hadiah pada program AviaRedeem.<br/><br/>
+            
+            Terima kasih<br/><br/>
+
+            Harap jangan balas email ini karena kami tidak dapat menanggapi pesan yang dikirim ke alamat email ini.
+        ";
+        $headers = "From: Info Avian<info@avianbrands.com>\r\n";
+        $headers .= "MIME-Version: 1.0" . "\r\n";
+        $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+        foreach ($email_to as $email):
+            mail($email, "Reminder Kurang 1 Hari Penukaran Hadiah Campaign ".$data_email->kode_campaign." di AviaRedeem Customer ".$data_email->kode_customer, $message_2, $headers);
+        endforeach;
+
+        mail($email_02, "Reminder Kurang 1 Hari Penukaran Hadiah Campaign ".$data_email->kode_campaign." di AviaRedeem Customer ".$data_email->kode_customer, $message_2, $headers);
+
+    endforeach;
+
+
+    $data_belum_klaim_2 = DB::select("
+        select  `campaign_h`.`kode_campaign`, 
+            `customer_omzet`.`periode_awal`, 
+            `customer_omzet`.`periode_akhir`, count(distinct campaign_d_hadiah.id) as jum_emas, 
+            count(distinct redeem_detail.id) as jum_redeem_detail, 
+            count(distinct redeem_emas.id) as jum_redeem_emas, `customer_omzet`.`kode_customer` 
+        from `customer_omzet` 
+        left join `campaign_h` 
+        on `customer_omzet`.`kode_campaign` = `campaign_h`.`kode_campaign` 
+        left join `campaign_d_hadiah` 
+        on `campaign_d_hadiah`.`id_campaign` = `campaign_h`.`id` and `campaign_d_hadiah`.`emas` = 1 
+        left join `redeem_detail` 
+        on `redeem_detail`.`kode_customer` = `customer_omzet`.`kode_customer` and `redeem_detail`.`id_campaign` = `campaign_h`.`id` 
+        left join `redeem_emas` 
+        on `redeem_emas`.`kode_customer` = `customer_omzet`.`kode_customer` and `redeem_emas`.`id_campaign` = `campaign_h`.`id` 
+        where `campaign_h`.`active` = 1 and customer_omzet.active = 1
+        group by `customer_omzet`.`kode_customer`, `customer_omzet`.`kode_campaign`
+        having jum_redeem_detail = 0 and date_sub(customer_omzet.periode_akhir, interval 2 day) = '".$sekarang_2."'        
+    ");
+    foreach ($data_belum_klaim_2 as $data_email):
+        $user = UserAvex::where('reldag', $data_email->kode_customer)->first();
+        $email = $user->email;
+        $email_to = array_filter(explode(";", $email));
+        $message_2 = " 
+            Dear Customer,<br/><br/>
+            Batas waktu penukaran hadiah campaign <b><u>".$data_email->kode_campaign."</u></b> kurang 2 hari,<br/><br/>
+            Mohon segera melakukan penukaran hadiah pada program AviaRedeem.<br/><br/>
+            
+            Terima kasih<br/><br/>
+
+            Harap jangan balas email ini karena kami tidak dapat menanggapi pesan yang dikirim ke alamat email ini.
+        ";
+        $headers = "From: Info Avian<info@avianbrands.com>\r\n";
+        $headers .= "MIME-Version: 1.0" . "\r\n";
+        $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+        foreach ($email_to as $email):
+            mail($email, "Reminder Kurang 2 Hari Penukaran Hadiah Campaign ".$data_email->kode_campaign." di AviaRedeem Customer ".$data_email->kode_customer, $message_2, $headers);
+        endforeach;
+
+        mail($email_02, "Reminder Kurang 2 Hari Penukaran Hadiah Campaign ".$data_email->kode_campaign." di AviaRedeem Customer ".$data_email->kode_customer, $message_2, $headers);
+
+
+    endforeach;
+
+    
+    //================== BELUM KONVERSI =======================//
+    $data_belum_konversi_0 = DB::select("
+        select  `campaign_h`.`kode_campaign`, 
+            `customer_omzet`.`periode_awal`, 
+            `customer_omzet`.`periode_akhir`, count(distinct campaign_d_hadiah.id) as jum_emas, 
+            count(distinct redeem_detail.id) as jum_redeem_detail, 
+            count(distinct redeem_emas.id) as jum_redeem_emas, `customer_omzet`.`kode_customer` 
+        from `customer_omzet` 
+            left join `campaign_h` 
+            on `customer_omzet`.`kode_campaign` = `campaign_h`.`kode_campaign` 
+            left join `campaign_d_hadiah` 
+            on `campaign_d_hadiah`.`id_campaign` = `campaign_h`.`id` and `campaign_d_hadiah`.`emas` = 1 
+            left join `redeem_detail` 
+            on `redeem_detail`.`kode_customer` = `customer_omzet`.`kode_customer` and `redeem_detail`.`id_campaign` = `campaign_h`.`id` 
+            left join `redeem_emas` 
+            on `redeem_emas`.`kode_customer` = `customer_omzet`.`kode_customer` and `redeem_emas`.`id_campaign` = `campaign_h`.`id` 
+        where `campaign_h`.`active` = 1 and customer_omzet.active = 1
+        group by `customer_omzet`.`kode_customer`, `customer_omzet`.`kode_campaign`
+        having jum_emas > 0 and jum_redeem_detail > 0 and jum_redeem_emas = 0 and customer_omzet.periode_akhir = '".$sekarang."'
+    ");
+
+    foreach ($data_belum_konversi_0 as $data_email):
+        $user = UserAvex::where('reldag', $data_email->kode_customer)->first();
+        $email = $user->email;
+        $email_to = array_filter(explode(";", $email));
+        $message_2 = " 
+            Dear Customer,<br/><br/>
+            Batas waktu konversi emas campaign <b><u>".$data_email->kode_campaign."</u></b> adalah hari ini,<br/><br/>
+            Mohon segera melakukan konversi emas pada program AviaRedeem.<br/><br/>
+            
+            Terima kasih<br/><br/>
+
+            Harap jangan balas email ini karena kami tidak dapat menanggapi pesan yang dikirim ke alamat email ini.
+        ";
+        $headers = "From: Info Avian<info@avianbrands.com>\r\n";
+        $headers .= "MIME-Version: 1.0" . "\r\n";
+        $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+        foreach ($email_to as $email):
+            mail($email, "Reminder Hari Terakhir Konversi Emas Campaign ".$data_email->kode_campaign." di AviaRedeem Customer ".$data_email->kode_customer, $message_2, $headers);
+        endforeach;
+
+        mail($email_02, "Reminder Hari Terakhir Konversi Emas Campaign ".$data_email->kode_campaign." di AviaRedeem Customer ".$data_email->kode_customer, $message_2, $headers);
+
+    endforeach;
+
+    $data_belum_konversi_1 = DB::select("
+        select  `campaign_h`.`kode_campaign`, 
+            `customer_omzet`.`periode_awal`, 
+            `customer_omzet`.`periode_akhir`, count(distinct campaign_d_hadiah.id) as jum_emas, 
+            count(distinct redeem_detail.id) as jum_redeem_detail, 
+            count(distinct redeem_emas.id) as jum_redeem_emas, `customer_omzet`.`kode_customer` 
+        from `customer_omzet` 
+            left join `campaign_h` 
+            on `customer_omzet`.`kode_campaign` = `campaign_h`.`kode_campaign` 
+            left join `campaign_d_hadiah` 
+            on `campaign_d_hadiah`.`id_campaign` = `campaign_h`.`id` and `campaign_d_hadiah`.`emas` = 1 
+            left join `redeem_detail` 
+            on `redeem_detail`.`kode_customer` = `customer_omzet`.`kode_customer` and `redeem_detail`.`id_campaign` = `campaign_h`.`id` 
+            left join `redeem_emas` 
+            on `redeem_emas`.`kode_customer` = `customer_omzet`.`kode_customer` and `redeem_emas`.`id_campaign` = `campaign_h`.`id` 
+        where `campaign_h`.`active` = 1 and customer_omzet.active = 1
+        group by `customer_omzet`.`kode_customer`, `customer_omzet`.`kode_campaign`
+        having jum_emas > 0 and jum_redeem_detail > 0 and jum_redeem_emas = 0 and date_sub(customer_omzet.periode_akhir, interval 1 day) = '".$sekarang_1."'
+    ");
+    foreach ($data_belum_konversi_1 as $data_email):
+        $user = UserAvex::where('reldag', $data_email->kode_customer)->first();
+        $email = $user->email;
+        $email_to = array_filter(explode(";", $email));
+        $message_2 = " 
+            Dear Customer,<br/><br/>
+            Batas waktu konversi emas campaign <b><u>".$data_email->kode_campaign."</u></b> kurang 1 hari,<br/><br/>
+            Mohon segera melakukan konversi emas pada program AviaRedeem.<br/><br/>
+            
+            Terima kasih<br/><br/>
+
+            Harap jangan balas email ini karena kami tidak dapat menanggapi pesan yang dikirim ke alamat email ini.
+        ";
+        $headers = "From: Info Avian<info@avianbrands.com>\r\n";
+        $headers .= "MIME-Version: 1.0" . "\r\n";
+        $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+        foreach ($email_to as $email):
+            mail($email, "Reminder Kurang 1 Hari Konversi Emas Campaign ".$data_email->kode_campaign." di AviaRedeem Customer ".$data_email->kode_customer, $message_2, $headers);
+        endforeach;
+
+        mail($email_02, "Reminder Kurang 1 Hari Konversi Emas Campaign ".$data_email->kode_campaign." di AviaRedeem Customer ".$data_email->kode_customer, $message_2, $headers);
+
+    endforeach;
+
+
+    $data_belum_konversi_2 = DB::select("
+        select  `campaign_h`.`kode_campaign`, 
+            `customer_omzet`.`periode_awal`, 
+            `customer_omzet`.`periode_akhir`, count(distinct campaign_d_hadiah.id) as jum_emas, 
+            count(distinct redeem_detail.id) as jum_redeem_detail, 
+            count(distinct redeem_emas.id) as jum_redeem_emas, `customer_omzet`.`kode_customer` 
+        from `customer_omzet` 
+            left join `campaign_h` 
+            on `customer_omzet`.`kode_campaign` = `campaign_h`.`kode_campaign` 
+            left join `campaign_d_hadiah` 
+            on `campaign_d_hadiah`.`id_campaign` = `campaign_h`.`id` and `campaign_d_hadiah`.`emas` = 1 
+            left join `redeem_detail` 
+            on `redeem_detail`.`kode_customer` = `customer_omzet`.`kode_customer` and `redeem_detail`.`id_campaign` = `campaign_h`.`id` 
+            left join `redeem_emas` 
+            on `redeem_emas`.`kode_customer` = `customer_omzet`.`kode_customer` and `redeem_emas`.`id_campaign` = `campaign_h`.`id` 
+        where `campaign_h`.`active` = 1 and customer_omzet.active = 1
+        group by `customer_omzet`.`kode_customer`, `customer_omzet`.`kode_campaign`
+        having jum_emas > 0 and jum_redeem_detail > 0 and jum_redeem_emas = 0 and date_sub(customer_omzet.periode_akhir, interval 2 day) = '".$sekarang_2."'
+    ");
+    foreach ($data_belum_konversi_2 as $data_email):
+        $user = UserAvex::where('reldag', $data_email->kode_customer)->first();
+        $email = $user->email;
+        $email_to = array_filter(explode(";", $email));
+        $message_2 = " 
+            Dear Customer,<br/><br/>
+            Batas waktu konversi emas campaign <b><u>".$data_email->kode_campaign."</u></b> kurang 2 hari,<br/><br/>
+            Mohon segera melakukan konversi emas pada program AviaRedeem.<br/><br/>
+            
+            Terima kasih<br/><br/>
+
+            Harap jangan balas email ini karena kami tidak dapat menanggapi pesan yang dikirim ke alamat email ini.
+        ";
+        $headers = "From: Info Avian<info@avianbrands.com>\r\n";
+        $headers .= "MIME-Version: 1.0" . "\r\n";
+        $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+        foreach ($email_to as $email):
+            mail($email, "Reminder Kurang 2 Hari Konversi Emas Campaign ".$data_email->kode_campaign." di AviaRedeem Customer ".$data_email->kode_customer, $message_2, $headers);
+        endforeach;
+
+        mail($email_02, "Reminder Kurang 2 Hari Konversi Emas Campaign ".$data_email->kode_campaign." di AviaRedeem Customer ".$data_email->kode_customer, $message_2, $headers);
+
+
+    endforeach;    
+
+});
 
 Route::get('/backup-database', function () {
     $tables = false;
@@ -112,6 +427,9 @@ Route::group(array('prefix' => 'backend','middleware'=> ['token_super']), functi
 
     Route::get('/last-tto/datatable','Backend\TTOController@datatable');	
     Route::resource('last-tto', 'Backend\TTOController');
+
+    Route::get('/delete-redeem','Backend\DelRedeemController@index');	
+    Route::post('/delete-redeem','Backend\DelRedeemController@delete');	
 
 });
 

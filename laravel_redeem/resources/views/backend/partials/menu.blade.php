@@ -38,6 +38,9 @@
                 <li class="{{ ($segment == 'last-tto' ? 'active' : '') }}">
                     <a href="<?=url('backend/last-tto');?>"><i class="fa fa-list-alt"></i> Last TTO / TTP Number</a>
                 </li>
+                <li class="{{ ($segment == 'delete-redeem' ? 'active' : '') }}">
+                    <a href="<?=url('backend/delete-redeem');?>"><i class="fa fa-trash-o"></i> Delete Redeem</a>
+                </li>
             <?php
                 endif;
             ?>

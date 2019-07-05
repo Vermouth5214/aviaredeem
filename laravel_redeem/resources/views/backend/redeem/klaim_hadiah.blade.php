@@ -206,6 +206,7 @@
                             ?>
                                 </tbody>
                                 </table>
+                                <h4 class="blue" style="text-align:right; margin-bottom:20px;"><b>*) Jumlah redeem adalah jumlah dalam satuan paket</b></h4>
                                 <div class="form-group">
                                     <div class="col-sm-6 col-xs-12 col-sm-offset-6 text-right">
                                         <a href="<?=url('/backend/redeem-hadiah')?>" class="btn btn-warning">&nbsp;&nbsp;&nbsp;&nbsp;Cancel&nbsp;&nbsp;&nbsp;&nbsp;</a>

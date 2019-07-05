@@ -173,6 +173,8 @@
                                     <th class="text-right">  <?=number_format($total,0,',','.');?></th>
                                 </thead>
                             </table>
+                            <h4 class="blue" style="text-align:right; margin-bottom:20px;"><b>*) Jumlah redeem adalah jumlah dalam satuan paket</b></h4>
+
                             <br/>
                             <?php
                                 $url = "backend/redeem-hadiah/".$data_omzet[0]->id."/konversi-emas";
