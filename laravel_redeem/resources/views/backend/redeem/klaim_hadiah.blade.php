@@ -169,8 +169,9 @@
                                 <table class="table table-striped table-hover table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
                                 <thead>
                                     <th class="text-center">Hadiah</th>
-                                    <th class="text-center">Jumlah</th>
+                                    <th class="text-center">Jumlah (Paket)</th>
                                     <th class="text-center">Harga / Poin</th>
+                                    <th class="text-center">Jumlah (Total)</th>
                                     <th class="text-center">Satuan</th>
                                 </thead>
                                 <tbody>
@@ -186,16 +187,20 @@
                                     }
                             ?>      
                                     <tr>
-                                        <td width = "60%" class="text-right">
+                                        <td width = "50%" class="text-right">
                                             <input type="hidden" name="id[]" value="<?=$hadiah->id;?>">
                                             <?=$hadiah->nama_hadiah;?>
                                         </td>
                                         <td>
-                                            <input type="number" class="form-control jumlah" name="jumlah[]" min=0 value=<?=$jumlah;?> required="required">
+                                            <input type="number" class="form-control jumlah" name="jumlah[]" min=0 value=<?=$jumlah;?> required="required" id="jumlah_paket_<?=$hadiah->id;?>">
                                         </td>
                                         <td class="text-right">
                                             <input type="hidden" value="<?=$hadiah->harga;?>" class="harga" name="harga[]">
+                                            <input type="hidden" value="<?=$hadiah->jumlah;?>" id="jumlah_<?=$hadiah->id;?>">
                                             <?=number_format($hadiah->harga,0,',','.');?>
+                                        </td>
+                                        <td class="text-right">
+                                            <b class="blue" id="hadiah_<?=$hadiah->id;?>"><b>
                                         </td>
                                         <td>
                                             <?=$hadiah->satuan;?>
@@ -278,9 +283,24 @@
         }
 
         hitung_total();
-        
+        hitung_jumlah_total();
+
+        function hitung_jumlah_total(){
+            <?php
+                foreach ($data_list_hadiah as $hadiah):
+            ?>
+                var hadiah = <?=$hadiah;?>;
+                jumlah_paket = $("#jumlah_paket_" + hadiah.id).val();
+                jumlah = $("#jumlah_" + hadiah.id).val();
+                $('#hadiah_' + hadiah.id).html( jumlah_paket * jumlah);
+            <?php
+                endforeach;
+            ?>
+        }
+
         $('.jumlah').on('change',function(e){
             hitung_total();
+            hitung_jumlah_total();
         })
 
         $('#form-submit').on('submit',function(){

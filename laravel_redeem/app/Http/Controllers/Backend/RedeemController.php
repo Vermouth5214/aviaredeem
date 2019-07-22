@@ -219,11 +219,11 @@ class RedeemController extends Controller
             }
 
             //data list hadiah
-            $data_list_hadiah_emas =  CampaignDHadiah::select('id','nama_hadiah','harga','satuan')
+            $data_list_hadiah_emas =  CampaignDHadiah::select('id','nama_hadiah','harga','satuan','jumlah')
                                     ->where('id_campaign', $data_header[0]->id)
                                     ->where('pilihan',0)->orderBy('id','ASC')->get();
             
-            $data_list_hadiah_pilihan = CampaignDBagi::select('campaign_d_hadiah.id','campaign_d_hadiah.nama_hadiah','campaign_d_hadiah.harga','campaign_d_hadiah.satuan')
+            $data_list_hadiah_pilihan = CampaignDBagi::select('campaign_d_hadiah.id','campaign_d_hadiah.nama_hadiah','campaign_d_hadiah.harga','campaign_d_hadiah.satuan', 'campaign_d_hadiah.jumlah')
                                         ->leftJoin('campaign_d_hadiah','campaign_d_bagi.id_campaign_d_hadiah','=','campaign_d_hadiah.id')
                                         ->where('campaign_d_bagi.id_campaign',$data_header[0]->id)
                                         ->where('campaign_d_bagi.kode_agen',$userinfo['reldag'])->orderBy('campaign_d_hadiah.id','ASC')->get();
@@ -530,11 +530,11 @@ class RedeemController extends Controller
             }
 
             //data list hadiah
-            $data_list_hadiah_emas =  CampaignDHadiah::select('id','nama_hadiah','harga','satuan')
+            $data_list_hadiah_emas =  CampaignDHadiah::select('id','nama_hadiah','harga','satuan','jumlah')
                                     ->where('id_campaign', $data_header[0]->id)
                                     ->where('pilihan',0)->orderBy('id','ASC')->get();
             
-            $data_list_hadiah_pilihan = CampaignDBagi::select('campaign_d_hadiah.id','campaign_d_hadiah.nama_hadiah','campaign_d_hadiah.harga','campaign_d_hadiah.satuan')
+            $data_list_hadiah_pilihan = CampaignDBagi::select('campaign_d_hadiah.id','campaign_d_hadiah.nama_hadiah','campaign_d_hadiah.harga','campaign_d_hadiah.satuan','campaign_d_hadiah.jumlah')
                                         ->leftJoin('campaign_d_hadiah','campaign_d_bagi.id_campaign_d_hadiah','=','campaign_d_hadiah.id')
                                         ->where('campaign_d_bagi.id_campaign',$data_header[0]->id)
                                         ->where('campaign_d_bagi.kode_agen',$userinfo['reldag'])->orderBy('campaign_d_hadiah.id','ASC')->get();

@@ -138,9 +138,11 @@
                             <table class="table table-striped table-hover table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
                                 <thead>
                                     <th class="text-center">Hadiah</th>
-                                    <th class="text-center">Jumlah</th>
-                                    <th class="text-center">Satuan</th>                                    
-                                    <th class="text-center">Harga / Poin</th>
+                                    <th class="text-center">Jumlah (Paket)</th>
+                                    <th class="text-center">Harga / Poin</th>                                    
+                                    <th class="text-center">Jumlah (Total)</th>
+                                    <th class="text-center">Satuan</th>
+                                    <th class="text-center">Sub Total</th>
                                 </thead>
                                 <tbody>
                                     <?php
@@ -148,19 +150,25 @@
                                         $keterangan = '';
                                         foreach ($data_redeem as $hadiah):
                                             $keterangan = $hadiah->keterangan;
-                                    ?>      
+                                    ?>
                                             <tr>
-                                                <td width = "60%" class="text-right">
+                                                <td width = "40%" class="text-right">
                                                     <?=$hadiah->campaign_hadiah->nama_hadiah;?>
                                                 </td>
                                                 <td class="text-right">
                                                     <?=number_format($hadiah->jumlah,0,',','.');?>
                                                 </td>
+                                                <td class="text-right">
+                                                    <?=number_format($hadiah->campaign_hadiah->harga,0,',','.');?>
+                                                </td>
+                                                <td class="text-right">
+                                                    <b class="blue"><?=number_format($hadiah->jumlah * $hadiah->campaign_hadiah->jumlah,0,',','.');?></b>
+                                                </td>
                                                 <td>
                                                     <?=$hadiah->campaign_hadiah->satuan;?>
                                                 </td>
                                                 <td class="text-right">
-                                                    <?=number_format($hadiah->campaign_hadiah->harga,0,',','.');?>
+                                                    <?=number_format($hadiah->jumlah * $hadiah->campaign_hadiah->harga,0,',','.');?>
                                                 </td>
                                             </tr>
                                     <?php
@@ -169,7 +177,7 @@
                                     ?>
                                 </tbody>
                                 <thead>
-                                    <th class="text-right" colspan=3>Grand Total</th>
+                                    <th class="text-right" colspan=5>Grand Total</th>
                                     <th class="text-right">  <?=number_format($total,0,',','.');?></th>
                                 </thead>
                             </table>
