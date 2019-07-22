@@ -181,7 +181,6 @@
                                     <th class="text-right">  <?=number_format($total,0,',','.');?></th>
                                 </thead>
                             </table>
-                            <h4 class="blue" style="text-align:right; margin-bottom:20px;"><b>*) Jumlah redeem adalah jumlah dalam satuan paket</b></h4>
                             <br/>
                             <h2>Daftar Konversi Emas</h2>
                             <table class="table table-striped table-hover table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
