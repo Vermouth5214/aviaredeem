@@ -71,7 +71,7 @@ Route::get('/email-reminder', function () {
     // $sekarang_3 = '2019-06-22';
 
     $email_01 = "oeidonny.winarto@gmail.com";
-    $email_02 = "mkt1@avianbrands.com";
+    $email_02 = "mkt_1@avianbrands.com";
 
     // EMAIL NOTIFIKASI SUDAH BISA MULAI REDEEM    
     $data_campaign = DB::select("
