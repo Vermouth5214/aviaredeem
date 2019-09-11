@@ -1,6 +1,7 @@
 <?php
 
 use App\Model\CampaignDHadiah;
+use App\Model\CampaignDBagi;
 use App\Model\CampaignDEmas;
 use App\Model\RedeemDetail;
 use App\Model\RedeemEmas;
@@ -55,6 +56,72 @@ Route::get('/auto-redeem', function () {
                 $insert_redeem_emas->jumlah = 0;
                 $insert_redeem_emas->save();
             endforeach;
+        endforeach;
+    }
+}); 
+
+Route::get('/auto-redeem-satu', function () {
+    $data = DB::select("
+                SELECT c.kode_campaign, c.kode_customer, c.omzet_netto, c.poin, ch.id, count(distinct rd.id) as jum_redeem, detail_had.jum_hadiah
+                FROM customer_omzet c
+                LEFT JOIN campaign_h ch on ch.kode_campaign = c.kode_campaign
+                LEFT JOIN redeem_detail rd on rd.kode_customer = c.kode_customer and rd.id_campaign = ch.id
+                LEFT JOIN 
+                (
+                SELECT id_campaign, count(id_campaign) as jum_hadiah, emas
+                FROM(
+                        SELECT cd1.id_campaign, emas
+                        FROM campaign_d_hadiah cd1
+                        WHERE pilihan = 0
+                        GROUP BY id_campaign, emas
+                        UNION ALL
+                        SELECT cd2.id_campaign, emas
+                        FROM campaign_d_hadiah cd2
+                        WHERE pilihan = 1
+                        GROUP BY id_campaign
+                        ORDER BY id_campaign
+                    ) cmp 
+                    GROUP BY id_campaign
+                    HAVING jum_hadiah = 1 AND emas = 0
+                ) detail_had
+                ON ch.id = detail_had.id_campaign
+                WHERE c.active = 1 and ch.active = 1
+                AND '".date('Y-m-d')."' >= c.periode_awal and '".date('Y-m-d')."' <= c.periode_akhir
+                AND jum_hadiah = 1
+                GROUP BY c.kode_campaign, c.kode_customer
+                HAVING jum_redeem = 0
+            ");
+    if ($data){
+        foreach ($data as $detail):
+            $id_hadiah = 0;
+            $harga = 1;
+            //query ambil id hadiah dan harga sesuai kode agen
+            //cek di tabel hadiah dulu
+            $get_harga = CampaignDHadiah::where('id_campaign', '=', $detail->id)->where('pilihan', '=', 0)->where('emas', '=', 0)->get();
+            if (count($get_harga)){
+                $id_hadiah = $get_harga[0]->id;
+                $harga = $get_harga[0]->harga;
+            } else {
+                //cek di tabel pilihan
+                $get_harga = CampaignDBagi::with('campaign_hadiah')->where('id_campaign', '=', $detail->id)->where('kode_agen', '=', $detail->kode_customer)->get();
+                if (count($get_harga)){
+                    $id_hadiah = $get_harga[0]->id_campaign_d_hadiah;
+                    $harga = $get_harga[0]->campaign_hadiah->harga;
+                }
+            }
+
+            if ($detail->omzet_netto > 0){
+                $jum_redeem = floor($detail->omzet_netto / $harga);
+            } else 
+            if ($detail->poin > 0){
+                $jum_redeem = floor($detail->poin / $harga);
+            }
+            $insert_redeem = new RedeemDetail();
+            $insert_redeem->kode_customer = $detail->kode_customer;
+            $insert_redeem->id_campaign = $detail->id;
+            $insert_redeem->id_campaign_hadiah = $id_hadiah;
+            $insert_redeem->jumlah = $jum_redeem;
+            $insert_redeem->save();
         endforeach;
     }
 }); 
