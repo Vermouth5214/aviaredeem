@@ -22,7 +22,7 @@
     <div class="clearfix"></div>
     @include('backend.elements.breadcrumb',array('breadcrumb' => $breadcrumb))	
     <div class="row">
-        <div class="col-xs-12">
+        <div class="col-xs-12 table-responsive">
             <table class="table table-striped">
                 <thead>
                   <tr>

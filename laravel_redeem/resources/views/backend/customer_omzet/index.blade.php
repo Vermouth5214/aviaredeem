@@ -39,6 +39,9 @@
 				<div class="x_content">
                     @include('backend.elements.notification')
                     @if (Session::has('error'))
+                        <?php
+                            if (!empty(Session::get('error'))) :
+                        ?>
                         <div class="row">
                             <div class="col-xs-12 alert alert-danger alert-dismissible" role="alert">
                                 <?php
@@ -49,6 +52,9 @@
                                 <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
                             </div>
                         </div>
+                        <?php
+                            endif;
+                        ?>
                     @endif
                     <table class="table table-striped table-hover table-bordered dt-responsive nowrap dataTable" cellspacing="0" width="100%">
 						<thead>
