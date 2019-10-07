@@ -201,7 +201,7 @@
                             </table>
                             <?php
                                 // GROUP AAA ada kolom keterangan
-                                if (($data_omzet[0]->kode_customer == '14F01020002') || ($data_omzet[0]->kode_customer == '14B02010003') || ($data_omzet[0]->kode_customer == '22A02010002') || ($data_omzet[0]->kode_customer == '14J01010002')) :
+                                if (($data_omzet[0]->kode_customer == '14F01020002') || ($data_omzet[0]->kode_customer == '14B02010003') || ($data_omzet[0]->kode_customer == '22A02010002')) :
                             ?>
                             <div class="row">
                                 <div class="col-xs-12 col-sm-6">
