@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Redirect;
 use Datatables;
+use App\Imports\OmzetImport;
 use Excel;
 
 class OmzetController extends Controller
@@ -266,66 +267,10 @@ class OmzetController extends Controller
     public function upload_store(Request $request){
         if ($request->hasFile('upload_file')) {
             $file = $request->file('upload_file');
-            $result = Excel::selectSheetsByIndex(0)->load($file, function ($reader) {
-                $reader->noHeading();
-            })->get();
-            $result = $result->toArray();
-            $i = 1;
-            $j = 1;
-            $error = array();
-            foreach ($result as $row):
-                $cek_campaign = CampaignH::where('kode_campaign', trim($row[0]))->where('active' , 1)->count();
-                $cek_user = UserAvex::where('reldag', trim($row[1]))->count();
-                $cek = CustomerOmzet::where('kode_campaign', trim($row[0]))->where('kode_customer', trim($row[1]))->where('active',1)->count();
-                if ($cek_campaign == 0){
-                    $text = "Baris ".$i." : Kode Campaign tidak ditemukan";
-                    array_push($error,$text);
-                } else 
-                if ($cek_user == 0){
-                    $text = "Baris ".$i." : Kode Customer tidak ditemukan";
-                    array_push($error,$text);
-                } else
-                if ($cek > 0){
-                    //kembar
-                    $text = "Baris ".$i." : Data sudah ada";
-                    array_push($error,$text);
-                } else
-                if ($row[3] < $row[2]){
-                    //periode akhir < periode awal
-                    $text = "Baris ".$i." : Tanggal periode akhir lebih kecil dari periode awal";
-                    array_push($error,$text);
-                } else 
-                if (($row[7] == 0) && ($row[8] == 0)){
-                    //jika omzet 0 dan poin = 0
-                    $text = "Baris ".$i." : Omzet Netto dan Poin 0";
-                    array_push($error,$text);
-                } else 
-                if (($row[7] > 0) && ($row[8] > 0)){
-                    //jika omzet dan poin diisi
-                    $text = "Baris ".$i." : Omzet Netto dan Poin > 0";
-                    array_push($error,$text);
-                } else 
-                if (($row[7] < 0) || ($row[8] < 0)){
-                    //jika omzet lebih kecil 0 atau poin lebih kecil 0
-                    $text = "Baris ".$i." : Omzet Netto atau Poin < 0";
-                    array_push($error,$text);
-                } else {
-                    $data = new CustomerOmzet;
-                    $data->kode_campaign = trim($row[0]);
-                    $data->kode_customer = trim($row[1]);
-                    $data->periode_awal = $row[2];
-                    $data->periode_akhir = $row[3];
-                    $data->omzet_tepat_waktu = $row[4] / 1;
-                    $data->disc_pembelian = $row[5] / 1;
-                    $data->disc_penjualan = $row[6] / 1;
-                    $data->omzet_netto = $row[7] / 1;
-                    $data->poin = $row[8] / 1;
-                    $data->active = 1;
-                    $data->user_modified = Session::get('userinfo')['uname'];
-                    $data->save();
-                }
-                $i++;
-            endforeach;
+
+            $import = new OmzetImport;
+            Excel::import($import, $file);
+            $error = $import->getError();
 
             return Redirect::to('/backend/master-omzet/')->with('success', "Data saved successfully")->with('mode', 'success')->with('error', $error);
         } else {
