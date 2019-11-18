@@ -531,6 +531,10 @@ Route::group(array('prefix' => 'backend','middleware'=> ['token_admin']), functi
 Route::group(array('prefix' => 'backend','middleware'=> ['token_all']), function()
 {
     Route::get('',function (){return Redirect::to('backend/dashboard');});
+    Route::get('/user-guide', function () {
+        return response()->file('upload/SOP Avia Redeem.pdf');
+    });
+
 });
 
 /* USER AJA */

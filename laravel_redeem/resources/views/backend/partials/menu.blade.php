@@ -60,6 +60,9 @@
             <li class="{{ ($segment == 'redeem-hadiah' ? 'active' : '') }}">
                 <a href="<?=url('backend/redeem-hadiah');?>"><i class="fa fa-gift"></i> Redeem Hadiah</a>
             </li>
+			<li class="{{ ($segment == 'user-guide' ? 'active' : '') }}">
+				<a href="<?=url('backend/user-guide');?>" target="_blank"><i class="fa fa-question"></i> User Guide</a>
+			</li>
         </ul>
     </div>
     <?php
