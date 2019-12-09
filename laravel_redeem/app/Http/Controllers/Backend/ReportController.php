@@ -137,7 +137,7 @@ class ReportController extends Controller
                         foreach ($data_konversi_emas as $detail_emas):
                             $jumlah_emas = 1;
                             for ($i=1;$i<=$detail_emas->jumlah;$i++){
-                                if ($total_gram + $detail_emas->jumlah_gram >= 300){
+                                if ($total_gram + $detail_emas->jumlah_gram >= 214){
                                     //generate detail emas
                                     $document_no = "TTO-AAP-".date('ym')."-".strval($digit);
                                     $data_emas_detail_item = [$document_no, $line_no * $ctr, $detail_emas->kode_catalogue, $detail_emas->kode_hadiah, $jumlah_emas, $jumlah_emas, $detail_emas->harga * $jumlah_emas, $tipe, $detail_emas->satuan, 1, $detail_emas->harga * $jumlah_emas, "0", "H"];
@@ -320,7 +320,7 @@ class ReportController extends Controller
                         foreach ($data_konversi_emas as $detail_emas):
                             $jumlah_emas = 1;
                             for ($i=1;$i<=$detail_emas->jumlah;$i++){
-                                if ($total_gram + $detail_emas->jumlah_gram >= 300){
+                                if ($total_gram + $detail_emas->jumlah_gram >= 214){
                                     //generate detail emas
                                     $document_no = "TTP-AAP-".date('ym')."-".strval($digit);
                                     $data_emas_detail_item = [$document_no, $line_no * $ctr, $detail_emas->kode_catalogue, $detail_emas->kode_hadiah, $jumlah_emas, $jumlah_emas, $detail_emas->harga * $jumlah_emas, $tipe, $detail_emas->satuan, 1, $detail_emas->harga * $jumlah_emas, "0", "H"];
@@ -510,7 +510,7 @@ class ReportController extends Controller
                         foreach ($data_konversi_emas as $detail_emas):
                             $jumlah_emas = 1;
                             for ($i=1;$i<=$detail_emas->jumlah;$i++){
-                                if ($total_gram + $detail_emas->jumlah_gram >= 300){
+                                if ($total_gram + $detail_emas->jumlah_gram >= 214){
                                     //generate detail emas
                                     $document_no = "TTO-IPP-".date('ym')."-".strval($digit);
                                     $data_emas_detail_item = [$document_no, $line_no * $ctr, $detail_emas->kode_catalogue, $detail_emas->kode_hadiah, $jumlah_emas, $jumlah_emas, $detail_emas->harga * $jumlah_emas, $tipe, $detail_emas->satuan, 1, $detail_emas->harga * $jumlah_emas, "0", "H"];
@@ -694,7 +694,7 @@ class ReportController extends Controller
                         foreach ($data_konversi_emas as $detail_emas):
                             $jumlah_emas = 1;
                             for ($i=1;$i<=$detail_emas->jumlah;$i++){
-                                if ($total_gram + $detail_emas->jumlah_gram >= 300){
+                                if ($total_gram + $detail_emas->jumlah_gram >= 214){
                                     //generate detail emas
                                     $document_no = "TTP-IPP-".date('ym')."-".strval($digit);
                                     $data_emas_detail_item = [$document_no, $line_no * $ctr, $detail_emas->kode_catalogue, $detail_emas->kode_hadiah, $jumlah_emas, $jumlah_emas, $detail_emas->harga * $jumlah_emas, $tipe, $detail_emas->satuan, 1, $detail_emas->harga * $jumlah_emas, "0", "H"];
