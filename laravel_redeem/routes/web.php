@@ -22,6 +22,8 @@ Route::get('/', function () {
 	return redirect('backend/');
 });
 
+
+//AUTO REDEEM OMZET / POIN tidak cukup
 Route::get('/auto-redeem', function () {
     $data = DB::select("
         SELECT ch.id, c.kode_campaign, c.kode_customer, c.omzet_netto, c.poin, count(distinct rd.id) as jum_redeem, min_hadiah.harga
@@ -60,68 +62,130 @@ Route::get('/auto-redeem', function () {
     }
 }); 
 
+
+//AUTO REDEEM jika cuma satu hadiah
 Route::get('/auto-redeem-satu', function () {
+    /* ==================================================
+        - dilistkan seluruh hadiah dulu dari d_bagi di union sama dari d_hadiah yang pilihan = 0 
+
+        - terus di cek jumlah hadiahnya (jumlah baris)
+        - kalau cuma 1 langsung di auto redeem
+
+        - kalau jumlah lebih dari 1 di cek kode hadiahnya
+            - kalau kode beda abaikan
+            - kalau kode sama
+                - di redeemkan dari yang nominalnya paling besar
+                - sisanya di cek an di nominal yang kecil    
+    ====================================================*/
+
+    //select campaign yang ga ada hadiah emas nya
     $data = DB::select("
-                SELECT c.kode_campaign, c.kode_customer, c.omzet_netto, c.poin, ch.id, count(distinct rd.id) as jum_redeem, detail_had.jum_hadiah
-                FROM customer_omzet c
-                LEFT JOIN campaign_h ch on ch.kode_campaign = c.kode_campaign
-                LEFT JOIN redeem_detail rd on rd.kode_customer = c.kode_customer and rd.id_campaign = ch.id
-                LEFT JOIN 
-                (
-                SELECT id_campaign, count(id_campaign) as jum_hadiah, emas
-                FROM(
-                        SELECT cd1.id_campaign, emas
-                        FROM campaign_d_hadiah cd1
-                        WHERE pilihan = 0
-                        GROUP BY id_campaign, emas
-                        UNION ALL
-                        SELECT cd2.id_campaign, emas
-                        FROM campaign_d_hadiah cd2
-                        WHERE pilihan = 1
-                        GROUP BY id_campaign
-                        ORDER BY id_campaign
-                    ) cmp 
-                    GROUP BY id_campaign
-                    HAVING jum_hadiah = 1 AND emas = 0
-                ) detail_had
-                ON ch.id = detail_had.id_campaign
-                WHERE c.active = 1 and ch.active = 1
-                AND '".date('Y-m-d')."' >= c.periode_awal and '".date('Y-m-d')."' <= c.periode_akhir
-                AND jum_hadiah = 1
-                GROUP BY c.kode_campaign, c.kode_customer
-                HAVING jum_redeem = 0
+                    select cop_emas0.*, count(distinct rd.id) as jum_redeem from
+                    (
+                        select c.kode_campaign, c.kode_customer, c.omzet_netto, c.poin, c_emas.jum_emas, c_emas.id
+                            from customer_omzet c
+                        left join
+                            (
+                            select ch.id, ch.kode_campaign, IFNULL(c_emas.jum_emas,0) as jum_emas
+                                from campaign_h ch 
+                                left join
+                                    (select id_campaign, count(kode_hadiah) as jum_emas from campaign_d_hadiah where emas = 1 
+                                        group by id_campaign) c_emas
+                                on ch.id = c_emas.id_campaign
+                                where ch.active = 1
+                            having jum_emas = 0
+                            ) c_emas
+                            on c.kode_campaign = c_emas.kode_campaign
+                        where jum_emas = 0
+                        AND '".date('Y-m-d')."' >= c.periode_awal and '".date('Y-m-d')."' <= c.periode_akhir
+                    ) cop_emas0
+                    LEFT JOIN redeem_detail rd on rd.kode_customer = cop_emas0.kode_customer and rd.id_campaign = cop_emas0.id
+                    GROUP BY cop_emas0.kode_campaign, cop_emas0.kode_customer
+                    HAVING jum_redeem = 0
             ");
+
     if ($data){
         foreach ($data as $detail):
-            $id_hadiah = 0;
-            $harga = 1;
-            //query ambil id hadiah dan harga sesuai kode agen
-            //cek di tabel hadiah dulu
-            $get_harga = CampaignDHadiah::where('id_campaign', '=', $detail->id)->where('pilihan', '=', 0)->where('emas', '=', 0)->get();
-            if (count($get_harga)){
-                $id_hadiah = $get_harga[0]->id;
-                $harga = $get_harga[0]->harga;
-            } else {
-                //cek di tabel pilihan
-                $get_harga = CampaignDBagi::with('campaign_hadiah')->where('id_campaign', '=', $detail->id)->where('kode_agen', '=', $detail->kode_customer)->get();
-                if (count($get_harga)){
-                    $id_hadiah = $get_harga[0]->id_campaign_d_hadiah;
-                    $harga = $get_harga[0]->campaign_hadiah->harga;
+            $id_campaign = $detail->id;
+            $kode_campaign = $detail->kode_campaign;
+            $kode_customer = $detail->kode_customer;
+            $omzet = $detail->omzet_netto;
+            $poin = $detail->poin;
+
+            //ngelist hadiah
+            $data_hadiah = DB::select("
+                select cdh.id, cdh.kode_hadiah, cdh.pilihan, cdh.id_campaign, cdh.harga
+                    from campaign_d_bagi cdb 
+                    left join campaign_d_hadiah cdh
+                    on cdb.id_campaign_d_hadiah = cdh.id
+                where cdb.id_campaign = '".$id_campaign."' and kode_agen = '".$kode_customer."'
+                union all
+                select id, kode_hadiah, pilihan, id_campaign, harga
+                    from campaign_d_hadiah
+                where id_campaign = '".$id_campaign."'
+                    and pilihan = 0 and emas = 0
+                order by id_campaign, harga DESC
+            ");
+
+            //cek jumlah baris hadiah
+            $jumlah_hadiah = count($data_hadiah);
+
+            //jika jumlah hadiah cuma 1 langsung di redeem kan
+            if ($jumlah_hadiah == 1){
+                foreach ($data_hadiah as $detail_hadiah):
+                    $id_campaign_hadiah = $detail_hadiah->id;
+                    $harga = $detail_hadiah->harga;
+                endforeach;
+
+                if ($omzet > 0){
+                    $jum_redeem = floor($omzet / $harga);
+                } else 
+                if ($poin > 0){
+                    $jum_redeem = floor($poin / $harga);
+                }
+
+                $insert_redeem = new RedeemDetail();
+                $insert_redeem->kode_customer = $kode_customer;
+                $insert_redeem->id_campaign = $id_campaign;
+                $insert_redeem->id_campaign_hadiah = $id_campaign_hadiah;
+                $insert_redeem->jumlah = $jum_redeem;
+                $insert_redeem->save();
+            } else 
+            if ($jumlah_hadiah > 1){
+                $one_code = false;
+                $kode_hadiah = [];
+                foreach ($data_hadiah as $detail_hadiah):
+                    array_push($kode_hadiah, $detail_hadiah->kode_hadiah);
+                endforeach;
+
+                //cek jika kodenya sama semua baru diredeemkan
+                if (count(array_unique($kode_hadiah)) == 1){
+                    $totop = 0;
+                    if ($omzet > 0){
+                        $totop = $omzet;
+                    } else 
+                    if ($poin > 0){
+                        $totop = $poin;
+                    }
+
+                    //jika kode hadiah nya sama maka di redeem kan dengan urutan nominal terbesar dulu
+                    foreach ($data_hadiah as $detail_hadiah):
+                        $id_campaign_hadiah = $detail_hadiah->id;
+                        $harga = $detail_hadiah->harga;
+
+                        $jum_redeem = floor($totop / $harga);
+                        $insert_redeem = new RedeemDetail();
+                        $insert_redeem->kode_customer = $kode_customer;
+                        $insert_redeem->id_campaign = $id_campaign;
+                        $insert_redeem->id_campaign_hadiah = $id_campaign_hadiah;
+                        $insert_redeem->jumlah = $jum_redeem;
+                        $insert_redeem->save();
+
+                        $sisa = ($totop - $jum_redeem * $harga);
+                        $totop = $sisa;
+                    endforeach;
                 }
             }
-
-            if ($detail->omzet_netto > 0){
-                $jum_redeem = floor($detail->omzet_netto / $harga);
-            } else 
-            if ($detail->poin > 0){
-                $jum_redeem = floor($detail->poin / $harga);
-            }
-            $insert_redeem = new RedeemDetail();
-            $insert_redeem->kode_customer = $detail->kode_customer;
-            $insert_redeem->id_campaign = $detail->id;
-            $insert_redeem->id_campaign_hadiah = $id_hadiah;
-            $insert_redeem->jumlah = $jum_redeem;
-            $insert_redeem->save();
         endforeach;
     }
 }); 
