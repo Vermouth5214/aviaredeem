@@ -87,7 +87,9 @@ class ReportController extends Controller
                                             ->where('campaign_h.category', "CAT")
                                             ->where('campaign_h.jenis', "omzet")
                                             ->groupBy('customer_omzet.kode_customer')
-                                            ->groupBy('customer_omzet.kode_campaign');
+                                            ->groupBy('customer_omzet.kode_campaign')
+                                            ->orderBy('redeem_emas.created_at','ASC')
+                                            ->orderBy('redeem_detail.created_at','ASC');
                     if ($mode != "all"){
                         $data_list_campaign = $data_list_campaign->where('customer_omzet.periode_awal','>=', date('Y-m-d 00:00:00',strtotime($startDate)));
                         $data_list_campaign = $data_list_campaign->where('customer_omzet.periode_akhir','<=',date('Y-m-d 23:59:59',strtotime($endDate)));
@@ -218,7 +220,7 @@ class ReportController extends Controller
                                                 ->where('redeem_detail.kode_customer','=', $campaign->kode_customer)
                                                 ->where('redeem_detail.jumlah','>',0)
                                                 ->where('campaign_d_hadiah.emas','=',0)
-                                                ->orderBy('redeem_detail.id','ASC')
+                                                ->orderBy('redeem_detail.id_campaign_hadiah','ASC')
                                                 ->get();
                         $document_no = "TTO-AAP-".date('ym')."-".strval($digit);
                         $line_no = 10000;
@@ -274,7 +276,9 @@ class ReportController extends Controller
                                             ->where('campaign_h.category', "CAT")
                                             ->where('campaign_h.jenis', "poin")
                                             ->groupBy('customer_omzet.kode_customer')
-                                            ->groupBy('customer_omzet.kode_campaign');
+                                            ->groupBy('customer_omzet.kode_campaign')
+                                            ->orderBy('redeem_emas.created_at','ASC')
+                                            ->orderBy('redeem_detail.created_at','ASC');
                     if ($mode != "all"){
                         $data_list_campaign = $data_list_campaign->where('customer_omzet.periode_awal','>=', date('Y-m-d 00:00:00',strtotime($startDate)));
                         $data_list_campaign = $data_list_campaign->where('customer_omzet.periode_akhir','<=',date('Y-m-d 23:59:59',strtotime($endDate)));
@@ -405,7 +409,7 @@ class ReportController extends Controller
                                                 ->where('redeem_detail.kode_customer','=', $campaign->kode_customer)
                                                 ->where('redeem_detail.jumlah','>',0)
                                                 ->where('campaign_d_hadiah.emas','=',0)
-                                                ->orderBy('redeem_detail.id','ASC')
+                                                ->orderBy('redeem_detail.id_campaign_hadiah','ASC')
                                                 ->get();
                         $document_no = "TTP-AAP-".date('ym')."-".strval($digit);
                         $line_no = 10000;
@@ -468,7 +472,9 @@ class ReportController extends Controller
                                             ->where('campaign_h.category', "PIPA")
                                             ->where('campaign_h.jenis', "omzet")
                                             ->groupBy('customer_omzet.kode_customer')
-                                            ->groupBy('customer_omzet.kode_campaign');
+                                            ->groupBy('customer_omzet.kode_campaign')
+                                            ->orderBy('redeem_emas.created_at','ASC')
+                                            ->orderBy('redeem_detail.created_at','ASC');
                     if ($mode != "all"){
                         $data_list_campaign = $data_list_campaign->where('customer_omzet.periode_awal','>=', date('Y-m-d 00:00:00',strtotime($startDate)));
                         $data_list_campaign = $data_list_campaign->where('customer_omzet.periode_akhir','<=',date('Y-m-d 23:59:59',strtotime($endDate)));
@@ -600,7 +606,7 @@ class ReportController extends Controller
                                                 ->where('redeem_detail.kode_customer','=', $campaign->kode_customer)
                                                 ->where('redeem_detail.jumlah','>',0)
                                                 ->where('campaign_d_hadiah.emas','=',0)
-                                                ->orderBy('redeem_detail.id','ASC')
+                                                ->orderBy('redeem_detail.id_campaign_hadiah','ASC')
                                                 ->get();
                         $document_no = "TTO-IPP-".date('ym')."-".strval($digit);
                         $line_no = 10000;
@@ -656,7 +662,9 @@ class ReportController extends Controller
                                             ->where('campaign_h.category', "PIPA")
                                             ->where('campaign_h.jenis', "poin")
                                             ->groupBy('customer_omzet.kode_customer')
-                                            ->groupBy('customer_omzet.kode_campaign');
+                                            ->groupBy('customer_omzet.kode_campaign')
+                                            ->orderBy('redeem_emas.created_at','ASC')
+                                            ->orderBy('redeem_detail.created_at','ASC');
                     if ($mode != "all"){
                         $data_list_campaign = $data_list_campaign->where('customer_omzet.periode_awal','>=', date('Y-m-d 00:00:00',strtotime($startDate)));
                         $data_list_campaign = $data_list_campaign->where('customer_omzet.periode_akhir','<=',date('Y-m-d 23:59:59',strtotime($endDate)));
@@ -787,7 +795,7 @@ class ReportController extends Controller
                                                 ->where('redeem_detail.kode_customer','=', $campaign->kode_customer)
                                                 ->where('redeem_detail.jumlah','>',0)
                                                 ->where('campaign_d_hadiah.emas','=',0)
-                                                ->orderBy('redeem_detail.id','ASC')
+                                                ->orderBy('redeem_detail.id_campaign_hadiah','ASC')
                                                 ->get();
                         $document_no = "TTP-IPP-".date('ym')."-".strval($digit);
                         $line_no = 10000;
