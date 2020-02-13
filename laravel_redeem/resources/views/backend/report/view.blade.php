@@ -188,7 +188,7 @@
                                                     <?=$hadiah->campaign_hadiah->nama_hadiah;?>
                                                 </td>
                                                 <td class="text-right">
-                                                    <?=$hadiah->jumlah;?>
+                                                    <?=number_format($hadiah->jumlah,0,',','.');?>
                                                 </td>
                                                 <td class="text-right">
                                                     <?=$hadiah->campaign_hadiah->satuan;?>

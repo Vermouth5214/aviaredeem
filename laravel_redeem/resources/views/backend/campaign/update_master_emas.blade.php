@@ -86,7 +86,7 @@
                                     <input type="text" class="form-control" name="nama_hadiah[]" placeholder="Nama Hadiah" required="required" value="<?=$value->nama_hadiah;?>">
                                 </div>
                                 <div class="col-xs-12 col-sm-1">
-                                    <input type="number" class="form-control" name="jumlah[]" placeholder=1 min=1 required="required" value="<?=$value->jumlah;?>">
+                                    <input type="number" class="form-control" name="jumlah[]" placeholder=0.5 min=0.5 step=0.5 required="required" value="<?=$value->jumlah;?>">
                                 </div>
                                 <div class="col-xs-12 col-sm-2">
                                     <input type="number" class="form-control" name="harga[]" placeholder=1 min=1 required="required" value="<?=$value->harga;?>">
@@ -124,7 +124,7 @@
                                         <input type="text" class="form-control" name="nama_hadiah[]" placeholder="Nama Hadiah" required="required">
                                     </div>
                                     <div class="col-xs-12 col-sm-1">
-                                        <input type="number" class="form-control" name="jumlah[]" placeholder=1 min=1 required="required">
+                                        <input type="number" class="form-control" name="jumlah[]" placeholder=0.5 min=0.5 step=0.5 required="required">
                                     </div>
                                     <div class="col-xs-12 col-sm-2">
                                         <input type="number" class="form-control" name="harga[]" placeholder=1 min=1 required="required">
@@ -166,7 +166,7 @@
         var addButton = $('.add_button');
         var wrapper = $('.field_wrapper');
         $(addButton).click(function(){ //Once add button is clicked
-            $(wrapper).append('<div class="row" style="margin-bottom:10px;"><div class="col-xs-12 col-sm-2"><input type="text" class="form-control" name="kode_catalogue[]" placeholder="Kode Catalogue" required="required"></div><div class="col-xs-12 col-sm-2"><input type="text" class="form-control" name="kode_hadiah[]" placeholder="Kode Barang" required="required"></div><div class="col-xs-12 col-sm-3"><input type="text" class="form-control" name="nama_hadiah[]" placeholder="Nama Hadiah" required="required"></div><div class="col-xs-12 col-sm-1"><input type="number" class="form-control" name="jumlah[]" placeholder=1 min=1 required="required"></div><div class="col-xs-12 col-sm-2"><input type="number" class="form-control" name="harga[]" placeholder=1 min=1 required="required"></div><div class="col-xs-12 col-sm-1"><input type="text" class="form-control" name="satuan[]" placeholder="Satuan" required="required"></div><div class="col-xs-12 col-sm-1"><a href="javascript:void(0);" class="remove_button btn btn-danger btn-block" title="Hapus Baris">-</a></div>'); 
+            $(wrapper).append('<div class="row" style="margin-bottom:10px;"><div class="col-xs-12 col-sm-2"><input type="text" class="form-control" name="kode_catalogue[]" placeholder="Kode Catalogue" required="required"></div><div class="col-xs-12 col-sm-2"><input type="text" class="form-control" name="kode_hadiah[]" placeholder="Kode Barang" required="required"></div><div class="col-xs-12 col-sm-3"><input type="text" class="form-control" name="nama_hadiah[]" placeholder="Nama Hadiah" required="required"></div><div class="col-xs-12 col-sm-1"><input type="number" class="form-control" name="jumlah[]" placeholder=0.5 min=0.5 step=0.5 required="required"></div><div class="col-xs-12 col-sm-2"><input type="number" class="form-control" name="harga[]" placeholder=1 min=1 required="required"></div><div class="col-xs-12 col-sm-1"><input type="text" class="form-control" name="satuan[]" placeholder="Satuan" required="required"></div><div class="col-xs-12 col-sm-1"><a href="javascript:void(0);" class="remove_button btn btn-danger btn-block" title="Hapus Baris">-</a></div>'); 
         });
         $(wrapper).on('click', '.remove_button', function(e){ 
             if (confirm("Apakah anda yakin mau menghapus baris ini?")) {
