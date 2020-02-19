@@ -187,7 +187,7 @@
                                 $total = 0;
                             ?>
                             {{ Form::open(['url' => $url, 'method' => 'POST','class' => 'form-horizontal form-label-left', 'id' => 'form-submit']) }}
-                            <h3>Total Emas (gr) : <span id="total_emas"><?=number_format($total_gram,0,',','.');?></span></h3>
+                            <h3>Total Emas (gr) : <span id="total_emas"><?=number_format($total_gram,2,',','.');?></span></h3>
                             <br/>
                             <h2>List Hadiah</h2>
                                 <table class="table table-striped table-hover table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
@@ -277,9 +277,9 @@
             var subtotal = hitung_sub_total();
             var sisa = total - subtotal;
             if (sisa < 0){
-                $('#total_emas').html("<span class='red'>" + numberWithCommas(sisa) + "</span>");
+                $('#total_emas').html("<span class='red'>" + (sisa) + "</span>");
             } else {
-                $('#total_emas').html(numberWithCommas(sisa));
+                $('#total_emas').html((sisa));
             }
             
         })
