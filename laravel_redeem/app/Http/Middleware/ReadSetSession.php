@@ -22,7 +22,7 @@ class ReadSetSession
     public function handle($request, Closure $next)
     {
         $currentPath = Route::getFacadeRoot()->current()->uri();
-        if (($currentPath != "backup-database") && ($currentPath != "auto-redeem") && ($currentPath != "email-reminder") && ($currentPath != "auto-redeem-satu")) {
+        if (($currentPath != "backup-database") && ($currentPath != "auto-redeem") && ($currentPath != "email-reminder") && ($currentPath != "auto-redeem-satu") && ($currentPath != "api/notifikasi/waktu-klaim") && ($currentPath != "api/notifikasi/belum-klaim") && ($currentPath != "api/notifikasi/belum-konversi") && ($currentPath != "api/data/get-customer/{id}")) {
             $sessid=session_id();
             if (isset($_SESSION["uname"][$sessid])){
                 if ($request->session()->has('userinfo')){

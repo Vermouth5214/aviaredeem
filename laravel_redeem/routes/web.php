@@ -201,9 +201,6 @@ Route::get('/email-reminder', function () {
     // $sekarang_2 = '2019-06-28';
     // $sekarang_3 = '2019-06-22';
 
-    $email_01 = "oeidonny.winarto@gmail.com";
-    $email_02 = "mkt_1@avianbrands.com";
-
     // EMAIL NOTIFIKASI SUDAH BISA MULAI REDEEM    
     $data_campaign = DB::select("
         select * 
@@ -228,11 +225,8 @@ Route::get('/email-reminder', function () {
         $headers .= "MIME-Version: 1.0" . "\r\n";
         $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
         foreach ($email_to as $email):
-            mail($email, "Notifikasi Penukaran Hadiah Campaign ".$data_email->kode_campaign." di AviaRedeem Customer ".$data_email->kode_customer, $message_2, $headers);
+            mail(trim($email), "Notifikasi Penukaran Hadiah Campaign ".$data_email->kode_campaign." di AviaRedeem Customer ".$data_email->kode_customer, $message_2, $headers);
         endforeach;
-
-        mail($email_02, "Notifikasi Penukaran Hadiah Campaign ".$data_email->kode_campaign." di AviaRedeem Customer ".$data_email->kode_customer, $message_2, $headers);
-
     endforeach;
 
     //================= BELUM KLAIM ====================//
@@ -273,11 +267,8 @@ Route::get('/email-reminder', function () {
         $headers .= "MIME-Version: 1.0" . "\r\n";
         $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
         foreach ($email_to as $email):
-            mail($email, "Reminder Hari Terakhir Penukaran Hadiah Campaign ".$data_email->kode_campaign." di AviaRedeem Customer ".$data_email->kode_customer, $message_2, $headers);
+            mail(trim($email), "Reminder Hari Terakhir Penukaran Hadiah Campaign ".$data_email->kode_campaign." di AviaRedeem Customer ".$data_email->kode_customer, $message_2, $headers);
         endforeach;
-
-        mail($email_02, "Reminder Hari Terakhir Penukaran Hadiah Campaign ".$data_email->kode_campaign." di AviaRedeem Customer ".$data_email->kode_customer, $message_2, $headers);
-
     endforeach;
 
     $data_belum_klaim_1 = DB::select("
@@ -316,11 +307,8 @@ Route::get('/email-reminder', function () {
         $headers .= "MIME-Version: 1.0" . "\r\n";
         $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
         foreach ($email_to as $email):
-            mail($email, "Reminder Kurang 1 Hari Penukaran Hadiah Campaign ".$data_email->kode_campaign." di AviaRedeem Customer ".$data_email->kode_customer, $message_2, $headers);
+            mail(trim($email), "Reminder Kurang 1 Hari Penukaran Hadiah Campaign ".$data_email->kode_campaign." di AviaRedeem Customer ".$data_email->kode_customer, $message_2, $headers);
         endforeach;
-
-        mail($email_02, "Reminder Kurang 1 Hari Penukaran Hadiah Campaign ".$data_email->kode_campaign." di AviaRedeem Customer ".$data_email->kode_customer, $message_2, $headers);
-
     endforeach;
 
 
@@ -360,12 +348,8 @@ Route::get('/email-reminder', function () {
         $headers .= "MIME-Version: 1.0" . "\r\n";
         $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
         foreach ($email_to as $email):
-            mail($email, "Reminder Kurang 2 Hari Penukaran Hadiah Campaign ".$data_email->kode_campaign." di AviaRedeem Customer ".$data_email->kode_customer, $message_2, $headers);
+            mail(trim($email), "Reminder Kurang 2 Hari Penukaran Hadiah Campaign ".$data_email->kode_campaign." di AviaRedeem Customer ".$data_email->kode_customer, $message_2, $headers);
         endforeach;
-
-        mail($email_02, "Reminder Kurang 2 Hari Penukaran Hadiah Campaign ".$data_email->kode_campaign." di AviaRedeem Customer ".$data_email->kode_customer, $message_2, $headers);
-
-
     endforeach;
 
     
@@ -407,11 +391,8 @@ Route::get('/email-reminder', function () {
         $headers .= "MIME-Version: 1.0" . "\r\n";
         $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
         foreach ($email_to as $email):
-            mail($email, "Reminder Hari Terakhir Konversi Emas Campaign ".$data_email->kode_campaign." di AviaRedeem Customer ".$data_email->kode_customer, $message_2, $headers);
+            mail(trim($email), "Reminder Hari Terakhir Konversi Emas Campaign ".$data_email->kode_campaign." di AviaRedeem Customer ".$data_email->kode_customer, $message_2, $headers);
         endforeach;
-
-        mail($email_02, "Reminder Hari Terakhir Konversi Emas Campaign ".$data_email->kode_campaign." di AviaRedeem Customer ".$data_email->kode_customer, $message_2, $headers);
-
     endforeach;
 
     $data_belum_konversi_1 = DB::select("
@@ -450,11 +431,8 @@ Route::get('/email-reminder', function () {
         $headers .= "MIME-Version: 1.0" . "\r\n";
         $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
         foreach ($email_to as $email):
-            mail($email, "Reminder Kurang 1 Hari Konversi Emas Campaign ".$data_email->kode_campaign." di AviaRedeem Customer ".$data_email->kode_customer, $message_2, $headers);
+            mail(trim($email), "Reminder Kurang 1 Hari Konversi Emas Campaign ".$data_email->kode_campaign." di AviaRedeem Customer ".$data_email->kode_customer, $message_2, $headers);
         endforeach;
-
-        mail($email_02, "Reminder Kurang 1 Hari Konversi Emas Campaign ".$data_email->kode_campaign." di AviaRedeem Customer ".$data_email->kode_customer, $message_2, $headers);
-
     endforeach;
 
 
@@ -494,15 +472,93 @@ Route::get('/email-reminder', function () {
         $headers .= "MIME-Version: 1.0" . "\r\n";
         $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
         foreach ($email_to as $email):
-            mail($email, "Reminder Kurang 2 Hari Konversi Emas Campaign ".$data_email->kode_campaign." di AviaRedeem Customer ".$data_email->kode_customer, $message_2, $headers);
+            mail(trim($email), "Reminder Kurang 2 Hari Konversi Emas Campaign ".$data_email->kode_campaign." di AviaRedeem Customer ".$data_email->kode_customer, $message_2, $headers);
         endforeach;
-
-        mail($email_02, "Reminder Kurang 2 Hari Konversi Emas Campaign ".$data_email->kode_campaign." di AviaRedeem Customer ".$data_email->kode_customer, $message_2, $headers);
-
-
     endforeach;    
 
 });
+
+Route::get('/api/data/get-customer/{id}', function ($id) {
+    $user = UserAvex::where('reldag', $id)->first();
+    return $user;
+});
+
+Route::get('/api/notifikasi/waktu-klaim', function () {
+    $sekarang = date('Y-m-d');
+    $sekarang_1 = $sekarang;
+    $sekarang_2 = $sekarang;
+    $sekarang_3 = $sekarang;
+
+    $data = [];
+    // EMAIL NOTIFIKASI SUDAH BISA MULAI REDEEM    
+    $data = DB::select("
+        select * 
+        from customer_omzet 
+        where active = 1
+            and date_add(periode_awal, interval 1 day) = '".$sekarang_3."'
+    ");
+    return $data;
+});
+
+Route::get('/api/notifikasi/belum-klaim', function () {
+    $sekarang = date('Y-m-d');
+    $sekarang_1 = $sekarang;
+    $sekarang_2 = $sekarang;
+    $sekarang_3 = $sekarang;
+
+    $data = [];
+    $data = DB::select("
+        select  `campaign_h`.`kode_campaign`, 
+            `customer_omzet`.`periode_awal`, 
+            `customer_omzet`.`periode_akhir`, count(distinct campaign_d_hadiah.id) as jum_emas, 
+            count(distinct redeem_detail.id) as jum_redeem_detail, 
+            count(distinct redeem_emas.id) as jum_redeem_emas, `customer_omzet`.`kode_customer` 
+        from `customer_omzet` 
+        left join `campaign_h` 
+        on `customer_omzet`.`kode_campaign` = `campaign_h`.`kode_campaign` 
+        left join `campaign_d_hadiah` 
+        on `campaign_d_hadiah`.`id_campaign` = `campaign_h`.`id` and `campaign_d_hadiah`.`emas` = 1 
+        left join `redeem_detail` 
+        on `redeem_detail`.`kode_customer` = `customer_omzet`.`kode_customer` and `redeem_detail`.`id_campaign` = `campaign_h`.`id` 
+        left join `redeem_emas` 
+        on `redeem_emas`.`kode_customer` = `customer_omzet`.`kode_customer` and `redeem_emas`.`id_campaign` = `campaign_h`.`id` 
+        where `campaign_h`.`active` = 1 and customer_omzet.active = 1
+        group by `customer_omzet`.`kode_customer`, `customer_omzet`.`kode_campaign`
+        having jum_redeem_detail = 0 and customer_omzet.periode_akhir = '".$sekarang."'
+    ");
+    return $data;
+});
+
+Route::get('/api/notifikasi/belum-konversi', function () {
+    $sekarang = date('Y-m-d');
+    $sekarang_1 = $sekarang;
+    $sekarang_2 = $sekarang;
+    $sekarang_3 = $sekarang;
+
+    $data = [];
+    //================== BELUM KONVERSI =======================//
+    $data = DB::select("
+        select  `campaign_h`.`kode_campaign`, 
+            `customer_omzet`.`periode_awal`, 
+            `customer_omzet`.`periode_akhir`, count(distinct campaign_d_hadiah.id) as jum_emas, 
+            count(distinct redeem_detail.id) as jum_redeem_detail, 
+            count(distinct redeem_emas.id) as jum_redeem_emas, `customer_omzet`.`kode_customer` 
+        from `customer_omzet` 
+            left join `campaign_h` 
+            on `customer_omzet`.`kode_campaign` = `campaign_h`.`kode_campaign` 
+            left join `campaign_d_hadiah` 
+            on `campaign_d_hadiah`.`id_campaign` = `campaign_h`.`id` and `campaign_d_hadiah`.`emas` = 1 
+            left join `redeem_detail` 
+            on `redeem_detail`.`kode_customer` = `customer_omzet`.`kode_customer` and `redeem_detail`.`id_campaign` = `campaign_h`.`id` 
+            left join `redeem_emas` 
+            on `redeem_emas`.`kode_customer` = `customer_omzet`.`kode_customer` and `redeem_emas`.`id_campaign` = `campaign_h`.`id` 
+        where `campaign_h`.`active` = 1 and customer_omzet.active = 1
+        group by `customer_omzet`.`kode_customer`, `customer_omzet`.`kode_campaign`
+        having jum_emas > 0 and jum_redeem_detail > 0 and jum_redeem_emas = 0 and customer_omzet.periode_akhir = '".$sekarang."'
+    ");
+    return $data;
+});
+
 
 Route::get('/backup-database', function () {
     $tables = false;
