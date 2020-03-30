@@ -152,7 +152,7 @@
                                                     <?=number_format($hadiah->campaign_hadiah->harga,0,',','.');?>
                                                 </td>
                                                 <td class="text-right">
-                                                    <b class="blue"><?=number_format($hadiah->jumlah * $hadiah->campaign_hadiah->jumlah,0,',','.');?></b>
+                                                    <b class="blue"><?=number_format($hadiah->jumlah * $hadiah->campaign_hadiah->jumlah,2,',','.');?></b>
                                                 </td>
                                                 <td>
                                                     <?=$hadiah->campaign_hadiah->satuan;?>
