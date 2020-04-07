@@ -77,6 +77,9 @@
             <li class="{{ ($segment == 'general-report' ? 'active' : '') }}">
                 <a href="<?=url('backend/general-report');?>"><i class="fa fa-file-text-o"></i> General Report</a>
             </li>
+            <li class="{{ ($segment == 'redeem-report' ? 'active' : '') }}">
+                <a href="<?=url('backend/redeem-report');?>"><i class="fa fa-file-text-o"></i> Redeem per Campaign</a>
+            </li>
         </ul>
     </div>
     <?php

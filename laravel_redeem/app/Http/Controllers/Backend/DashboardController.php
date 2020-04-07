@@ -57,7 +57,7 @@ class DashboardController extends Controller {
                             on `redeem_emas`.`kode_customer` = `customer_omzet`.`kode_customer` and `redeem_emas`.`id_campaign` = `campaign_h`.`id`  
                         where `campaign_h`.`active` = 1 and customer_omzet.active = 1
                         group by `customer_omzet`.`kode_customer`, `customer_omzet`.`kode_campaign`
-                        having jum_redeem_detail = 0 and customer_omzet.periode_akhir < '".date('Y-m-d')."'
+                        having jum_redeem_detail = 0 and customer_omzet.periode_akhir < '".date('Y-m-d')."' and customer_omzet.periode_akhir > DATE_SUB('".date('Y-m-d')."', INTERVAL 2 MONTH)
                     ) b
                     group by b.kode_campaign
                 ) cb on (ch.kode_campaign = cb.kode_campaign)
@@ -79,7 +79,7 @@ class DashboardController extends Controller {
                             on `redeem_emas`.`kode_customer` = `customer_omzet`.`kode_customer` and `redeem_emas`.`id_campaign` = `campaign_h`.`id`  
                         where `campaign_h`.`active` = 1 and customer_omzet.active = 1
                         group by `customer_omzet`.`kode_customer`, `customer_omzet`.`kode_campaign`
-                        having (jum_redeem_detail > 0 and jum_redeem_emas = 0) and jum_emas > 0 and customer_omzet.periode_akhir < '".date('Y-m-d')."'
+                        having (jum_redeem_detail > 0 and jum_redeem_emas = 0) and jum_emas > 0 and customer_omzet.periode_akhir < '".date('Y-m-d')."' and customer_omzet.periode_akhir > DATE_SUB('".date('Y-m-d')."', INTERVAL 2 MONTH)
                     ) c
                     group by c.kode_campaign
                 ) cc on (ch.kode_campaign = cc.kode_campaign)

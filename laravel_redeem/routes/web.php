@@ -644,6 +644,9 @@ Route::group(array('prefix' => 'backend','middleware'=> ['token_admin']), functi
     Route::get('/general-report','Backend\ReportController@general_report');
     Route::get('/general-report/datatable','Backend\ReportController@datatable');
     Route::get('/general-report/view/{id}','Backend\ReportController@view');
+
+    Route::get('/redeem-report','Backend\ReportController@redeem_report');
+
 });
 
 

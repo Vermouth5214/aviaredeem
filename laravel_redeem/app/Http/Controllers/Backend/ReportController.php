@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Redirect;
 use Datatables;
 
 use App\Exports\ExportExcell;
+use App\Exports\ExportExcellRedeem;
 use Excel;
 
 class ReportController extends Controller
@@ -1015,6 +1016,76 @@ class ReportController extends Controller
 
             return view ('backend.report.view');
         }
+    }
+
+    public function redeem_report(){
+        $db2 = env('DB_DATABASE_2');
+        $kode_campaign = 999;
+        $nomor_campaign = "";
+        if (isset($_GET['kode_campaign'])){
+            $kode_campaign = $_GET['kode_campaign'];
+            $get_campaign = CampaignH::find($kode_campaign);
+            if ($get_campaign){
+                $nomor_campaign = $get_campaign->kode_campaign;
+            }
+        }
+        $campaign = CampaignH::where('active', '=', 1)->orderBy('id','DESC')->pluck('kode_campaign','id')->prepend('Pilih Campaign','999')->toArray();
+        $campaign = array_map('strtoupper', $campaign);
+
+        $data = DB::select(
+                "
+                    select al.kode_campaign, al.kode_customer, ".$db2.".tbuser.cabang, co.omzet_netto, co.poin,
+                            al.kode_hadiah, al.nama_hadiah, al.jumlah, al.jumlah_paket, al.jumlah_total, emas, idS
+                            from(
+                                select ch.kode_campaign, rd.kode_customer, 
+                                        dh.kode_hadiah, dh.nama_hadiah, 
+                                        dh.jumlah, rd.jumlah as jumlah_paket, (dh.jumlah*rd.jumlah) as jumlah_total, dh.emas, 0 as idS
+                                    from 
+                                    redeem_detail rd
+                                    left join
+                                    campaign_h ch
+                                    on rd.id_campaign = ch.id
+                                    left join
+                                    campaign_d_hadiah dh
+                                    on rd.id_campaign_hadiah = dh.id
+                                    where dh.emas = 0 and rd.id_campaign = '".$kode_campaign."'
+                                union all
+                                select * from (
+                                    select ch.kode_campaign, rd.kode_customer, 
+                                            dh.kode_hadiah, dh.nama_hadiah, 
+                                            dh.jumlah, rd.jumlah as jumlah_paket, (dh.jumlah*rd.jumlah) as jumlah_total, 1 as emas, dh.id as idS
+                                        from 
+                                        redeem_emas rd
+                                        left join
+                                        campaign_h ch
+                                        on rd.id_campaign = ch.id
+                                        left join
+                                        campaign_d_emas dh
+                                        on rd.id_campaign_emas = dh.id
+                                        where rd.id_campaign = '".$kode_campaign."'
+                                        order by dh.id ASC
+                                ) ccc
+                    ) al
+                    left join 
+                    ".$db2.".tbuser
+                    on ".$db2.".tbuser.uname = al.kode_customer
+                    left join
+                    customer_omzet co
+                    on co.kode_campaign = al.kode_campaign and co.kode_customer = al.kode_customer
+                    where jumlah_paket <> 0
+                    group by al.kode_campaign, kode_customer, kode_hadiah
+                    order by kode_customer, idS ASC
+                "
+        );
+
+        if (isset($_GET['export'])){
+            return Excel::download(new ExportExcellRedeem($data), 'Redeem Campaign '.str_replace("/","_",$nomor_campaign)." ".date('Y-m-d').'.xlsx');
+        }
+
+        view()->share('campaign', $campaign);
+        view()->share('kode_campaign', $kode_campaign);
+        view()->share('data', $data);
+        return view ('backend.report.redeem');
     }
 
 }
