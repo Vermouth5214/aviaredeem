@@ -12,7 +12,7 @@
                         <h1>Login Form</h1>
                         <div class="error-alert"></div>
                         <div>
-                            <input type="text" class="form-control" placeholder="Username" required="" name="username" />
+                            <input type="text" class="form-control" placeholder="Username" required="" name="username" autofocus/>
                         </div>
                         <div>
                             <input type="password" class="form-control" placeholder="Password" required="" name="password" />
