@@ -209,7 +209,7 @@ Route::get('/email-reminder', function () {
             and date_add(periode_awal, interval 1 day) = '".$sekarang_3."'
     ");
     foreach ($data_campaign as $data_email):
-        $user = UserAvex::where('reldag', $data_email->kode_customer)->first();
+        $user = UserAvex::where('uname', $data_email->kode_customer."A")->first();
         $email = $user->email;
         $email_to = array_filter(explode(";", $email));
         $message_2 = " 
@@ -251,7 +251,7 @@ Route::get('/email-reminder', function () {
     ");
 
     foreach ($data_belum_klaim_0 as $data_email):
-        $user = UserAvex::where('reldag', $data_email->kode_customer)->first();
+        $user = UserAvex::where('uname', $data_email->kode_customer."A")->first();
         $email = $user->email;
         $email_to = array_filter(explode(";", $email));
         $message_2 = " 
@@ -291,7 +291,7 @@ Route::get('/email-reminder', function () {
         having jum_redeem_detail = 0 and date_sub(customer_omzet.periode_akhir, interval 1 day) = '".$sekarang_1."'        
     ");
     foreach ($data_belum_klaim_1 as $data_email):
-        $user = UserAvex::where('reldag', $data_email->kode_customer)->first();
+        $user = UserAvex::where('uname', $data_email->kode_customer."A")->first();
         $email = $user->email;
         $email_to = array_filter(explode(";", $email));
         $message_2 = " 
@@ -332,7 +332,7 @@ Route::get('/email-reminder', function () {
         having jum_redeem_detail = 0 and date_sub(customer_omzet.periode_akhir, interval 2 day) = '".$sekarang_2."'        
     ");
     foreach ($data_belum_klaim_2 as $data_email):
-        $user = UserAvex::where('reldag', $data_email->kode_customer)->first();
+        $user = UserAvex::where('uname', $data_email->kode_customer."A")->first();
         $email = $user->email;
         $email_to = array_filter(explode(";", $email));
         $message_2 = " 
@@ -375,7 +375,7 @@ Route::get('/email-reminder', function () {
     ");
 
     foreach ($data_belum_konversi_0 as $data_email):
-        $user = UserAvex::where('reldag', $data_email->kode_customer)->first();
+        $user = UserAvex::where('uname', $data_email->kode_customer."A")->first();
         $email = $user->email;
         $email_to = array_filter(explode(";", $email));
         $message_2 = " 
@@ -415,7 +415,7 @@ Route::get('/email-reminder', function () {
         having jum_emas > 0 and jum_redeem_detail > 0 and jum_redeem_emas = 0 and date_sub(customer_omzet.periode_akhir, interval 1 day) = '".$sekarang_1."'
     ");
     foreach ($data_belum_konversi_1 as $data_email):
-        $user = UserAvex::where('reldag', $data_email->kode_customer)->first();
+        $user = UserAvex::where('uname', $data_email->kode_customer."A")->first();
         $email = $user->email;
         $email_to = array_filter(explode(";", $email));
         $message_2 = " 
@@ -456,7 +456,7 @@ Route::get('/email-reminder', function () {
         having jum_emas > 0 and jum_redeem_detail > 0 and jum_redeem_emas = 0 and date_sub(customer_omzet.periode_akhir, interval 2 day) = '".$sekarang_2."'
     ");
     foreach ($data_belum_konversi_2 as $data_email):
-        $user = UserAvex::where('reldag', $data_email->kode_customer)->first();
+        $user = UserAvex::where('uname', $data_email->kode_customer."A")->first();
         $email = $user->email;
         $email_to = array_filter(explode(";", $email));
         $message_2 = " 

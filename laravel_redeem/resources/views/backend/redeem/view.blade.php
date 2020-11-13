@@ -162,7 +162,7 @@
                                                     <?=number_format($hadiah->campaign_hadiah->harga,0,',','.');?>
                                                 </td>
                                                 <td class="text-right">
-                                                    <b class="blue"><?=number_format($hadiah->jumlah * $hadiah->campaign_hadiah->jumlah,2,',','.');?></b>
+                                                    <b class="blue"><?=number_format($hadiah->jumlah * $hadiah->campaign_hadiah->jumlah,1,',','.');?></b>
                                                 </td>
                                                 <td>
                                                     <?=$hadiah->campaign_hadiah->satuan;?>
@@ -211,7 +211,7 @@
                             </table>
                             <?php
                                 // GROUP AAA ada kolom keterangan
-                                if (($userinfo['reldag'] == '14F01020002') || ($userinfo['reldag'] == '14B02010003') || ($userinfo['reldag'] == '22A02010002') || ($userinfo['reldag'] == '14J01010002') || ($userinfo['reldag'] == '13F01010003')) :
+                                if (($userinfo['reldag'] == '14F01020002') || ($userinfo['reldag'] == '14B02010003') || ($userinfo['reldag'] == '22A02010002') || ($userinfo['reldag'] == '14J01010002') || ($userinfo['reldag'] == '13F01010003') || ($userinfo['reldag'] == '14K01010001')) :
                             ?>
                             <div class="row">
                                 <div class="col-xs-12 col-sm-6">
